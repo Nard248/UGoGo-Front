@@ -1,0 +1,27 @@
+.button {
+  padding: 10px 30px;
+}
+
+.button-primary {
+  background: #F9A34B;
+  color: #fff;
+  &:disabled {
+    background: #FCC28D;
+  }
+}
+
+.button-secondary {
+  background: #AEE6E6;
+  color: #008080;
+  &:disabled {
+    background: #C4EDED;
+  }
+}
+
+.button-tertiary {
+  background: #D0E3EBB2;
+  color: #000;
+  &:disabled {
+    background: #A3C0D1;
+  }
+}

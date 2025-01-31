@@ -1,0 +1,57 @@
+.profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 21px;
+  border: 1px solid #D5D7DA;
+  border-radius: 5px;
+
+  &__avatar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    &__image {
+      display: flex;
+      border-radius: 100%;
+
+      img {
+        border-radius: 100%;
+      }
+    }
+
+    &__details {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      &__name {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 20px;
+      }
+      &__rate {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        img {
+          max-width: 100%;
+          width: auto;
+        }
+
+        &__value {
+          font-size: 16px;
+          font-weight: 500;
+          line-height: 20px;
+          color: #808080;
+        }
+      }
+    }
+  }
+
+  &__message {
+    display: flex;
+    padding: 18px 20px;
+    border-radius: 100%;
+    background: #DFF5F5;
+  }
+}

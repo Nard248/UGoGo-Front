@@ -1,0 +1,23 @@
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  width: fit-content;
+  margin-inline-end: 46px;
+
+  &__iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 40px;
+    max-height: 40px;
+    padding: 8px;
+    background: #F2F2F2;
+    border: 1px solid #999999;
+    border-radius: 4px;
+
+    img {
+    }
+  }
+}

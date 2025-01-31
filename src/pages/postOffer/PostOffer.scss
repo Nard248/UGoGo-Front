@@ -1,0 +1,122 @@
+.postOffer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%;
+
+  &__header {
+    padding: 20px;
+    border-bottom: 1px solid #D5D7DA;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &__button {
+    color: #000;
+  }
+
+  &__label {
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  &__input {
+    margin-top: 6px;
+  }
+
+  &__form {
+    border: 1px solid #D5D7DA;
+    border-radius: 10px;
+  }
+
+  &__flightDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 3.3rem;
+    &__form {
+
+      &__header {
+
+        &__title {
+
+        }
+      }
+
+      &__content {
+        padding: 0 20px;
+        margin: 28px 0 18px 0;
+      }
+    }
+
+    &__notes {
+
+    }
+  }
+
+  &__detailedForm {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    &__prefferedCategory {
+      &__form {
+
+        &__header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        &__content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 25px;
+          padding: 20px;
+        }
+      }
+    }
+
+    &__itemDetails {
+
+      &__form {
+        gap: 50px;
+
+        &__content {
+          display: flex;
+          justify-content: space-between;
+          padding: 20px;
+          gap: 20px;
+
+        }
+      }
+    }
+
+    &__priceDetails {
+      display: flex;
+      align-items: flex-start;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 40px;
+
+    .button-tertiary {
+      color: #008080;
+      background: #AEE6E6;
+    }
+  }
+
+  &__actionsConfirm {
+    border: none;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17px;
+  }
+}

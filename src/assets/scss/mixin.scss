@@ -1,0 +1,23 @@
+@mixin forLaptop {
+  @media screen and (max-width: 1441px) {
+    @content;
+  }
+}
+
+@mixin forTablet {
+  @media screen and (max-width: 1024px) { // 960px
+    @content;
+  }
+}
+
+@mixin forMobile {
+  @media screen and (max-width: 480px) {
+    @content;
+  }
+}
+
+@mixin nonTouch {
+  @media screen and (hover: hover) {
+    @content;
+  }
+}

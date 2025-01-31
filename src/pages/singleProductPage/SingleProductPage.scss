@@ -1,0 +1,115 @@
+.singleProductPage {
+    display: flex;
+    gap: 54px;
+    flex-direction: column;
+    &__productInfo {
+        border: 1px solid #D5D7DA;
+        border-radius: 5px;
+
+        &__header {
+            background: #FFF1E7;
+            padding: 24px 21px;
+            border-bottom: 1px solid #D5D7DA;
+            &__title {
+                font-size: 22px;
+                font-weight: 500;
+            }
+        }
+
+        &__table {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 35px 80px;
+
+
+            &__item {
+                display: grid;
+                grid-template-columns: 4fr 1fr;
+                padding-bottom: 9px;
+                border-bottom: 1px solid #B3B3B3;
+                &:last-child {
+                    border: none;
+                }
+
+                &__title {
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+                    font-size: 22px;
+                    font-weight: 400;
+                    line-height: 33px;
+
+                    &__icon {
+                        display: flex;
+                    }
+                }
+                &__info {
+                    font-size: 22px;
+                    font-weight: 400;
+                    line-height: 33px;
+                }
+            }
+        }
+    }
+    &__notes {
+
+        &__title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #414651;
+            margin-bottom: 6px;
+        }
+        &__content {
+            display: flex;
+            justify-content: space-between;
+            gap: 100px;
+            &__area {
+                width: 50%;
+                textarea {
+                    width: 100%;
+                    padding: 10px 14px;
+                    border: 1px solid #D5D7DA;
+                    border-radius: 5px;
+                    resize: none;
+                    font-size: 16px;
+                    font-weight: 400;
+                    color: #717680;
+                }
+            }
+            &__button {
+                font-size: 15px;
+                font-weight: 600;
+                line-height: 18px;
+                padding: 10px 30px;
+            }
+        }
+    }
+    &__flightItemsDetails {
+        border: 1px solid #D5D7DA;
+        border-radius: 5px;
+        width: 50%;
+
+        &__content {
+            padding: 25px 15px;
+            &__item {
+                font-size: 22px;
+                font-weight: 500;
+                margin-top: 12px;
+            }
+            &__itemTitle {
+                color: #999999;
+            }
+            &__itemTotal {
+                margin-top: 32px;
+                padding-top: 32px;
+                border-top: 1px solid #B3B3B3;
+                font-size: 22px;
+                font-weight: 500;
+                &__title {
+                    color: #000;
+                }
+            }
+        }
+    }
+}

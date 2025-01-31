@@ -1,0 +1,16 @@
+.image {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid #D5D7DA;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 205px;
+  max-height: 205px;
+
+  img {
+    object-fit: scale-down;
+  }
+}

@@ -1,0 +1,18 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 25px 15px;
+  background: #F2F2F2;
+  border: 1px solid #D5D7DA;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 185px;
+}
+
+.selected {
+  border: 1px solid #73B2B2;
+  color: #73B2B2;
+}
