@@ -1,0 +1,112 @@
+.offerDetails {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #D5D7DA;
+  border-radius: 5px;
+  padding: 34px 41px;
+  margin-top: 30px;
+  gap: 33px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 3;
+    gap: 21px;
+
+    &__name {
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 42px;
+    }
+    &__details {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 22px;
+    }
+  }
+
+  &__book {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+
+    &__price {
+      font-size: 33px;
+      font-weight: 600;
+      line-height: 43px;
+    }
+
+    &__button {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 18px;
+    }
+  }
+
+  &__route {
+    display: flex;
+    justify-content: space-between;
+    gap: 22px;
+
+    &__location {
+      display: flex;
+      flex-direction: column;
+
+      &__label {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 22px;
+      }
+      &__title {
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 42px;
+      }
+    }
+
+    &__icon {
+      display: flex;
+      align-items: center;
+      gap: 29px;
+      flex-grow: 1;
+
+      &__divider {
+        width: 100%;
+        height: 1px;
+        border: .5px dashed #F9A34B;
+      }
+      
+      &__img {
+        background: #73B2B2;
+        border-radius: 100%;
+        padding: 10px;
+        
+        img {
+          max-width: 100%;
+          width: auto;
+          align-items: center;
+        } 
+      }
+    }
+  }
+
+  &__flight {
+    display: flex;
+    gap: 38px;
+  }
+  &__flightLabel {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  &__flightNumber {
+    font-size: 22px;
+    font-weight: 700;
+  }
+}

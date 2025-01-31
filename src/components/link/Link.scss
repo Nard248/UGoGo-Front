@@ -1,0 +1,30 @@
+.link {
+  padding: 10px 30px;
+  border-radius: 8px;
+
+  &__button {
+    text-decoration: none;
+  }
+}
+
+.link-primary {
+  background: #F9A34B;
+  a {
+    color: #fff;
+  }
+}
+
+.link-secondary {
+  background: #AEE6E6;
+  a {
+    color: #008080;
+  }
+}
+
+.link-tertiary {
+  background: #D0E3EBB2;
+  border: .5px solid #1B3A4B;
+  a {
+    color: #000;
+  }
+}
