@@ -1,0 +1,50 @@
+.offerCard {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border: 1px solid #AEE6E6;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 1px 1px 6px 0 #00000040;
+
+  &__details {
+
+  }
+
+  &__flightNumber {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  &__flightNumber {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  &__date {
+    font-size: 14px;
+    font-weight: 400;
+    line-width: 18.4px;
+    color: #808080;
+  }
+  &__direction {
+    font-size: 16px;
+    font-weight: 400;
+  }
+  &__space {
+    font-size: 14px;
+    font-weight: 700;
+    line-width: 17.6px;
+    color: #73B2B2;
+  }
+  &__userActions {
+    display: flex;
+    gap: 1.7rem;
+
+    .button {
+      width: 30px;
+      height: 30px;
+      padding: 8px;
+      border-radius: 100%;
+      background: #D0E3EB;
+    }
+  }
+}

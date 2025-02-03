@@ -10,6 +10,7 @@ import {IOfferCreateForm} from "../../types/global";
 import {DatePicker, DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, {Dayjs} from "dayjs";
+import {OfferCard} from "../../components/offerCard/OfferCard";
 
 export const PostOffer = () => {
     const [airports, setAirports] = useState<any[]>();
@@ -333,10 +334,11 @@ export const PostOffer = () => {
                                     />
                                 </div>
                                 <div className="postOffer__detailedForm__prefferedCategory__form__content">
-                                    {categories?.map(({id, name, icon_path}) => (
-                                        <Card key={id} id={id} title={name} iconSrc={icon_path} iconName={name}
-                                              selected={selectedCategories?.includes(id)} handleCardClick={handleCardClick}/>
-                                    ))}
+                                    <OfferCard />
+                                    {/*{categories?.map(({id, name, icon_path}) => (*/}
+                                    {/*    <Card key={id} id={id} title={name} iconSrc={icon_path} iconName={name}*/}
+                                    {/*          selected={selectedCategories?.includes(id)} handleCardClick={handleCardClick}/>*/}
+                                    {/*))}*/}
                                 </div>
                             </div>
                         </div>
