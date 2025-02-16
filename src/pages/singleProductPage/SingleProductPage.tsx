@@ -111,7 +111,7 @@ export const SingleProductPage: FC = () => {
                         <div className="flex flex-col singleProductPage__flightItemsDetails">
                             <div className="singleProductPage__productInfo__header postOffer__header">
                                 <h3 className="singleProductPage__productInfo__header__title singleProductPage__title">
-                                    Flight & Item Details
+                                    Price Details
                                 </h3>
                             </div>
                             <div className="singleProductPage__flightItemsDetails__content">
@@ -128,7 +128,6 @@ export const SingleProductPage: FC = () => {
                                     <span className="singleProductPage__flightItemsDetails__content__itemValue">$11</span>
                                 </div>
                             </div>
-                            <div className=""></div>
                         </div>
                     </div>
                     <div className="flex justify-end pt-9">

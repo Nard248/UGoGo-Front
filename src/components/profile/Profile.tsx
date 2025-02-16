@@ -17,8 +17,8 @@ export const Profile = () => {
                     <div className="profile__avatar__details__rate">
                         <img src={rateIcon} alt="Rate icon"/>
                         <span className="profile__avatar__details__rate__value">
-                                5 (435)
-                            </span>
+                            5 (435)
+                        </span>
                     </div>
                 </div>
             </div>

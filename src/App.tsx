@@ -8,14 +8,24 @@ import {Registration} from "./pages/auth/Registration";
 import {Login} from "./pages/auth/Login";
 import {ItemAdd} from "./pages/itemAdd/ItemAdd";
 import {Sidenav} from "./layouts/Sidenav";
+import {Payment} from "./pages/payment/Payment";
+import {PaymentConfirmation} from "./pages/paymentConfirmation/PaymentConfirmation";
+import {SearchResult} from "./pages/search/SearchResult";
+import {AddProfileInfo} from "./pages/profile/AddProfileInfo";
+import {ProfileVerification} from "./pages/profile/ProfileVerification";
 
 const Protected = () => {
+    const location = useLocation();
     const token = localStorage.getItem("token");
+    const withSidenav = !['/payment-success', '/search-result'].includes(location.pathname);
+    const withHeader = ['/search-result'].includes(location.pathname);
     return token ?
         <>
-            <Header withNavItems={false}/>
+            <Header withNavItems={withHeader}/>
             <div className="flex w-full">
-                <Sidenav/>
+                {withSidenav &&
+                    <Sidenav/>
+                }
                 <Outlet/>
             </div>
         </> :
@@ -24,7 +34,7 @@ const Protected = () => {
 
 const Public = () => {
     const location = useLocation();
-    const withHeader = !['/login', '/registration'].includes(location.pathname)
+    const withHeader = !['/login', '/registration'].includes(location.pathname);
     const token = localStorage.getItem("token");
 
     return !token ?
@@ -47,6 +57,11 @@ function App() {
                             <Route path="single-product-page" element={<SingleProductPage/>}/>
                             <Route path="post-offer" element={<PostOffer/>}/>
                             <Route path="add-item" element={<ItemAdd/>}/>
+                            <Route path="payment" element={<Payment/>}/>
+                            <Route path="payment-success" element={<PaymentConfirmation/>}/>
+                            <Route path="search-result" element={<SearchResult/>}/>
+                            <Route path="add-profile-info" element={<AddProfileInfo/>}/>
+                            <Route path="profile-verification" element={<ProfileVerification/>}/>
                         </Route>
                         <Route element={<Public/>}>
                             <Route path="registration" element={<Registration/>}/>

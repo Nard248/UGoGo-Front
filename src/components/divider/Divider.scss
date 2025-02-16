@@ -1,0 +1,29 @@
+.divider {
+  $this: &;
+
+  display: inline-flex;
+  //gap: var(--guit-ref-spacing-xsmall);
+  overflow: hidden;
+  width: 100%;
+
+  &_color {
+    &_primary {
+      background: #F9A34B;
+    }
+    &_secondary {
+      background: #559999;
+    }
+    &_neutral {
+      background: #B3B3B3;
+    }
+  }
+
+  &_size {
+    &_small {
+      height: 1px;
+    }
+    &_normal {
+      height: 5.5rem;
+    }
+  }
+}

@@ -146,9 +146,9 @@ export const Login: FC = () => {
                 </div>
 
                 <div className="dividerContainer">
-                    <div className="divider" />
+                    <div className="login__divider" />
                     <span className="orText">Or</span>
-                    <div className="divider" />
+                    <div className="login__divider" />
                 </div>
 
                 <button className="socialButton">
