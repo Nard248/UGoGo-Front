@@ -1,0 +1,40 @@
+.filter {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  inset: 0;
+  background: #cccccc85;
+
+  &__popup {
+    width: 50%;
+    margin: auto;
+    border-radius: 8px;
+    background: #fff;
+    margin-top: 2rem;
+  }
+
+  &__header {
+    padding: 28px;
+    border-bottom: 1px solid #B3B3B3;
+    width: 100%;
+  }
+
+  &__headerContent {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__headerClose {
+    width: 14px;
+    height: 14px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    gap: 3rem;
+  }
+}

@@ -3,7 +3,6 @@ import imageUpload from './../../assets/icons/imageUpload.svg'
 import './ImageLabel.scss'
 
 type Props = {
-
     classnames?: string;
 }
 

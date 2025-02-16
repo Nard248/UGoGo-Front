@@ -1,6 +1,5 @@
 import airplane from './../../assets/icons/airplane.svg'
 import './OfferDetails.scss'
-import {Button} from "../button/Button";
 
 export const OfferDetails = () => {
     return (
