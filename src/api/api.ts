@@ -6,7 +6,6 @@ export const api = axios.create({
 
 api.interceptors.request.use((request: any) => {
         const token = localStorage.getItem('token');
-        console.log(token);
         return {
             ...request,
             headers: {
@@ -17,7 +16,6 @@ api.interceptors.request.use((request: any) => {
         };
     },
     (error) => {
-        console.log('helllo');
         return Promise.reject(error);
     }
 );

@@ -12,6 +12,17 @@
   a {
     color: #fff;
   }
+  &.outline {
+    background: #D0E3EBB2;
+    color: #1B3A4B;
+    border: 1px solid #1B3A4B;
+
+    &:disabled {
+      background: #D0E3EB;
+      color: #7AA0BA;
+      border: 1px solid #7AA0BA;
+    }
+  }
 }
 
 .link-secondary {
@@ -26,5 +37,22 @@
   border: .5px solid #1B3A4B;
   a {
     color: #000;
+  }
+  &.outline {
+    display: inline-block;
+    background: transparent;
+    border: none;
+    outline-style: none;
+    padding: 0;
+
+    a {
+      color: #008080;
+      text-decoration: underline;
+      text-underline: #008080;
+    }
+
+    &:disabled {
+      color: #7AA0BA;
+    }
   }
 }

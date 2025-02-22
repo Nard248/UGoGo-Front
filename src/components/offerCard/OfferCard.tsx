@@ -93,8 +93,8 @@ export const OfferCard = () => {
                         <img src={moreBtn} alt="More buttons Icon"/>
                     </button>
                 </div>
-                <div className="cardActions flex items-center justify-between">
-                    <Button title={'Send a request'} type={'primary'} handleClick={() => {}} />
+                <div className="cardActions flex items-center justify-between mt-[3rem]">
+                    <Button title={'Send a request'} type={'primary'} outline={true} handleClick={() => {}} />
                     <Button title={'Learn more'} type={'primary'} handleClick={() => {}} />
                 </div>
             </div>

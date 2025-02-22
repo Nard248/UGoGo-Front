@@ -13,6 +13,12 @@ import {PaymentConfirmation} from "./pages/paymentConfirmation/PaymentConfirmati
 import {SearchResult} from "./pages/search/SearchResult";
 import {AddProfileInfo} from "./pages/profile/AddProfileInfo";
 import {ProfileVerification} from "./pages/profile/ProfileVerification";
+import {ForgotPassword} from "./pages/auth/ForgotPassword";
+import {EmailVerification} from "./pages/auth/EmailVerification";
+import {ResetPassword} from "./pages/auth/ResetPassword";
+import {Requests} from "./pages/requests/Requests";
+import {Offers} from "./pages/offers/Offers";
+import {Items} from "./pages/items/Items";
 
 const Protected = () => {
     const location = useLocation();
@@ -34,7 +40,7 @@ const Protected = () => {
 
 const Public = () => {
     const location = useLocation();
-    const withHeader = !['/login', '/registration'].includes(location.pathname);
+    const withHeader = !['/login', '/registration', '/forgot-password', '/email-verification', '/reset-password'].includes(location.pathname);
     const token = localStorage.getItem("token");
 
     return !token ?
@@ -62,10 +68,16 @@ function App() {
                             <Route path="search-result" element={<SearchResult/>}/>
                             <Route path="add-profile-info" element={<AddProfileInfo/>}/>
                             <Route path="profile-verification" element={<ProfileVerification/>}/>
+                            <Route path="requests" element={<Requests/>}/>
+                            <Route path="offers" element={<Offers/>}/>
+                            <Route path="items" element={<Items/>}/>
                         </Route>
                         <Route element={<Public/>}>
                             <Route path="registration" element={<Registration/>}/>
                             <Route path="login" element={<Login/>}/>
+                            <Route path="forgot-password" element={<ForgotPassword/>}/>
+                            <Route path="reset-password" element={<ResetPassword/>}/>
+                            <Route path="email-verification" element={<EmailVerification/>}/>
                         </Route>
                     </Routes>
                 </BrowserRouter>

@@ -32,7 +32,6 @@
   border: 0.1rem solid transparent;
 
   &.outline {
-    border-color: var(--border-inverse);
     color: var(--forgraund-inverse-no-theme);
     @include nonTouch {
       &:hover {
@@ -331,7 +330,6 @@
   justify-content: center;
   height: 4rem;
   border-radius: 0.8rem;
-  color: var(--forground-inverse);
 
   &.fullWidth {
     width: 100%;
