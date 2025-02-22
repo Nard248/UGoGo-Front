@@ -1,13 +1,27 @@
 .button {
   padding: 10px 30px;
   gap: .8rem;
+  outline-style: none;
 }
 
 .button-primary {
   background: #F9A34B;
   color: #fff;
+
   &:disabled {
     background: #FCC28D;
+  }
+
+  &.outline {
+    background: #FFEFD5;
+    color: #D96A1D;
+    border: 1px solid #D96A1D;
+
+    &:disabled {
+      background: #FDCEA3;
+      color: #FDCEA3;
+      border: 1px solid #FDCEA3;
+    }
   }
 }
 
@@ -17,6 +31,17 @@
   &:disabled {
     background: #C4EDED;
   }
+  &.outline {
+    background: #FFEFD5;
+    color: #008080;
+    border: 1px solid #008080;
+
+    &:disabled {
+      background: #AEE6E6;
+      color: #F0FBFB;
+      border: 1px solid #AEE6E6;
+    }
+  }
 }
 
 .button-tertiary {
@@ -24,5 +49,16 @@
   color: #000;
   &:disabled {
     background: #A3C0D1;
+  }
+  &.outline {
+    background: #D0E3EBB2;
+    color: #1B3A4B;
+    border: 1px solid #1B3A4B;
+
+    &:disabled {
+      background: #D0E3EB;
+      color: #7AA0BA;
+      border: 1px solid #7AA0BA;
+    }
   }
 }

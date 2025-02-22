@@ -5,6 +5,7 @@ import './Button.scss'
 type Props = {
     title: string;
     type: 'primary' | 'secondary' | 'tertiary';
+    outline?: boolean;
     disabled?: boolean;
     classNames?: string;
     icon?: string;
@@ -12,9 +13,9 @@ type Props = {
     handleClick: () => void;
 }
 
-export const Button: FC<Props> = ({type, title, disabled, icon, alt, classNames, handleClick}) => {
+export const Button: FC<Props> = ({type, title, outline, disabled, icon, alt, classNames, handleClick}) => {
     return (
-        <button className={`button button-${type} ${classNames ? classNames : ''} ${disabled ? 'disabled pointer-events-none' : ''}`} onClick={handleClick} disabled={disabled}>
+        <button className={`button button-${type} ${classNames ? classNames : ''} ${disabled ? 'disabled pointer-events-none' : ''} ${outline ? 'outline' : ''}`} onClick={handleClick} disabled={disabled}>
             {icon &&
                 <img src={filterIcon} alt={alt}/>
             }

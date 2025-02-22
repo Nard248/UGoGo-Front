@@ -10,8 +10,7 @@ import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, {Dayjs} from "dayjs";
 import {OfferCard} from "../../components/offerCard/OfferCard";
-import {FAQ} from "../../components/faq/FAQ";
-import {Divider} from "../../components/divider/Divider";
+import {Card} from "../../components/card/Card";
 
 export const PostOffer = () => {
     const [airports, setAirports] = useState<any[]>();
@@ -327,11 +326,10 @@ export const PostOffer = () => {
                                         />
                                     </div>
                                     <div className="postOffer__detailedForm__prefferedCategory__form__content">
-                                        <OfferCard/>
-                                        {/*{categories?.map(({id, name, icon_path}) => (*/}
-                                        {/*    <Card key={id} id={id} title={name} iconSrc={icon_path} iconName={name}*/}
-                                        {/*          selected={selectedCategories?.includes(id)} handleCardClick={handleCardClick}/>*/}
-                                        {/*))}*/}
+                                        {categories?.map(({id, name, icon_path}) => (
+                                            <Card key={id} id={id} title={name} iconSrc={icon_path} iconName={name}
+                                                  selected={selectedCategories?.includes(id)} handleCardClick={handleCardClick}/>
+                                        ))}
                                     </div>
                                 </div>
                             </div>

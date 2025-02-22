@@ -91,77 +91,77 @@ export const Login: FC = () => {
             :
             <Suspense fallback={<Loading />}>
                 <div className="container">
-            <div className="leftSection">
-                <img
-                    src={loginLogo}
-                    alt="UGOGO Plane Logo"
-                    className="logo"
-                />
-            </div>
-            <div className="rightSection">
-                <div className="title">
-                    <h1 className="title-wrapper">Welcome</h1>
-                    <div className="subTitle text-[#878787]">
-                        New to <strong className="text-[#000]">UGO<span className="text-[#F9A34B]">GO</span></strong>?&nbsp;
-                        <NavLink to="/registration" className="signupLink text-[#F9A34B]">Sign up</NavLink>
+                    <div className="leftSection">
+                        <img
+                            src={loginLogo}
+                            alt="UGOGO Plane Logo"
+                            className="logo"
+                        />
+                    </div>
+                    <div className="rightSection">
+                        <div className="title">
+                            <h1 className="title-wrapper">Welcome</h1>
+                            <div className="subTitle text-[#878787]">
+                                New to <strong className="text-[#000]">UGO<span className="text-[#F9A34B]">GO</span></strong>?&nbsp;
+                                <NavLink to="/registration" className="signupLink text-[#F9A34B]">Sign up</NavLink>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-[22px]">
+                            <div className={`inputHolder ${loginForm.email.errorMessage ? 'error' : ''}`}>
+                                <Label title={'Email address'} htmlFor={'email'}
+                                       classnames={'label'}>
+                                    <Input
+                                        id={'email'}
+                                        type={'email'}
+                                        placeholder={'Email address'}
+                                        classnames={'inputField'}
+                                        errorMessage={loginForm.email.errorMessage}
+                                        handleChange={handleEmailChange}/>
+                                </Label>
+                            </div>
+                            <div className={`inputHolder ${loginForm.password.errorMessage ? 'error' : ''}`}>
+                                <Label title={'Password'} htmlFor={'password'}
+                                       classnames={'label'}>
+                                    <Input
+                                        id={'password'}
+                                        type={'password'}
+                                        placeholder={'Password'}
+                                        classnames={'inputField'}
+                                        errorMessage={loginForm.password.errorMessage}
+                                        handleChange={handlePasswordChange}
+                                    />
+                                </Label>
+                            </div>
+                            <Button title={'Login'} type={'primary'} disabled={!loginForm.email.value || !loginForm.password.value} classNames={'loginButton'} handleClick={onLogin} />
+                        </div>
+
+                        <div className="rememberMeContainer">
+                            <input type="checkbox" id="rememberMe" className="cursor-pointer" />
+                            <label htmlFor="rememberMe" className="rememberMeLabel">
+                                Remember me
+                            </label>
+                            <a href="#forgot" className="forgotPasswordLink">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <div className="dividerContainer">
+                            <div className="login__divider" />
+                            <span className="orText">Or</span>
+                            <div className="login__divider" />
+                        </div>
+
+                        <button className="socialButton">
+                            Sign in with Google
+                        </button>
+                        <button className="socialButton">
+                            Sign in with Facebook
+                        </button>
+                        <button className="socialButton">
+                            Sign in with Apple
+                        </button>
                     </div>
                 </div>
-                <div className="flex flex-col gap-[22px]">
-                    <div className={`inputHolder ${loginForm.email.errorMessage ? 'error' : ''}`}>
-                        <Label title={'Email address'} htmlFor={'email'}
-                               classnames={'label'}>
-                            <Input
-                                id={'email'}
-                                type={'email'}
-                                placeholder={'Email address'}
-                                classnames={'inputField'}
-                                errorMessage={loginForm.email.errorMessage}
-                                handleChange={handleEmailChange}/>
-                        </Label>
-                    </div>
-                    <div className={`inputHolder ${loginForm.password.errorMessage ? 'error' : ''}`}>
-                        <Label title={'Password'} htmlFor={'password'}
-                               classnames={'label'}>
-                            <Input
-                                id={'password'}
-                                type={'password'}
-                                placeholder={'Password'}
-                                classnames={'inputField'}
-                                errorMessage={loginForm.password.errorMessage}
-                                handleChange={handlePasswordChange}
-                            />
-                        </Label>
-                    </div>
-                    <Button title={'Login'} type={'primary'} disabled={!loginForm.email.value || !loginForm.password.value} classNames={'loginButton'} handleClick={onLogin} />
-                </div>
-
-                <div className="rememberMeContainer">
-                    <input type="checkbox" id="rememberMe" className="cursor-pointer" />
-                    <label htmlFor="rememberMe" className="rememberMeLabel">
-                        Remember me
-                    </label>
-                    <a href="#forgot" className="forgotPasswordLink">
-                        Forgot password?
-                    </a>
-                </div>
-
-                <div className="dividerContainer">
-                    <div className="login__divider" />
-                    <span className="orText">Or</span>
-                    <div className="login__divider" />
-                </div>
-
-                <button className="socialButton">
-                    Sign in with Google
-                </button>
-                <button className="socialButton">
-                    Sign in with Facebook
-                </button>
-                <button className="socialButton">
-                    Sign in with Apple
-                </button>
-            </div>
-        </div>
             </Suspense>
     );
 }
