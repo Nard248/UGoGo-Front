@@ -10,8 +10,8 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '6dfbfc8c-0b2a-41b8-a038-418eb9b9b7fd'
-  imageRepository: 'frontend'
+  dockerRegistryServiceConnection: 'c28299d7-3800-444b-a34d-b644c0c56552'
+  imageRepository: 'ugogo'
   containerRegistry: 'ugogo.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
@@ -36,5 +36,5 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          latest
           $(tag)
+          latest
