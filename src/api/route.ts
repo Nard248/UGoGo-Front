@@ -5,6 +5,10 @@ export const login = async (data: ILogin) => {
     return await api.post(`/users/token/`, data)
 }
 
+export const logout = async (token: string) => {
+    return await api.post(`/users/token/logout/`, {"refresh": token})
+}
+
 export const register = async (data: ILogin) => {
     return await api.post(`/users/register/`, data)
 }
@@ -23,4 +27,8 @@ export const getCategories = async () => {
 
 export const creatOffer = async (data: IOfferCreate) => {
     return await api.post(`/offers/create_offer/`, data)
+}
+
+export const emailVerification = async (data: {email: string, email_verification_code: string}) => {
+    return await api.post(`/users/verfiy-email/`, data)
 }

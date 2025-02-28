@@ -11,14 +11,14 @@ export const Items = () => {
                 <Button title={'Add item'} type={'primary'} handleClick={() => {}} />
             </div>
             <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
             </div>
             <div className="flex justify-end gap-[4rem]">
                 <Button title={'How it works'} type={'secondary'} handleClick={() => {}} />

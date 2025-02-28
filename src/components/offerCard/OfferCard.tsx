@@ -1,5 +1,5 @@
+import {FC} from "react";
 import {Avatar, Box, Rating} from "@mui/material";
-import StarIcon from '@mui/icons-material/Star';
 import offerCardImage from './../../assets/images/offer.svg'
 import avatar from './../../assets/images/avatar.svg'
 import message from './../../assets/icons/message.svg'
@@ -7,7 +7,12 @@ import moreBtn from './../../assets/icons/more.svg'
 import {Button} from "../button/Button";
 import './OfferCard.scss';
 
-export const OfferCard = () => {
+interface IOfferCard {
+    primaryButtonText: string;
+    secondaryButtonText: string;
+}
+
+export const OfferCard: FC<IOfferCard> = ({primaryButtonText, secondaryButtonText}) => {
     return (
         <div className="offerCard border border-[#AEE6E6]">
             <div className="offerCard__image">
@@ -94,8 +99,8 @@ export const OfferCard = () => {
                     </button>
                 </div>
                 <div className="cardActions flex items-center justify-between mt-[3rem]">
-                    <Button title={'Send a request'} type={'primary'} outline={true} handleClick={() => {}} />
-                    <Button title={'Learn more'} type={'primary'} handleClick={() => {}} />
+                    <Button title={primaryButtonText} type={'primary'} outline={true} handleClick={() => {}} />
+                    <Button title={secondaryButtonText} type={'primary'} handleClick={() => {}} />
                 </div>
             </div>
         </div>

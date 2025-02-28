@@ -96,10 +96,10 @@ export const Registration = () => {
 
         try {
             const {data} = await register(formData);
-            if (data.tokens.access) {
-                localStorage.setItem('token', data.tokens.access);
+            if (data.user) {
+                localStorage.setItem('email', registerForm.email.value);
                 setIsLoading(false);
-                navigate('/post-offer')
+                navigate('/email-verification')
             }
         } catch (e) {
             console.log(e);
@@ -127,7 +127,7 @@ export const Registration = () => {
                                 <NavLink to="/login" className="signupLink text-[#F9A34B]">Sign in</NavLink>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-[22px]">
+                        <form className="flex flex-col gap-[22px]">
                             <div>
                                 <Label title={'Full Name'} htmlFor={'fullName'}
                                        classnames={'label'}>
@@ -158,7 +158,7 @@ export const Registration = () => {
                             <button className="loginButton" onClick={onRegister}
                                     disabled={!registerForm.fullName.value || !registerForm.email.value || !registerForm.password.value}>Continue
                             </button>
-                        </div>
+                        </form>
                         <div className="rememberMeContainer">
                             <input type="checkbox" id="rememberMe" className="cursor-pointer"/>
                             <label htmlFor="rememberMe" className="rememberMeLabel">
@@ -168,9 +168,9 @@ export const Registration = () => {
                         </div>
 
                         <div className="dividerContainer">
-                            <div className="divider"/>
+                            <div className="login__divider"/>
                             <span className="orText">Or</span>
-                            <div className="divider"/>
+                            <div className="login__divider"/>
                         </div>
 
                         <button className="socialButton">

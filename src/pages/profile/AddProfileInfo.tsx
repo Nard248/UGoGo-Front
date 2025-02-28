@@ -1,11 +1,10 @@
+import React from "react";
 import avatar from "../../assets/images/avatar.svg";
 import pencil from "../../assets/icons/pencil.svg";
-import './AddProfileInfo.scss';
-import {Divider} from "../../components/divider/Divider";
 import {Input} from "../../components/input/Input";
 import {Label} from "../../components/label/Label";
-import React from "react";
 import {Button} from "../../components/button/Button";
+import './AddProfileInfo.scss';
 
 export const AddProfileInfo = () => {
     return (

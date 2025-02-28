@@ -5,11 +5,12 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((request: any) => {
-        const token = localStorage.getItem('token');
+        const accessToken = localStorage.getItem('access');
+
         return {
             ...request,
             headers: {
-                ...(token !== null && {Authorization: `Bearer ${token}`}),
+                ...(accessToken !== null && {Authorization: `Bearer ${accessToken}`}),
                 ...request.headers,
                 'Access-Control-Allow-Origin': '*'
             },
@@ -30,17 +31,17 @@ api.interceptors.response.use(
             originalRequest._retry = true; // Prevent infinite loop
 
             try {
-                const refreshToken = localStorage.getItem("token");
+                const refreshToken = localStorage.getItem("refresh");
                 if (!refreshToken) throw new Error("No refresh token available");
 
                 // Request new access token using refresh token
-                const { data } = await api.post("/users/token/refresh", { refreshToken });
-
+                const { data } = await api.post("/users/token/refresh", { refresh: refreshToken });
                 // Store new tokens
-                localStorage.setItem("token", data.accessToken);
+                localStorage.setItem("access", data.access);
+                localStorage.setItem("refresh", data.refresh);
 
                 // Retry the failed request with new token
-                originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+                originalRequest.headers.Authorization = `Bearer ${data.access}`;
                 return api(originalRequest);
             } catch (err) {
                 console.error("Refresh token failed", err);

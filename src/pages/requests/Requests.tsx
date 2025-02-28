@@ -8,14 +8,14 @@ export const Requests = () => {
                 My requests
             </h3>
             <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
+                <OfferCard primaryButtonText={'Cancel'} secondaryButtonText={'Edit'}/>
             </div>
             <div className="flex justify-end gap-[4rem]">
                 <Button title={'How it works'} type={'secondary'} handleClick={() => {}} />
