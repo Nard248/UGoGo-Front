@@ -22,14 +22,14 @@ export const SearchResult: FC = () => {
                         }}/>
                     </div>
                     <div className="grid grid-cols-3 gap-[5.7rem]">
-                        <OfferCard/>
-                        <OfferCard/>
-                        <OfferCard/>
-                        <OfferCard/>
-                        <OfferCard/>
-                        <OfferCard/>
-                        <OfferCard/>
-                        <OfferCard/>
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
+                        <OfferCard primaryButtonText={'Send a request'} secondaryButtonText={'Learn more'} />
                     </div>
                 </div>
             </div>

@@ -1,3 +1,13 @@
+.emailVerificationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFFFFF;
+  gap: 80px;
+  font-family: 'Roboto', sans-serif;
+  margin-top: 50px;
+}
+
 .emailVerificationInput {
   height: 100%;
   font-size: 4.8rem;

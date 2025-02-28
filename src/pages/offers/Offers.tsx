@@ -8,14 +8,14 @@ export const Offers = () => {
                 My offers
             </h3>
             <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
-                <OfferCard/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
+                <OfferCard primaryButtonText={'Accept'} secondaryButtonText={'Decline'}/>
             </div>
             <div className="flex justify-end gap-[4rem]">
                 <Button title={'How it works'} type={'secondary'} handleClick={() => {}} />

@@ -9,12 +9,12 @@ export const Search: FC = () => {
                 <label>Where</label>
                 <input type="text" placeholder="Search destinations"/>
             </div>
-            <div className="divider"></div>
+            <div className="search__divider"></div>
             <div className="search-field">
                 <label>Date</label>
                 <input type="text" placeholder="Add date and time"/>
             </div>
-            <div className="divider"></div>
+            <div className="search__divider"></div>
             <div className="search-field">
                 <label>Item</label>
                 <input type="text" placeholder="Search by item name"/>

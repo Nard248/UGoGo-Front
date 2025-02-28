@@ -31,8 +31,10 @@ export const ForgotPassword = () => {
                             />
                     </div>
                     <Button title={'Send'} type={'primary'}
+                            classNames={'text-[1.4rem]'}
                             handleClick={() => {}}/>
-                    <Button title={'Back to Login'} type={'primary'}
+                    <Button title={'Back to Login'} type={'primary'} outline={true}
+                            classNames={'text-[1.4rem]'}
                             handleClick={() => {}}/>
                 </div>
             </div>

@@ -1,19 +1,22 @@
-import {FC} from "react";
+import {FC, useState} from "react";
 import {Link} from "../components/link/Link";
 import {Avatar, Badge} from "@mui/material";
 import avatar from './../assets/images/avatar.svg'
 import logo from './../assets/images/logo.svg'
 import notification from './../assets/icons/notification.svg'
 import './Header.scss';
+import {ProfilePopover} from "../components/profilePopover/profilePopover";
 
 interface IHeader {
     withNavItems?: boolean;
 }
 
 export const Header: FC<IHeader> = ({withNavItems = true}) => {
-    const isLoggedIn = !!localStorage.getItem('token')
+    const [isPopoverOpened, setIsPopoverOpened] = useState(false)
+    const isLoggedIn = !!localStorage.getItem('access');
+
     return (
-        <header className="header w-full">
+        <header className="header w-full relative">
             <a href={'/single-product-page'} className="header-logo">
                 <img src={logo} alt="UGOGO Logo" />
             </a>
@@ -32,7 +35,12 @@ export const Header: FC<IHeader> = ({withNavItems = true}) => {
                     <Badge>
                         <img src={notification} alt="Notifications"/>
                     </Badge>
-                    <Avatar alt="Avatar image" src={avatar}/>
+                    <div>
+                        <Avatar alt="Avatar image" src={avatar} className="cursor-pointer" onClick={() => setIsPopoverOpened(!isPopoverOpened)}/>
+                        {isPopoverOpened &&
+                            <ProfilePopover />
+                        }
+                    </div>
                 </div>
                 :
                 <div className="auth-buttons">

@@ -78,8 +78,15 @@ export const Login: FC = () => {
             password: loginForm.password.value
         }
         const {data} = await login(formData);
-        if(data.access) {
-            localStorage.setItem('token', data.access);
+
+        if (!data?.isEmailVerified) {
+            localStorage.setItem('email', loginForm.email.value);
+            navigate('/email-verification');
+        }
+
+        if(data.refresh) {
+            localStorage.setItem('refresh', data.refresh);
+            localStorage.setItem('access', data.access);
             setIsLoading(false);
             navigate('/post-offer')
         }
@@ -106,7 +113,7 @@ export const Login: FC = () => {
                                 <NavLink to="/registration" className="signupLink text-[#F9A34B]">Sign up</NavLink>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-[22px]">
+                        <form className="flex flex-col gap-[22px]">
                             <div className={`inputHolder ${loginForm.email.errorMessage ? 'error' : ''}`}>
                                 <Label title={'Email address'} htmlFor={'email'}
                                        classnames={'label'}>
@@ -133,16 +140,14 @@ export const Login: FC = () => {
                                 </Label>
                             </div>
                             <Button title={'Login'} type={'primary'} disabled={!loginForm.email.value || !loginForm.password.value} classNames={'loginButton'} handleClick={onLogin} />
-                        </div>
+                        </form>
 
                         <div className="rememberMeContainer">
                             <input type="checkbox" id="rememberMe" className="cursor-pointer" />
                             <label htmlFor="rememberMe" className="rememberMeLabel">
                                 Remember me
                             </label>
-                            <a href="#forgot" className="forgotPasswordLink">
-                                Forgot password?
-                            </a>
+                            <NavLink to="/forgot-password" className="forgotPasswordLink">Forgot password?</NavLink>
                         </div>
 
                         <div className="dividerContainer">
