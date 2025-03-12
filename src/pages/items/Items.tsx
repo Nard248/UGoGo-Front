@@ -1,14 +1,16 @@
 import {OfferCard} from "../../components/offerCard/OfferCard";
 import {Button} from "../../components/button/Button";
-
+import { useNavigate } from "react-router";
 export const Items = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="flex flex-col gap-[6rem] w-full">
             <div className="flex justify-between">
                 <h3 className="text-[2rem] font-medium">
                     My items
                 </h3>
-                <Button title={'Add item'} type={'primary'} handleClick={() => {}} />
+                <Button title={'Add item'} type={'primary'} handleClick={() => {navigate("/add-item")}} />
             </div>
             <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
                 <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'}/>
