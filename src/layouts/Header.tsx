@@ -22,10 +22,10 @@ export const Header: FC<IHeader> = ({withNavItems = true}) => {
             </a>
             {withNavItems &&
                 <nav className="nav">
-                    <a href="#">Home</a>
+                    <a href="/search-result">Home</a>
                     <a href="#">How it works</a>
-                    <a href="#">Post an offer</a>
-                    <a href="#">Find an offer</a>
+                    <a href="/post-offer">Post an offer</a>
+                    <a href="/search-result">Find an offer</a>
                     <a href="#">Price</a>
                     <a href="#">Contact Us</a>
                 </nav>
