@@ -106,3 +106,4 @@ export const OfferCard: FC<IOfferCard> = ({primaryButtonText, secondaryButtonTex
         </div>
     )
 }
+

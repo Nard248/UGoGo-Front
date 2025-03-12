@@ -26,9 +26,9 @@ api.interceptors.response.use(
   (response: any) => response, // Pass successful responses as is
   async (error: any) => {
     const originalRequest = error.config;
-
+    
     // If unauthorized and it's the first retry, attempt refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {      
       originalRequest._retry = true; // Prevent infinite loop
 
       try {
