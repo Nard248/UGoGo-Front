@@ -1,12 +1,13 @@
-import {FC} from "react";
+import {ChangeEvent, FC} from "react";
 import imageUpload from './../../assets/icons/imageUpload.svg'
 import './ImageLabel.scss'
 
 type Props = {
+    upload: (event: ChangeEvent<HTMLInputElement>) => void;
     classnames?: string;
 }
 
-export const ImageLabel: FC<Props> = ({classnames}) => {
+export const ImageLabel: FC<Props> = ({classnames, upload}) => {
     return (
         <label
             className={`imageLabel grid h-full gap-4 cursor-pointer ${classnames || ''}`}
@@ -39,6 +40,7 @@ export const ImageLabel: FC<Props> = ({classnames}) => {
                     className="hidden"
                     id="fileDropRef"
                     type="file"
+                    onChange={(event) => upload(event)}
                     multiple/>
             </div>
         </label>

@@ -6,11 +6,43 @@
   border-radius: 20px;
   padding: 20px;
   box-shadow: 1px 1px 6px 0 #00000040;
-  max-width: 352px;
   width: 100%;
+
+  &-small {
+    max-width: 150px;
+  }
+
+  &-medium {
+    max-width: 280px;
+  }
+
+  &-large {
+    max-width: 350px;
+  }
 
   &__details {
 
+  }
+  &__image {
+    position: relative;
+  }
+
+  &__imageFlag {
+    position: absolute;
+    top: 5%;
+    left: 3%;
+    text-transform: capitalize;
+    border: 1px solid #559999;
+    color: #1B3A4B;
+    background: #DFF5F5;
+    padding: 4px;
+    border-radius: 15px;
+    font-size: 12px;
+    span {
+      display: list-item;
+      margin-left: 1.5em;
+      padding-right: 5px;
+    }
   }
 
   &__flightNumber {

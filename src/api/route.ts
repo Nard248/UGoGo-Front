@@ -1,6 +1,5 @@
 import { api } from "./api";
-import { ILogin, IOfferCreate } from "../types/global";
-import { log } from "console";
+import {IItemCreate, ILogin, IOfferCreate} from "../types/global";
 
 export const login = async (data: ILogin) => {
   return await api.post(`/users/token/`, data);
@@ -36,6 +35,14 @@ export const getCategories = async () => {
 
 export const creatOffer = async (data: IOfferCreate) => {    
   return await api.post(`/offers/create_offer/`, data);
+};
+
+export const getItems = async () => {
+  return await api.get(`/items/items/`);
+};
+
+export const createItem = async (data: IItemCreate) => {
+  return await api.post(`/items/items/unified_create/`, data);
 };
 
 export const emailVerification = async (data: {

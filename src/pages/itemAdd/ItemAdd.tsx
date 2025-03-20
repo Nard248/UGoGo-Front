@@ -7,12 +7,18 @@ import {Card} from "../../components/card/Card";
 import {ImageComponent} from "../../components/image/Image";
 import iconSvg from './../../assets/icons/item.svg'
 import {ImageLabel} from "../../components/image/ImageLabel";
-import {Sidenav} from "../../layouts/Sidenav";
-import {getCategories} from "../../api/route";
+import {createItem, getCategories} from "../../api/route";
+import {IItemCreate} from "../../types/global";
+import {useNavigate} from "react-router-dom";
 
 export const ItemAdd: FC = () => {
+    const navigate = useNavigate();
     const [selectedCategories, setSelectedCategories] = useState<number[] | null>()
     const [categories, setCategories] = useState<any[]>([]);
+    const [files, setFiles] = useState<any[]>([]);
+    const [itemFormData, setItemFormData] = useState<IItemCreate>(
+        {} as IItemCreate
+    );
 
     const handleCardClick = (id: number) => {
         if (selectedCategories?.includes(id)) {
@@ -33,8 +39,19 @@ export const ItemAdd: FC = () => {
         getCategoriesData();
     }, [])
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+    const onImageUpload = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+        const target = e.target as HTMLInputElement
+        if (!target.files?.length) {
+            return
+        }
+        const files = Array.from(target.files).map((file) => {
+            return {
+                ...file,
+                blob: URL.createObjectURL(file)
+            };
+        })
 
+        setFiles(files)
     }
 
     const onAddCategory = () => {
@@ -45,8 +62,14 @@ export const ItemAdd: FC = () => {
 
     }
 
-    const onConfirm = () => {
-
+    const onConfirm = async () => {
+        setItemFormData({...itemFormData, category_ids: categories.map(item => item.id)})
+        try {
+            const data = await createItem(itemFormData);
+            navigate('/single-product-page?modal=book');
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     const onItemAdd = () => {
@@ -68,38 +91,29 @@ export const ItemAdd: FC = () => {
                             </h3>
                         </div>
                         <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Flight number'} htmlFor={'flightNumber'}
+                            <Label title={'Dimensions'} htmlFor={'dimensions'}
                                    classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'LH123'} id={'flightNumber'}
+                                <Input type={'text'} placeholder={'Length x Width x Height'} id={'dimensions'}
                                        classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
+                                       handleChange={(event) => setItemFormData({...itemFormData, dimensions: event.target.value})}
                                 />
                             </Label>
                         </div>
                         <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Departure'} htmlFor={'departure'}
+                            <Label title={'Name'} htmlFor={'name'}
                                    classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Yerevan (EVN)'} id={'departure'}
+                                <Input type={'text'} placeholder={'Laptop'} id={'name'}
                                        classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
+                                       handleChange={(event) => setItemFormData({...itemFormData, name: event.target.value})}
                                 />
                             </Label>
                         </div>
                         <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Destination'} htmlFor={'destination'}
+                            <Label title={'Wight'} htmlFor={'wight'}
                                    classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Moscow (SVO)'} id={'destination'}
+                                <Input type={'text'} placeholder={'1 kg'} id={'wight'}
                                        classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
-                                />
-                            </Label>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Destination'} htmlFor={'destination'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Moscow (SVO)'} id={'destination'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
+                                       handleChange={(event) => setItemFormData({...itemFormData, weight: +event.target.value})}
                                 />
                             </Label>
                         </div>
@@ -111,11 +125,11 @@ export const ItemAdd: FC = () => {
                             </h3>
                         </div>
                         <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Name'} htmlFor={'name'}
+                            <Label title={'Name'} htmlFor={'pickUpName'}
                                    classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'John'} id={'name'}
+                                <Input type={'text'} placeholder={'John'} id={'pickUpName'}
                                        classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
+                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_name: event.target.value})}
                                 />
                             </Label>
                         </div>
@@ -124,7 +138,7 @@ export const ItemAdd: FC = () => {
                                    classnames={'postOffer__label'}>
                                 <Input type={'text'} placeholder={'Doe'} id={'surname'}
                                        classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
+                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_surname: event.target.value})}
                                 />
                             </Label>
                         </div>
@@ -133,7 +147,7 @@ export const ItemAdd: FC = () => {
                                    classnames={'postOffer__label'}>
                                 <Input type={'text'} placeholder={'Phone'} id={'phone'}
                                        classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
+                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_phone: event.target.value})}
                                 />
                             </Label>
                         </div>
@@ -142,7 +156,7 @@ export const ItemAdd: FC = () => {
                                    classnames={'postOffer__label'}>
                                 <Input type={'text'} placeholder={'Email'} id={'email'}
                                        classnames={'postOffer__input'}
-                                       handleChange={handleInputChange}
+                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_email: event.target.value})}
                                 />
                             </Label>
                         </div>
@@ -156,9 +170,10 @@ export const ItemAdd: FC = () => {
                                     image</h3>
                             </div>
                             <div className="postOffer__detailedForm__prefferedCategory__form__content">
-                                <ImageLabel/>
-                                <ImageComponent src={iconSvg} alt={'item'}/>
-                                <ImageComponent src={iconSvg} alt={'item'}/>
+                                <ImageLabel upload={onImageUpload}/>
+                                {!!files.length && files.map(file => (
+                                    <ImageComponent src={file.blob} alt={'item'}/>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -192,7 +207,7 @@ export const ItemAdd: FC = () => {
                             <Input type={'textarea'} placeholder={'Enter a description...'}
                                    id={'availableDimensions'}
                                    classnames={'postOffer__input'}
-                                   handleChange={handleInputChange}
+                                   handleChange={(event) => setItemFormData({...itemFormData, description: event.target.value})}
                             />
                         </Label>
                         <span>

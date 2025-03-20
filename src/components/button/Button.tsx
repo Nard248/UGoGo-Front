@@ -3,7 +3,7 @@ import filterIcon from './../../assets/icons/filterIcon.svg'
 import './Button.scss'
 
 type Props = {
-    title: string;
+    title?: string;
     type: 'primary' | 'secondary' | 'tertiary';
     outline?: boolean;
     disabled?: boolean;
@@ -19,7 +19,7 @@ export const Button: FC<Props> = ({type, title, outline, disabled, icon, alt, cl
             {icon &&
                 <img src={filterIcon} alt={alt}/>
             }
-            {title}
+            {title && title}
         </button>
     )
 }

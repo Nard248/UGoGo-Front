@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import {useState, useEffect, useRef, FC} from "react";
 import { useNavigate } from "react-router-dom";
 import { Divider } from "../divider/Divider";
 import avatar from "../../assets/images/avatar.svg";
@@ -19,9 +19,9 @@ interface User {
   email: string;
 }
 
-export const ProfilePopover: React.FC = () => {
+export const ProfilePopover: FC = () => {
   const navigate = useNavigate();
-  const popoverRef = useRef<HTMLDivElement>(null); // Ref to the popover container
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   const [requestsIconState, setRequestsIcon] = useState(requestsIcon);
   const [itemsIconState, setItemsIcon] = useState(itemsIcon);
@@ -29,7 +29,7 @@ export const ProfilePopover: React.FC = () => {
   const [accountIconState, setAccountIcon] = useState(accountIcon);
   const [logoutIconState, setLogoutIcon] = useState(logoutIcon);
 
-  const [isPopoverOpen, setIsPopoverOpen] = useState(true); // Popover visibility state
+  const [isPopoverOpen, setIsPopoverOpen] = useState(true);
 
   const [user, setUser] = useState<User>({ name: "NULL", email: "NULL" });
 
@@ -64,7 +64,6 @@ export const ProfilePopover: React.FC = () => {
 
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Cleanup event listener on component unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -77,7 +76,6 @@ export const ProfilePopover: React.FC = () => {
     try {
       const refreshToken = localStorage.getItem("refresh");
       if (!refreshToken) {
-        console.log("No refresh token found. Logging out...");
         localStorage.removeItem("access");
         localStorage.removeItem("refresh");
         navigate("/login");
@@ -97,7 +95,7 @@ export const ProfilePopover: React.FC = () => {
   };
 
   const handleNavigation = (path: string) => {
-    setIsPopoverOpen(false); // Close popover on navigation
+    setIsPopoverOpen(false);
     navigate(path);
   };
   
@@ -187,13 +185,14 @@ export const ProfilePopover: React.FC = () => {
                 My Flights
               </span>
             </div>
+          </div>
+
 
             <Divider
               appearance="neutral"
               size="small"
-              className="mt-[1.6rem]"
             />
-
+          <div className="flex flex-col gap-[.8rem] px-[2.1rem] py-[1.6rem]">
             <div
               className="flex items-center gap-[.8rem] cursor-pointer"
               onClick={handleLogout}
