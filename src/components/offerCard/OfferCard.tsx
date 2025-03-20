@@ -1,5 +1,6 @@
 import {FC} from "react";
-import {Avatar, Box, Rating} from "@mui/material";
+import classNames from "classnames";
+import {Avatar, Rating} from "@mui/material";
 import offerCardImage from './../../assets/images/offer.svg'
 import avatar from './../../assets/images/avatar.svg'
 import message from './../../assets/icons/message.svg'
@@ -8,17 +9,29 @@ import {Button} from "../button/Button";
 import './OfferCard.scss';
 
 interface IOfferCard {
+    // name?: string;
+    // dimensions?: string;
+    // description?: string;
+    // pickup_name?: string;
+    // weight?: string;
+    // verified?: string;
+    data?: any;
     primaryButtonText: string;
     secondaryButtonText: string;
+    size?: 'small' | 'medium' | 'large';
 }
 
-export const OfferCard: FC<IOfferCard> = ({primaryButtonText, secondaryButtonText}) => {
+export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large'}) => {
     return (
-        <div className="offerCard border border-[#AEE6E6]">
+        <div className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
             <div className="offerCard__image">
-                <div className="offerCard__imageFlag">
-                    {/*Open*/}
-                </div>
+                {data?.verified &&
+                    <div className="offerCard__imageFlag">
+                        <span>
+                        {data?.verified}
+                        </span>
+                    </div>
+                }
                 <img src={offerCardImage} alt="Offer card" className="offerCard__imageSvg"/>
             </div>
             <div className="offerCard__details flex flex-col gap-3.5">
@@ -26,7 +39,7 @@ export const OfferCard: FC<IOfferCard> = ({primaryButtonText, secondaryButtonTex
                     <div className="flex items-center gap-3">
                         <Avatar alt="Avatar" src={avatar}/>
                         <span className="text-[#808080]">
-                            Edd Sheeren
+                            {data?.pickup_name}
                         </span>
                     </div>
                     <div className="rate flex items-center gap-3">

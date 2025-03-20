@@ -55,3 +55,20 @@ export interface IOfferCreateForm {
     price: IValidationModel;
     notes?: IValidationModel;
 }
+
+export interface IItemCreate {
+    name: string,
+    weight: number,
+    dimensions: string,
+    fragile?: boolean,
+    description?: string,
+    pickup_name?: string,
+    pickup_surname?: string,
+    pickup_phone?: string,
+    pickup_email?: string,
+    category_ids?: number[],
+    pictures?: {
+        image_path: string
+    }[],
+    state?: string
+}

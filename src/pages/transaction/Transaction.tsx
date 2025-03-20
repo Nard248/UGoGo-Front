@@ -185,45 +185,56 @@ export const Transaction = () => {
                         }} />} label="Credit or Debit card" />
                     </RadioGroup>
                 </FormControl>
-                <Label title={'Card number'} htmlFor={'cardNumber'}
-                       classnames={''}>
-                    <Input
-                        id={'cardNumber'}
-                        type={'text'}
-                        icon={'mastercard'}
-                        handleChange={() => {
-                        }}
-                    />
-                </Label>
-                <Label title={'Cardholder name'} htmlFor={'cardholderName'}
-                       classnames={''}>
-                    <Input
-                        id={'cardholderName'}
-                        type={'text'}
-                        classnames={'inputField'}
-                        handleChange={() => {
-                        }}
-                    />
-                </Label>
-                <div className="flex items-center">
-                    <Label title={'Cardholder name'} htmlFor={'cardholderName'}
-                           classnames={''}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker label="Basic date picker"/>
-                        </LocalizationProvider>
-                    </Label>
-
-                    <Label title={'CVV'} htmlFor={'cvv'}
+                <div className="flex flex-col">
+                    <Label title={'Card number'} htmlFor={'cardNumber'}
                            classnames={''}>
                         <Input
-                            id={'cvv'}
+                            id={'cardNumber'}
+                            type={'text'}
+                            icon={'mastercard'}
+                            classnames={''}
+                            handleChange={() => {
+                            }}
+                        />
+                    </Label>
+                </div>
+                <div className="flex flex-col">
+                    <Label title={'Cardholder name'} htmlFor={'cardholderName'}
+                           classnames={''}>
+                        <Input
+                            id={'cardholderName'}
                             type={'text'}
                             classnames={'inputField'}
                             handleChange={() => {
                             }}
                         />
                     </Label>
-                    <div className="flex">
+                </div>
+                <div className="flex flex-col">
+                    <div className="flex flex-col">
+                        <div className="flex items-center">
+                            <div className="flex flex-col">
+                                <Label title={'Cardholder name'} htmlFor={'cardholderName'}
+                                       classnames={''}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker label="Basic date picker"/>
+                                    </LocalizationProvider>
+                                </Label>
+                            </div>
+                            <div className="flex flex-col">
+                                <Label title={'CVV'} htmlFor={'cvv'}
+                                       classnames={''}>
+                                    <Input
+                                        id={'cvv'}
+                                        type={'text'}
+                                        classnames={'inputField'}
+                                        handleChange={() => {
+                                        }}
+                                    />
+                                </Label>
+                            </div>
+                        </div>
+                        <div className="flex">
                             <Checkbox defaultChecked
                                       sx={{
                                           color: '#F9A34B',
@@ -234,6 +245,7 @@ export const Transaction = () => {
                                       }}
                             />
                         </div>
+                    </div>
                     <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
                         <RadioGroup
@@ -247,7 +259,7 @@ export const Transaction = () => {
                                 '&.Mui-checked': {
                                     color: '#F9A34B',
                                 },
-                            }} />} label="Paypal" />
+                            }}/>} label="Paypal"/>
                         </RadioGroup>
                     </FormControl>
                 </div>

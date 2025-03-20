@@ -7,6 +7,10 @@ import {Divider} from "../../components/divider/Divider";
 import Checkbox from "@mui/material/Checkbox/Checkbox";
 
 export const Payment = () => {
+    const addPaymentMethod = () => {
+
+    }
+
     return (
         <div className="flex flex-col gap-[35px] w-full">
             <h1 className="text-[2rem] font-medium">
@@ -75,7 +79,7 @@ export const Payment = () => {
                             </div>
                         </div>
                         <div>
-                            <Button title={'Add payment method'} type={'primary'} handleClick={() => {}} />
+                            <Button title={'Add payment method'} type={'primary'} handleClick={addPaymentMethod} />
                         </div>
                     </div>
                     <div className="flex py-8 px-7 border-solid border border-[#D5D7DA] rounded-xl">

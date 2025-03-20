@@ -199,8 +199,6 @@ export const PostOffer = () => {
     //   price: offerFormData.price?.value,
     // };
 
-    console.log(sendingData);
-
     // const data = await creatOffer(sendingData);
 
     // navigate("/offers"); // Redirect to /offers page after successful submission
