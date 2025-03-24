@@ -18,6 +18,10 @@ export const Items = () => {
         setItems(data.data.results || []);
     }
 
+    const findOffer = () => {
+
+    }
+
     return (
         items.length ?
         <div className="flex flex-col gap-[6rem] w-full">
@@ -29,7 +33,7 @@ export const Items = () => {
             </div>
             <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
                 {items.map((item) => (
-                        <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'} data={item}/>
+                        <OfferCard onSecondaryClick={findOffer} secondaryButtonText={'Delete'} data={item}/>
                     ))
                 }
             </div>

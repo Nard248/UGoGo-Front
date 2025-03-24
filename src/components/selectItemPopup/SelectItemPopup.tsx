@@ -10,44 +10,25 @@ interface ISelectItemPopup {
     onClose: () => void;
 }
 
-const Items = [
-    {
-        id: 1,
-    },
-    {
-        id: 2,
-    },
-    {
-        id: 3,
-    },
-    {
-        id: 4,
-    }
-]
-
 export const SelectItemPopup: FC<ISelectItemPopup> = ({data, onClose}) => {
     const navigate = useNavigate();
-    const [selectedItems, setSelectedItems] = useState<
-        number[] | null
+    const [selectedItem, setSelectedItem] = useState<
+        number | null
     >();
 
     const handleCardClick = (id: number) => {
-        if (selectedItems?.includes(id)) {
-            const _selectedItems = selectedItems.filter(
-                (item) => item !== id
-            );
-            setSelectedItems(_selectedItems);
+        if (id === selectedItem) {
+            setSelectedItem(null);
             return;
         }
-        const _selectedItems = selectedItems?.length
-            ? [...selectedItems, id]
-            : [id];
-        setSelectedItems(_selectedItems);
+
+        setSelectedItem(id);
     };
     
     const onConfirm = () => {
-        localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-        navigate('/transaction');
+        const item = data.find(item => item.id === selectedItem);
+        localStorage.setItem('selectedItem', JSON.stringify(item));
+        navigate('/payment');
     }
 
     return (
@@ -60,20 +41,28 @@ export const SelectItemPopup: FC<ISelectItemPopup> = ({data, onClose}) => {
                     <Button type={'tertiary'} outline={true} handleClick={onClose}/>
                 </div>
                 <div className="grid grid-cols-3 gap-[2rem] justify-items-center overflow-y-scroll">
-                    {data.map(({id}) => (
+                    {data.map((item) => (
                         <button
-                            key={id}
+                            key={item.id}
                             className={classNames(
-                                "flex flex-col justify-center items-center gap-[2rem] border-solid border-[#D5D7DA] border rounded-[.5rem] w-[20.5rem] h-[20.5rem] p-[1.5rem]",
-                                {'!border-[#73B2B2] text-[#73B2B2]': selectedItems?.includes(id)}
+                                "relative flex flex-col justify-center items-center gap-[2rem] border-solid border-[#D5D7DA] border rounded-[.5rem] w-[20.5rem] h-[20.5rem] p-[1.5rem]",
+                                {'!border-[#73B2B2] text-[#73B2B2]': selectedItem === item.id}
                             )}
-                            onClick={() => handleCardClick(id)}
+                            disabled={item.verified !== 'verified'}
+                            onClick={() => handleCardClick(item.id)}
                         >
-                            <div>
+                            <div className="">
+                                {item.verified &&
+                                    <div className="offerCard__imageFlag">
+                                        <span>
+                                        {item.verified}
+                                        </span>
+                                    </div>
+                                }
                                 <img className="object-scale-down" src={iconSvg}/>
                             </div>
                             <h3>
-                                item title
+                                {item.name}
                             </h3>
                         </button>
                     ))}

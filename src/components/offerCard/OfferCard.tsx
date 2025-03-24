@@ -9,19 +9,15 @@ import {Button} from "../button/Button";
 import './OfferCard.scss';
 
 interface IOfferCard {
-    // name?: string;
-    // dimensions?: string;
-    // description?: string;
-    // pickup_name?: string;
-    // weight?: string;
-    // verified?: string;
     data?: any;
-    primaryButtonText: string;
-    secondaryButtonText: string;
+    primaryButtonText?: string;
+    secondaryButtonText?: string;
     size?: 'small' | 'medium' | 'large';
+    onPrimaryClick?: () => void;
+    onSecondaryClick?: () => void;
 }
 
-export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large'}) => {
+export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick}) => {
     return (
         <div className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
             <div className="offerCard__image">
@@ -111,9 +107,9 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                         <img src={moreBtn} alt="More buttons Icon"/>
                     </button>
                 </div>
-                <div className="cardActions flex items-center justify-between mt-[3rem]">
-                    <Button title={primaryButtonText} type={'primary'} outline={true} handleClick={() => {}} />
-                    <Button title={secondaryButtonText} type={'primary'} handleClick={() => {}} />
+                <div className={classNames(`cardActions flex items-center mt-[3rem] ${!primaryButtonText || !primaryButtonText ? 'justify-end' : 'justify-between'}`)}>
+                    {primaryButtonText && <Button title={primaryButtonText} type={'primary'} outline={true} {...(onPrimaryClick && { handleClick: onPrimaryClick })} />}
+                    {secondaryButtonText && <Button title={secondaryButtonText} type={'primary'} {...(onPrimaryClick && { handleClick: onSecondaryClick })} />}
                 </div>
             </div>
         </div>

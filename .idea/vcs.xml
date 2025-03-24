@@ -2,7 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/https:/BytesSphere@dev.azure.com/BytesSphere/UGOGO/_git/Frontend" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/https:/BytesSphere@dev.azure.com/BytesSphere/UGOGO/_git/UGOGO" vcs="Git" />
   </component>
 </project>
