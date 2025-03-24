@@ -97,7 +97,7 @@ function App() {
           <Routes>
             <Route element={<Protected />}>
               <Route
-                path="single-product-page"
+                path="offer/:id"
                 element={<SingleProductPage />}
               />
               <Route path="post-offer" element={<PostOffer />} />

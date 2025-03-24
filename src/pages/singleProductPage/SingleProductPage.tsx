@@ -8,16 +8,17 @@ import {Label} from "../../components/label/Label";
 import './SingleProductPage.scss';
 import {createPortal} from "react-dom";
 import {SelectItemPopup} from "../../components/selectItemPopup/SelectItemPopup";
-import { useSearchParams } from "react-router-dom";
+import {useParams, useSearchParams } from "react-router-dom";
 
 export const SingleProductPage: FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
+    const { id } = useParams();
     const [data, setData] = useState(null);
     const [items, setItems] = useState<any[]>([]);
     const [isItemPopupOpened, setIsItemPopupOpened] = useState(false);
 
     useEffect(() => {
-        getSingleProduct('3').then(data => {
+        getSingleProduct(`${id}`).then(data => {
             setData(data.data.offer)
         })
     }, [])

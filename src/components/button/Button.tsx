@@ -10,7 +10,7 @@ type Props = {
     classNames?: string;
     icon?: string;
     alt?: string;
-    handleClick: () => void;
+    handleClick?: () => void;
 }
 
 export const Button: FC<Props> = ({type, title, outline, disabled, icon, alt, classNames, handleClick}) => {

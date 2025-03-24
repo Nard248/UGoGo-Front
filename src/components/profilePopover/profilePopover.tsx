@@ -102,7 +102,7 @@ export const ProfilePopover: FC = () => {
   return (
     <>
       {isPopoverOpen && (
-        <div ref={popoverRef}  className="flex flex-col border border-solid border-[#D5D7DA] rounded-[1rem] absolute top-[70%] left-[90%] min-w-[300px] translate-x-[-50%] bg-[#fff]">
+        <div ref={popoverRef}  className="flex flex-col border border-solid border-[#D5D7DA] rounded-[1rem] absolute top-[70%] left-[90%] min-w-[300px] translate-x-[-50%] bg-[#fff] z-10">
           <div className="profile__avatar px-[2.1rem] py-[1.6rem]">
             <div className="profile__avatar__image">
               <img

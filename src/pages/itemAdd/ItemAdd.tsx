@@ -58,10 +58,6 @@ export const ItemAdd: FC = () => {
 
     }
 
-    const onDraftSave = () => {
-
-    }
-
     const onConfirm = async () => {
         setItemFormData({...itemFormData, category_ids: categories.map(item => item.id)})
         try {
@@ -72,15 +68,10 @@ export const ItemAdd: FC = () => {
         }
     }
 
-    const onItemAdd = () => {
-
-    }
-
     return (
         <div className="postOffer">
             <div className="flex justify-between items-center mb-[2.1rem]">
                 <h1 className="font-medium text-[2rem]">Add an item</h1>
-                <Button type={'primary'} title={'Add item'} handleClick={onItemAdd}></Button>
             </div>
             <div className="postOffer__content flex justify-between gap-20">
                 <div className="postOffer__flightDetails">
@@ -216,12 +207,6 @@ export const ItemAdd: FC = () => {
                     </div>
                 </div>
                 <div className="postOffer__actions">
-                    <Button
-                        title={'Save draft'}
-                        type={'tertiary'}
-                        classNames={'postOffer__actionsConfirm'}
-                        handleClick={onDraftSave}
-                    />
                     <Button
                         title={'Confirm'}
                         type={'primary'}
