@@ -5,7 +5,6 @@ import {Input} from "../../components/input/Input";
 import {Button} from "../../components/button/Button";
 import {Card} from "../../components/card/Card";
 import {ImageComponent} from "../../components/image/Image";
-import iconSvg from './../../assets/icons/item.svg'
 import {ImageLabel} from "../../components/image/ImageLabel";
 import {createItem, getCategories} from "../../api/route";
 import {IItemCreate} from "../../types/global";
@@ -44,14 +43,14 @@ export const ItemAdd: FC = () => {
         if (!target.files?.length) {
             return
         }
-        const files = Array.from(target.files).map((file) => {
+        const newFiles = Array.from(target.files).map((file) => {
             return {
                 ...file,
                 blob: URL.createObjectURL(file)
             };
         })
 
-        setFiles(files)
+        setFiles([...files, ...newFiles])
     }
 
     const onAddCategory = () => {
@@ -175,12 +174,6 @@ export const ItemAdd: FC = () => {
                                     className="postOffer__detailedForm__prefferedCategory__form__header postOffer__header">
                                     <h3 className="postOffer__detailedForm__prefferedCategory__form__header__title postOffer__title">Item
                                         preferred category</h3>
-                                    <Button
-                                        title={'Add category'}
-                                        type={'tertiary'}
-                                        classNames={'postOffer__button'}
-                                        handleClick={onAddCategory}
-                                    />
                                 </div>
                                 <div className="postOffer__detailedForm__prefferedCategory__form__content">
                                     {categories?.map(({id, name, icon_path}) => (
