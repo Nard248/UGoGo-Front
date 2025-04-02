@@ -9,8 +9,9 @@ import { Input } from "../../components/input/Input";
 import { Button } from "../../components/button/Button";
 import { Select } from "../../components/select/Select";
 import { Card } from "../../components/card/Card";
-import "./PostOffer.scss";
 import { useNavigate } from "react-router-dom";
+import { Snackbar } from "@mui/material";
+import "./PostOffer.scss";
 
 export const PostOffer = () => {
   const [airports, setAirports] = useState<any[]>();
@@ -21,18 +22,13 @@ export const PostOffer = () => {
   const [offerFormData, setOfferFormData] = useState<IOfferCreateForm>(
     {} as IOfferCreateForm
   );
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const navigate = useNavigate();
-
-//   interface Notification {
-//     open: boolean;
-//     message: string;
-//   }
-
-//   const [notification, setNotification] = useState<Notification>({
-//     open: false,
-//     message: "",
-//   });
 
   const handleCardClick = (id: number) => {
     if (selectedCategories?.includes(id)) {
@@ -53,6 +49,19 @@ export const PostOffer = () => {
         errorMessage: null,
       },
     }));
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    nextField: string
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const nextElement = document.getElementById(nextField);
+      if (nextElement) {
+        nextElement.focus();
+      }
+    }
   };
 
   const getAirportsData = async () => {
@@ -91,14 +100,12 @@ export const PostOffer = () => {
     type: string
   ) => {
     const { value } = event.target;
-    if (!value) {
-      return;
-    }
+    if (!value) return;
 
     setOfferFormData((prevState) => ({
       ...prevState,
       [type === "to" ? "to_airport_id" : "from_airport_id"]: {
-        value: value,
+        value,
         errorMessage: null,
       },
     }));
@@ -173,7 +180,31 @@ export const PostOffer = () => {
       },
     }));
   };
+
+  const handleCreateButtonClick = () => {
+    onConfirm(); // Proceed with offer creation if form is valid
+  };
+
   const onConfirm = async () => {
+    // if (!validateForm()) return;
+    const requiredFields = [
+      offerFormData.flight_number?.value,
+      offerFormData.from_airport_id?.value,
+      offerFormData.to_airport_id?.value,
+      offerFormData.departure_datetime?.value,
+      offerFormData.arrival_datetime?.value,
+      offerFormData.category_ids?.value?.length,
+      offerFormData.available_weight?.value,
+      offerFormData.price?.value,
+    ];
+
+    const missingFields = requiredFields.some((field) => !field);
+
+    if (missingFields) {
+      setOpenSnackbar(true); 
+      return;
+    }
+
     const sendingData = {
       flight_number: offerFormData.flight_number?.value,
       from_airport_id: offerFormData.from_airport_id?.value,
@@ -187,38 +218,14 @@ export const PostOffer = () => {
       available_weight: offerFormData.available_weight?.value,
       price: offerFormData.price?.value,
     };
-    // const sendingData = {
-    //   flight_number: offerFormData.flight_number?.value,
-    //   from_airport_id: offerFormData.from_airport_id?.value,
-    //   to_airport_id: offerFormData.to_airport_id?.value,
-    //   departure_datetime: offerFormData.departure_datetime?.value,
-    //   arrival_datetime: offerFormData.arrival_datetime?.value,
-    //   category_ids: offerFormData.category_ids?.value,
-    //   available_space: 1,
-    //   available_weight: offerFormData.available_weight?.value,
-    //   price: offerFormData.price?.value,
-    // };
 
-    // const data = await creatOffer(sendingData);
-
-    // navigate("/offers"); // Redirect to /offers page after successful submission
-
-    // console.log(sendingData);
     try {
       const data = await creatOffer(sendingData);
+
       if (data) {
-        // setNotification({
-        //   open: true,
-        //   message: `Offer has been created successfully`,
-        // });
         navigate("/offers", {
-            state: { notification: "Offer has been created successfully" },
-          });
-    
-        // setTimeout(() => {
-        //     navigate("/offers");
-        //   }, 1000); 
-        // navigate("/offers"); // Redirect to /offers page after successful submission
+          state: { notification: "Offer has been created successfully" },
+        });
       }
     } catch (error) {
       console.error("Error creating offer:", error);
@@ -231,19 +238,8 @@ export const PostOffer = () => {
 
   return (
     <div className="postOffer">
-      {/* {notification.open && (
-        <div className="notification">
-          <p>{notification.message}</p>
-        </div>
-      )} */}
-
       <div className="flex justify-between items-center mb-[2.1rem]">
         <h1 className="font-medium text-[2rem]">Create a new flight</h1>
-        {/* <Button
-          type={"primary"}
-          title={"+ Add flight"}
-          handleClick={onFlightAdd}
-        ></Button> */}
       </div>
       <div className="postOffer__content flex justify-between gap-20">
         <div className="postOffer__flightDetails">
@@ -277,7 +273,7 @@ export const PostOffer = () => {
                 <Select
                   options={airports || []}
                   id={"departure"}
-                  placeholder={"Yerevan (EVN)"}
+                  placeholder={"select airport"}
                   classnames={"postOffer__input cursor-pointer"}
                   handleSelectChange={(event) => onSelectChange(event, "from")}
                 />
@@ -291,7 +287,7 @@ export const PostOffer = () => {
               >
                 <Select
                   options={airports || []}
-                  placeholder={"Moscow (SVO)"}
+                  placeholder={"select airport"}
                   id={"destination"}
                   classnames={"postOffer__input cursor-pointer"}
                   handleSelectChange={(event) => onSelectChange(event, "to")}
@@ -421,12 +417,6 @@ export const PostOffer = () => {
                   <h3 className="postOffer__detailedForm__prefferedCategory__form__header__title postOffer__title">
                     Item preferred category
                   </h3>
-                  {/* <Button
-                    title={"Add category"}
-                    type={"tertiary"}
-                    classNames={"postOffer__button"}
-                    handleClick={onAddCategory}
-                  /> */}
                 </div>
                 <div className="postOffer__detailedForm__prefferedCategory__form__content">
                   {categories?.map(({ id, name, icon_path }) => (
@@ -458,13 +448,16 @@ export const PostOffer = () => {
                     htmlFor={"weight"}
                     classnames={"postOffer__label"}
                   >
-                    <Input
-                      type={"text"}
-                      placeholder={"1 kg"}
-                      id={"weight"}
-                      classnames={"postOffer__input"}
-                      handleChange={handleWeightChange}
-                    />
+                    <div className="postOffer__inputWrapper">
+                      <Input
+                        type={"text"}
+                        placeholder={"1"}
+                        id={"weight"}
+                        classnames={"postOffer__input"}
+                        handleChange={handleWeightChange}
+                      />
+                      <span className="postOffer__kg">kg</span>
+                    </div>
                   </Label>
                 </div>
                 <div className="postOffer__detailedForm__itemDetails__form__content__item">
@@ -473,13 +466,40 @@ export const PostOffer = () => {
                     htmlFor={"availableDimensions"}
                     classnames={"postOffer__label"}
                   >
-                    <Input
-                      type={"text"}
-                      placeholder={"Length x Width x Height"}
-                      id={"availableDimensions"}
-                      classnames={"postOffer__input"}
-                      handleChange={handleDimensionsChange}
-                    />
+                    <div className="postOffer__dimensionsWrapper">
+                      <div className="postOffer__inputWrapper">
+                        <input
+                          type="number"
+                          placeholder="Height"
+                          id="height"
+                          className="postOffer__dimensionInput"
+                          onKeyDown={(e) => handleKeyDown(e, "width")}
+                          onChange={handleDimensionsChange}
+                        />
+                        <span className="postOffer__unit">cm</span>
+                      </div>
+                      <div className="postOffer__inputWrapper">
+                        <input
+                          type="number"
+                          placeholder="Width"
+                          id="width"
+                          className="postOffer__dimensionInput"
+                          onKeyDown={(e) => handleKeyDown(e, "length")}
+                          onChange={handleDimensionsChange}
+                        />
+                        <span className="postOffer__unit">cm</span>
+                      </div>
+                      <div className="postOffer__inputWrapper">
+                        <input
+                          type="number"
+                          placeholder="Length"
+                          id="length"
+                          className="postOffer__dimensionInput"
+                          onChange={handleDimensionsChange}
+                        />
+                        <span className="postOffer__unit">cm</span>
+                      </div>
+                    </div>
                   </Label>
                 </div>
               </div>
@@ -499,13 +519,16 @@ export const PostOffer = () => {
                     htmlFor={"priceDetails"}
                     classnames={"postOffer__label"}
                   >
-                    <Input
-                      type={"number"}
-                      placeholder={"20 $"}
-                      id={"priceDetails"}
-                      classnames={"postOffer__input"}
-                      handleChange={handlePriceChange}
-                    />
+                    <div className="postOffer__inputWrapper">
+                      <Input
+                        type={"number"}
+                        placeholder={"20 "}
+                        id={"priceDetails"}
+                        classnames={"postOffer__input"}
+                        handleChange={handlePriceChange}
+                      />
+                      <span className="postOffer__currencySign">$</span>
+                    </div>
                   </Label>
                 </div>
               </div>
@@ -528,15 +551,25 @@ export const PostOffer = () => {
           </div>
           <div className="postOffer__actions">
             <Button
-              title={"Confirm"}
+              title={"Create"}
               type={"tertiary"}
               classNames={"postOffer__actionsConfirm"}
-              handleClick={onConfirm}
+              // handleClick={onConfirm}
+              handleClick={handleCreateButtonClick}
             />
+      <Snackbar
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        autoHideDuration={4000}
+        message="Please fill all required fields."
+        className="postOffer__notification"
+        ContentProps={{
+          className: "postOffer__notification",
+        }}
+      />
           </div>
         </div>
       </div>
     </div>
   );
 };
-

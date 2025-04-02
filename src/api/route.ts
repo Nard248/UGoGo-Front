@@ -25,7 +25,7 @@ export const getSingleProduct = async (id: string) => {
   return await api.get(`/offers/offers/${id}/`);
 };
 
-export const getAirports = async () => {
+export const getAirports = async () => {  
   return await api.get(`/locations/airports/`);
 };
 
@@ -33,7 +33,7 @@ export const getCategories = async () => {
   return await api.get(`/items/get_all_categories/`);
 };
 
-export const creatOffer = async (data: IOfferCreate) => {    
+export const creatOffer = async (data: IOfferCreate) => {      
   return await api.post(`/offers/create_offer/`, data);
 };
 
@@ -54,7 +54,6 @@ export const emailVerification = async (data: {
 
 export const getUserDetails = async () => {
   try {
-    // Assuming your API provides a /users/me or similar endpoint to fetch current user info
     const response = await api.get("/users/me", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access")}`,
@@ -66,4 +65,16 @@ export const getUserDetails = async () => {
     console.error("Failed to fetch user details", error);
     return null;
   }
+};
+
+export const searchOffer = async (params: {
+  origin_airport: string;
+  destination_airport: string;
+  takeoff_date: string;
+}) => {
+  return await api.get(`/offers/search_offer/`, { params });
+};
+
+export const getAllOffers = async () => {
+  return await api.get(`/offers/get_all_offers/`);
 };

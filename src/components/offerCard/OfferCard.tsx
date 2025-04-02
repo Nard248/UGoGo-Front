@@ -1,11 +1,11 @@
-import {FC} from "react";
+import { FC } from "react";
 import classNames from "classnames";
-import {Avatar, Rating} from "@mui/material";
-import offerCardImage from './../../assets/images/offer.svg'
-import avatar from './../../assets/images/avatar.svg'
-import message from './../../assets/icons/message.svg'
-import moreBtn from './../../assets/icons/more.svg'
-import {Button} from "../button/Button";
+import { Avatar, Box, Rating } from "@mui/material";
+import offerCardImage from './../../assets/images/offer.svg';
+import avatar from './../../assets/images/avatar.svg';
+import message from './../../assets/icons/message.svg';
+import moreBtn from './../../assets/icons/more.svg';
+import { Button } from "../button/Button";
 import './OfferCard.scss';
 
 interface IOfferCard {
@@ -28,38 +28,23 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                         </span>
                     </div>
                 }
-                <img src={offerCardImage} alt="Offer card" className="offerCard__imageSvg"/>
+                <img src={offerCardImage} alt="Offer card" className="offerCard__imageSvg" />
             </div>
             <div className="offerCard__details flex flex-col gap-3.5">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <Avatar alt="Avatar" src={avatar}/>
+                        <Avatar alt="Avatar" src={avatar} />
                         <span className="text-[#808080]">
-                            {data?.pickup_name}
+                            {data.user?.full_name || "Unknown User"}
                         </span>
                     </div>
                     <div className="rate flex items-center gap-3">
                         <Rating
                             name="hover-feedback"
-                            // value={value}
                             precision={0.5}
-                            max={1}
-                            // getLabelText={getLabelText}
-                            // onChange={(event, newValue) => {
-                            //     setValue(newValue);
-                            // }}
-                            // onChangeActive={(event, newHover) => {
-                            //     setHover(newHover);
-                            // }}
-                            // emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                            max={5} 
                         />
-
-                        {/*{value !== null && (*/}
-                        {/*    <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : value]}</Box>*/}
-                        {/*)}*/}
-                        <span>
-                            5 (435)
-                        </span>
+                        <span>5 (435)</span>
                     </div>
                 </div>
                 <div className="flex items-center justify-between">
@@ -67,44 +52,41 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                         Flight number
                     </h3>
                     <span className="offerCard__flight">
-                        LH123
-                    </span>
+                        {data.user_flight?.flight?.departure_datetime || "N/A"}
+                        </span>
                 </div>
                 <div className="offerCard__date">
-                    <span>12.12.2024</span>
+                    <span>{data.departure_datetime?.split('T')[0] || "N/A"}</span>
                 </div>
                 <div className="offerCard__direction flex items-center justify-between">
                     <div className='from'>
                         <span className="country">
-                            Armenia
+                            {data.from_airport?.city?.city_name || "Unknown City"}
                         </span>,
                         <span className="city">
-                            Yerevan
+                            {data.from_airport?.airport_name || "Unknown Airport"}
                         </span>
                     </div>
                     <div className='to'>
                         <span className="country">
-                            Russia
-                        </span>,
-                        <span className="city">
-                            Moscow
+                            {data.to_airport?.airport_name || "Unknown Destination"}
                         </span>
                     </div>
                 </div>
-                <div className="offerCard__date">
-                    <span>13:30</span>
-                    <span>15:30</span>
+                <div className="offerCard__time">
+                    <span>{data.departure_datetime?.split('T')[1] || "N/A"}</span>
+                    <span>{data.arrival_datetime?.split('T')[1] || "N/A"}</span>
                 </div>
                 <div className="offerCard__space flex items-center justify-between">
                     <span>Available space</span>
-                    <span>kg 12, 5x4x3</span>
+                    <span>{data.available_weight || "0"} kg, {data.available_space || "0"} m³</span>
                 </div>
                 <div className="offerCard__userActions">
                     <button className="button">
-                        <img src={message} alt="Message Icon"/>
+                        <img src={message} alt="Message Icon" />
                     </button>
                     <button className="button">
-                        <img src={moreBtn} alt="More buttons Icon"/>
+                        <img src={moreBtn} alt="More buttons Icon" />
                     </button>
                 </div>
                 <div className={classNames(`cardActions flex items-center mt-[3rem] ${!primaryButtonText || !primaryButtonText ? 'justify-end' : 'justify-between'}`)}>
@@ -113,6 +95,5 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                 </div>
             </div>
         </div>
-    )
-}
-
+    );
+};

@@ -148,7 +148,7 @@ export const Transaction = () => {
                                     </Label>
                                     <Label title={'Gender'} htmlFor={'gender'}
                                            classnames={'label'}>
-                                        <Select options={[{}]} id={'gender'} placeholder={'Gender'}
+                                              <Select options={[]} id={'gender'} placeholder={'Gender'}
                                                 classnames={'cursor-pointer'}
                                                 handleSelectChange={(event) => {
                                                 }}

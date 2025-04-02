@@ -1,11 +1,17 @@
 import airplane from './../../assets/icons/airplane.svg'
 import './OfferDetails.scss'
 
-export const OfferDetails = () => {
+interface IOfferDetails {
+    flightNumber?: string;
+    fromCity?: string;
+    toCity?: string;
+}
+
+export const OfferDetails = ({ flightNumber, fromCity, toCity }: IOfferDetails) => {
     return (
         <div className="offerDetails">
             <div className="offerDetails__flight">
-                <span className="offerDetails__flightNumber">LH123</span>
+                <span className="offerDetails__flightNumber">{flightNumber || "LH123"}</span>
             </div>
             <div className="offerDetails__route">
                 <div className="offerDetails__route__location">
@@ -13,7 +19,7 @@ export const OfferDetails = () => {
                             From
                         </span>
                     <span className="offerDetails__route__location__title">
-                            Yerevan
+                            {fromCity}
                         </span>
                 </div>
                 <div className="offerDetails__route__icon">
@@ -28,7 +34,7 @@ export const OfferDetails = () => {
                             To
                         </span>
                     <span className="offerDetails__route__location__title">
-                            Moscow
+                            {toCity}
                         </span>
                 </div>
             </div>
