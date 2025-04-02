@@ -8,7 +8,7 @@ export interface ILogin {
     password: string
 }
 
-export interface IRegister extends ILogin{
+export interface IRegister extends ILogin {
     full_name: string;
 }
 
@@ -18,7 +18,7 @@ export interface ILoginForm {
     rememberMe: boolean;
 }
 
-export interface IRegisterForm extends Omit<ILoginForm, 'rememberMe'>{
+export interface IRegisterForm extends Omit<ILoginForm, 'rememberMe'> {
     fullName: IValidationModel;
 }
 
@@ -36,7 +36,7 @@ export interface IOfferCreate {
     available_weight: number;
     available_space?: number;
     price: number;
-    notes?:	string;
+    notes?: string;
 }
 
 export interface IOfferCreateForm {
@@ -71,4 +71,29 @@ export interface IItemCreate {
         image_path: string
     }[],
     state?: string
+}
+
+interface IOfferData {
+    price?: string;
+    available_space?: string;
+    available_weight?: string;
+    user_flight?: {
+        flight: {
+            departure_datetime?: string;
+            arrival_datetime?: string;
+            from_airport?: {
+                airport_name?: string;
+                city?: {
+                    city_name?: string;
+                };
+            };
+            to_airport?: {
+                airport_name?: string;
+            };
+        };
+    };
+    user?: {
+        full_name?: string;
+        email?: string;
+    }
 }

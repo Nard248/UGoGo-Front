@@ -1,21 +1,34 @@
-import { FC } from "react";
-import searchIcon from "./../../assets/icons/search.svg";
-import "./Search.scss";
+import { FC, ChangeEvent, useState, useEffect } from "react";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import React, { ChangeEvent, useEffect, useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import searchIcon from "./../../assets/icons/search.svg";
 import { IOfferCreateForm } from "../../types/global";
 import { Label } from "../label/Label";
-import { getAirports } from "../../api/route";
+import { getAirports, searchOffer } from "../../api/route";
 import { Select } from "../../components/select/Select";
+import "./Search.scss";
 
-export const Search: FC = () => {
+interface SearchProps {
+  onSearchResults: (searchParams: {
+    origin_airport: string;
+    destination_airport: string;
+    takeoff_date: string;
+  }) => void;
+}
+
+export const Search: FC<SearchProps> = ({ onSearchResults }) => {
   const [airports, setAirports] = useState<any[]>([]);
-
-  const [offerFormData, setOfferFormData] = useState<IOfferCreateForm>(
-    {} as IOfferCreateForm
-  );
+  const [offerFormData, setOfferFormData] = useState<IOfferCreateForm>({
+    flight_number: { value: "", errorMessage: null },
+    from_airport_id: { value: "", errorMessage: null },
+    to_airport_id: { value: "", errorMessage: null },
+    departure_datetime: { value: null, errorMessage: null },
+    arrival_datetime: { value: null, errorMessage: null },
+    available_dimensions: { value: "", errorMessage: null },
+    available_weight: { value: "", errorMessage: null },
+    price: { value: "", errorMessage: null },
+  });
 
   const getAirportsData = async () => {
     const data = await getAirports();
@@ -32,124 +45,107 @@ export const Search: FC = () => {
     type: string
   ) => {
     const { value } = event.target;
-    if (!value) {
-      return;
-    }
+    if (!value) return;
 
     setOfferFormData((prevState) => ({
       ...prevState,
       [type === "to" ? "to_airport_id" : "from_airport_id"]: {
-        value: value,
+        value,
         errorMessage: null,
       },
     }));
   };
 
+  const onDateChange = (date: Dayjs | null) => {
+    setOfferFormData((prevState) => ({
+      ...prevState,
+      departure_datetime: {
+        value: date ? date.format("YYYY-MM-DD") : null,
+        errorMessage: null,
+      },
+    }));
+  };
+
+  const handleSearch = async () => {
+    const searchParams = {
+      origin_airport: offerFormData.from_airport_id.value,
+      destination_airport: offerFormData.to_airport_id.value,
+      takeoff_date: offerFormData.departure_datetime.value,
+    };
+
+    // try {
+    //   const response = await searchOffer(searchParams);
+    // } catch (error) {
+    //   console.error("Search Error:", error);
+    // }
+
+    onSearchResults(searchParams);
+  };
+
+  const filteredToAirports = airports.filter(
+    (airport) => airport.airport_code !== offerFormData.from_airport_id.value
+  );
+
   return (
     <div className="search-bar">
       <div className="search-field">
         <label>From</label>
-        {/* <Select
-          options={airports.map((airport) => ({
-            value: airport.id,
-            label: airport.name,
-          }))}
-          placeholder="Select departure airport"
-          classnames="search-select"
-          handleSelectChange={(event) => setDeparture(event.target.value)}
-        /> */}
         <Select
-          options={airports || []}
-          id={"departure"}
-          placeholder={"Yerevan (EVN)"}
-          classnames={"postOffer__input cursor-pointer"}
+          options={airports}
+          id="departure"
+          placeholder="Select departure airport"
+          classnames="postOffer__input cursor-pointer"
           handleSelectChange={(event) => onSelectChange(event, "from")}
         />
-
-        {/* </div> */}
-
-        {/* <input type="text" placeholder="Search destinations" /> */}
       </div>
+
       <div className="search__divider"></div>
+
       <div className="search-field">
         <label>To</label>
-        {/* <Select
-          options={airports.map((airport) => ({
-            value: airport.id,
-            label: airport.name,
-          }))}
-          placeholder="Select destination airport"
-          classnames="search-select"
-          handleSelectChange={(event) => setDestination(event.target.value)}
-        /> */}
         <Select
-          options={airports || []}
-          placeholder={"Moscow (SVO)"}
-          id={"destination"}
-          classnames={"postOffer__input cursor-pointer"}
+          options={filteredToAirports}
+          id="destination"
+          placeholder="Select destination airport"
+          classnames="postOffer__input cursor-pointer"
           handleSelectChange={(event) => onSelectChange(event, "to")}
         />
-
-        {/* <input type="text" placeholder="Search destinations" /> */}
       </div>
+
       <div className="search__divider"></div>
+
       <div className="search-field">
         <Label
-          title={"Arrival Date"}
-          htmlFor={"arrivalTime"}
-          classnames={"postOffer__label"}
+          title="Arrival Date"
+          htmlFor="arrivalTime"
+          classnames="postOffer__label"
         >
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               views={["day"]}
+              value={
+                offerFormData.departure_datetime.value
+                  ? dayjs(offerFormData.departure_datetime.value)
+                  : null
+              }
+              onChange={onDateChange}
+              minDate={dayjs()}
               slotProps={{
-                day: {
-                  sx: {
-                    fontSize: "1.4rem",
-                    "&.Mui-selected": {},
-                    "&:hover": {},
-                  },
-                },
-                toolbar: {
-                  sx: {
-                    ".MuiTypography-root": {
-                      fontSize: "1.4rem",
-                      backgroundColor: "red",
-                    },
-                  },
-                },
                 textField: {
-                  sx: {
-                    width: "100%",
-                    input: {
-                      width: "100%",
-                      fontSize: "1.4rem",
-                      padding: "0",
-                    },
-                    ".MuiOutlinedInput-root": {
-                      borderRadius: ".8rem",
-                      padding: "1rem",
-                      marginTop: "6px",
-                    },
-                  },
+                  sx: { width: "100%" },
                 },
               }}
-              minDate={
-                dayjs(offerFormData.departure_datetime?.value) || dayjs()
-              } // Set minDate to ensure valid selection
-              // onChange={(event) => handleDateChange(event, "end")}
             />
           </LocalizationProvider>
         </Label>
       </div>
+
       <div className="search__divider"></div>
-      <div className="search-field">
-        <label>Item</label>
-        <input type="text" placeholder="Search by item name" />
-      </div>
-      <button className="search-button">
+
+      <button className="search-button" onClick={handleSearch}>
         <img src={searchIcon} alt="Search Icon" />
       </button>
     </div>
   );
 };
+
