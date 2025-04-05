@@ -17,12 +17,12 @@ export const Header: FC<IHeader> = ({withNavItems = true}) => {
 
     return (
         <header className="header w-full relative">
-            <a href={'/single-product-page'} className="header-logo">
+            <a href={'/'} className="header-logo">
                 <img src={logo} alt="UGOGO Logo" />
             </a>
             {withNavItems &&
                 <nav className="nav">
-                    <a href="/search-result">Home</a>
+                    <a href="/">Home</a>
                     <a href="#">How it works</a>
                     <a href="/post-offer">Post an offer</a>
                     <a href="/search-result">Find an offer</a>

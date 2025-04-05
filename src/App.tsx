@@ -29,7 +29,7 @@ import { Transaction } from "./pages/transaction/Transaction";
 import "./assets/scss/index.scss";
 import { TwoFactorConfirmation } from "./pages/auth/TwoFactorConfirmation";
 import { PaymentHistory } from "./pages/transaction/PaymentHistory";
-
+import { Home } from "./pages/home/home";
 const Protected = () => {
   const location = useLocation();
   const accessToken = localStorage.getItem("access");
@@ -52,6 +52,7 @@ const Protected = () => {
     "/offers",
     "/items",
     "/transaction",
+    "/",
   ].includes(location.pathname);
 
   return accessToken ? (
@@ -85,7 +86,7 @@ const Public = () => {
       <Outlet />
     </>
   ) : (
-    <Navigate to="/single-product-page" />
+    <Navigate to="/" />
   );
 };
 
@@ -96,10 +97,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route element={<Protected />}>
-              <Route
-                path="offer/:id"
-                element={<SingleProductPage />}
-              />
+              <Route path="offer/:id" element={<SingleProductPage />} />
               <Route path="post-offer" element={<PostOffer />} />
               <Route path="add-item" element={<ItemAdd />} />
               <Route path="payment" element={<Payment />} />
@@ -115,6 +113,7 @@ function App() {
               <Route path="offers" element={<Offers />} />
               <Route path="items" element={<Items />} />
               <Route path="transaction" element={<Transaction />} />
+              <Route path="/" element={<Home />} />
             </Route>
             <Route element={<Public />}>
               <Route path="registration" element={<Registration />} />
@@ -137,7 +136,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </main>
-      {/*<Footer />*/}
+      {/* <Footer /> */}
     </div>
   );
 }
