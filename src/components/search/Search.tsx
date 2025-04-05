@@ -1,13 +1,14 @@
-import { FC, ChangeEvent, useState, useEffect } from "react";
+import { FC, ChangeEvent } from "react";
+import searchIcon from "./../../assets/icons/search.svg";
+import "./Search.scss";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import searchIcon from "./../../assets/icons/search.svg";
 import { IOfferCreateForm } from "../../types/global";
 import { Label } from "../label/Label";
 import { getAirports, searchOffer } from "../../api/route";
 import { Select } from "../../components/select/Select";
-import "./Search.scss";
+import { useState, useEffect } from "react";
 
 interface SearchProps {
   onSearchResults: (searchParams: {
@@ -30,14 +31,16 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
     price: { value: "", errorMessage: null },
   });
 
-  const getAirportsData = async () => {
-    const data = await getAirports();
-    setAirports(data.data.results);
-  };
-
   useEffect(() => {
-    getAirportsData();
-    // getCategoriesData();
+    const fetchAirports = async () => {
+      try {
+        const data = await getAirports();
+        setAirports(data.data.results);
+      } catch (error) {
+        console.error("Error fetching airports:", error);
+      }
+    };
+    fetchAirports();
   }, []);
 
   const onSelectChange = (
@@ -73,11 +76,11 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
       takeoff_date: offerFormData.departure_datetime.value,
     };
 
-    // try {
-    //   const response = await searchOffer(searchParams);
-    // } catch (error) {
-    //   console.error("Search Error:", error);
-    // }
+    try {
+      const response = await searchOffer(searchParams);
+    } catch (error) {
+      console.error("Search Error:", error);
+    }
 
     onSearchResults(searchParams);
   };

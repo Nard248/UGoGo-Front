@@ -9,9 +9,10 @@ import { Input } from "../../components/input/Input";
 import { Button } from "../../components/button/Button";
 import { Select } from "../../components/select/Select";
 import { Card } from "../../components/card/Card";
+import "./PostOffer.scss";
 import { useNavigate } from "react-router-dom";
 import { Snackbar } from "@mui/material";
-import "./PostOffer.scss";
+import classNames from "classnames";
 
 export const PostOffer = () => {
   const [airports, setAirports] = useState<any[]>();
@@ -23,6 +24,8 @@ export const PostOffer = () => {
     {} as IOfferCreateForm
   );
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [departureDate, setDepartureDate] = useState<Dayjs | null>(null);
+  const [isFragile, setIsFragile] = useState(false);
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -66,6 +69,8 @@ export const PostOffer = () => {
 
   const getAirportsData = async () => {
     const data = await getAirports();
+    console.log(data.data.results);
+
     setAirports(data.data.results);
   };
 
@@ -94,18 +99,25 @@ export const PostOffer = () => {
       },
     }));
   };
-
   const onSelectChange = (
     event: ChangeEvent<HTMLSelectElement>,
     type: string
   ) => {
-    const { value } = event.target;
-    if (!value) return;
+    const selectedAirportCode = event.target.value;
+
+    // Ensure airports is defined and is an array before using .find()
+    if (!airports || !Array.isArray(airports)) return;
+
+    const selectedAirport = airports.find(
+      (airport) => airport.airport_code === selectedAirportCode
+    );
+
+    if (!selectedAirport) return;
 
     setOfferFormData((prevState) => ({
       ...prevState,
       [type === "to" ? "to_airport_id" : "from_airport_id"]: {
-        value,
+        value: selectedAirport.id, // Use the airport ID
         errorMessage: null,
       },
     }));
@@ -172,6 +184,10 @@ export const PostOffer = () => {
       return;
     }
 
+    if (type === "start") {
+      setDepartureDate(event); // Store Departure Date
+    }
+
     setOfferFormData((prevState) => ({
       ...prevState,
       [type === "start" ? "arrival_datetime" : "departure_datetime"]: {
@@ -181,42 +197,106 @@ export const PostOffer = () => {
     }));
   };
 
-  const handleCreateButtonClick = () => {
-    onConfirm(); // Proceed with offer creation if form is valid
+  const handleArrivalDateValidation = (value: Dayjs | null) => {
+    if (departureDate && value) {
+      if (value.isBefore(departureDate, "minute")) {
+        return true;
+      }
+    }
+    return false;
   };
 
+  const handleCreateButtonClick = () => {
+    onConfirm();
+  };
+
+  const [errors, setErrors] = useState({
+    flight_number: false,
+    from_airport_id: false,
+    to_airport_id: false,
+    departure_datetime: false,
+    arrival_datetime: false,
+    category_ids: false,
+    available_weight: false,
+    price: false,
+    available_dimensions: false,
+  });
+
   const onConfirm = async () => {
-    // if (!validateForm()) return;
     const requiredFields = [
-      offerFormData.flight_number?.value,
-      offerFormData.from_airport_id?.value,
-      offerFormData.to_airport_id?.value,
-      offerFormData.departure_datetime?.value,
-      offerFormData.arrival_datetime?.value,
-      offerFormData.category_ids?.value?.length,
-      offerFormData.available_weight?.value,
-      offerFormData.price?.value,
+      { field: "flight_number", value: offerFormData.flight_number?.value },
+      { field: "from_airport_id", value: offerFormData.from_airport_id?.value },
+      { field: "to_airport_id", value: offerFormData.to_airport_id?.value },
+      {
+        field: "departure_datetime",
+        value: offerFormData.departure_datetime?.value,
+      },
+      {
+        field: "arrival_datetime",
+        value: offerFormData.arrival_datetime?.value,
+      },
+      {
+        field: "category_ids",
+        value: offerFormData.category_ids?.value?.length,
+      },
+      {
+        field: "available_weight",
+        value: offerFormData.available_weight?.value,
+      },
+      { field: "price", value: offerFormData.price?.value },
+      {
+        field: "available_dimensions",
+        value: offerFormData.available_dimensions?.value,
+      },
     ];
 
-    const missingFields = requiredFields.some((field) => !field);
+    let isValid = true;
+    const newErrors: {
+      flight_number: boolean;
+      from_airport_id: boolean;
+      to_airport_id: boolean;
+      departure_datetime: boolean;
+      arrival_datetime: boolean;
+      category_ids: boolean;
+      available_weight: boolean;
+      price: boolean;
+      available_dimensions: boolean;
+    } = { ...errors };
 
-    if (missingFields) {
-      setOpenSnackbar(true); 
+    requiredFields.forEach(({ field, value }) => {
+      if (!value) {
+        newErrors[field as keyof typeof newErrors] = true;
+        isValid = false;
+      } else {
+        newErrors[field as keyof typeof newErrors] = false;
+      }
+    });
+
+    setErrors(newErrors); // Update the error state
+
+    if (!isValid) {
+      setOpenSnackbar(true);
       return;
     }
+    const formatDate = (date: Date) => {
+      return date ? new Date(date).toISOString() : "";
+    };
+
+    const departureDate = offerFormData.departure_datetime?.value;
+    const arrivalDate = offerFormData.arrival_datetime?.value;
 
     const sendingData = {
       flight_number: offerFormData.flight_number?.value,
       from_airport_id: offerFormData.from_airport_id?.value,
       to_airport_id: offerFormData.to_airport_id?.value,
-      departure_datetime: offerFormData.departure_datetime?.value,
-      arrival_datetime: offerFormData.arrival_datetime?.value,
+      departure_datetime: formatDate(new Date(departureDate)),
+      arrival_datetime: formatDate(new Date(arrivalDate)),
       category_ids: offerFormData.category_ids?.value,
-      // available_dimensions: offerFormData.available_dimensions.value,
+      available_dimensions: offerFormData.available_dimensions.value,
       available_space: 1,
-      // allow_fragile: true,
       available_weight: offerFormData.available_weight?.value,
       price: offerFormData.price?.value,
+      is_fragile: isFragile,
     };
 
     try {
@@ -259,7 +339,9 @@ export const PostOffer = () => {
                   type={"text"}
                   placeholder={"LH123"}
                   id={"flightNumber"}
-                  classnames={"postOffer__input"}
+                  classnames={`postOffer__input ${
+                    errors.flight_number ? "error" : ""
+                  }`}
                   handleChange={handleFlightChange}
                 />
               </Label>
@@ -274,7 +356,9 @@ export const PostOffer = () => {
                   options={airports || []}
                   id={"departure"}
                   placeholder={"select airport"}
-                  classnames={"postOffer__input cursor-pointer"}
+                  classnames={`postOffer__input cursor-pointer ${
+                    errors.from_airport_id ? "error" : ""
+                  }`}
                   handleSelectChange={(event) => onSelectChange(event, "from")}
                 />
               </Label>
@@ -289,7 +373,9 @@ export const PostOffer = () => {
                   options={airports || []}
                   placeholder={"select airport"}
                   id={"destination"}
-                  classnames={"postOffer__input cursor-pointer"}
+                  classnames={`postOffer__input cursor-pointer ${
+                    errors.to_airport_id ? "error" : ""
+                  }`}
                   handleSelectChange={(event) => onSelectChange(event, "to")}
                 />
               </Label>
@@ -332,6 +418,9 @@ export const PostOffer = () => {
                             marginTop: "6px",
                           },
                         },
+                        className: `postOffer__input ${
+                          errors.departure_datetime ? "error" : ""
+                        }`,
                       },
                     }}
                     minDate={dayjs()}
@@ -344,7 +433,10 @@ export const PostOffer = () => {
               <Label
                 title={"Arrival Date and Time"}
                 htmlFor={"arrivalTime"}
-                classnames={"postOffer__label"}
+                // classnames={"postOffer__label"}
+                classnames={`postOffer__label ${
+                  errors.arrival_datetime ? "error" : ""
+                }`}
               >
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
@@ -378,12 +470,18 @@ export const PostOffer = () => {
                             marginTop: "6px",
                           },
                         },
+                        className: `postOffer__input ${
+                          errors.arrival_datetime ? "error" : ""
+                        }`,
                       },
                     }}
                     minDate={
-                      dayjs(offerFormData.departure_datetime?.value) || dayjs()
+                      departureDate
+                        ? dayjs(departureDate).add(1, "minute")
+                        : dayjs()
                     }
                     onChange={(event) => handleDateChange(event, "end")}
+                    shouldDisableDate={handleArrivalDateValidation}
                   />
                 </LocalizationProvider>
               </Label>
@@ -402,7 +500,6 @@ export const PostOffer = () => {
                     "Want to add something specific about the flight?"
                   }
                   id={"Details"}
-                  classnames={"postOffer__input"}
                   handleChange={handleInputChange}
                 />
               </Label>
@@ -453,7 +550,9 @@ export const PostOffer = () => {
                         type={"text"}
                         placeholder={"1"}
                         id={"weight"}
-                        classnames={"postOffer__input"}
+                        classnames={`postOffer__input ${
+                          errors.available_weight ? "error" : ""
+                        }`}
                         handleChange={handleWeightChange}
                       />
                       <span className="postOffer__kg">kg</span>
@@ -472,7 +571,9 @@ export const PostOffer = () => {
                           type="number"
                           placeholder="Height"
                           id="height"
-                          className="postOffer__dimensionInput"
+                          className={`postOffer__dimensionInput ${
+                            errors.available_dimensions ? "error" : ""
+                          }`}
                           onKeyDown={(e) => handleKeyDown(e, "width")}
                           onChange={handleDimensionsChange}
                         />
@@ -483,7 +584,9 @@ export const PostOffer = () => {
                           type="number"
                           placeholder="Width"
                           id="width"
-                          className="postOffer__dimensionInput"
+                          className={`postOffer__dimensionInput ${
+                            errors.available_dimensions ? "error" : ""
+                          }`}
                           onKeyDown={(e) => handleKeyDown(e, "length")}
                           onChange={handleDimensionsChange}
                         />
@@ -494,7 +597,9 @@ export const PostOffer = () => {
                           type="number"
                           placeholder="Length"
                           id="length"
-                          className="postOffer__dimensionInput"
+                          className={`postOffer__dimensionInput ${
+                            errors.available_dimensions ? "error" : ""
+                          }`}
                           onChange={handleDimensionsChange}
                         />
                         <span className="postOffer__unit">cm</span>
@@ -502,9 +607,25 @@ export const PostOffer = () => {
                     </div>
                   </Label>
                 </div>
+                <div className="postOffer__flightDetails__form__content">
+                  <label
+                    htmlFor="fragileCheckbox"
+                    className="postOffer__label flex items-center"
+                  >
+                    <input
+                      type="checkbox"
+                      id="fragileCheckbox"
+                      checked={isFragile}
+                      onChange={() => setIsFragile(!isFragile)}
+                      className="mr-2"
+                    />
+                    Fragile
+                  </label>
+                </div>
               </div>
             </div>
           </div>
+
           <div className="postOffer__detailedForm__priceDetails gap-32">
             <div className="postOffer__detailedForm__priceDetails__form postOffer__form w-full">
               <div className="postOffer__detailedForm__itemDetails__form__header postOffer__header">
@@ -524,7 +645,9 @@ export const PostOffer = () => {
                         type={"number"}
                         placeholder={"20 "}
                         id={"priceDetails"}
-                        classnames={"postOffer__input"}
+                        classnames={`postOffer__input ${
+                          errors.price ? "error" : ""
+                        }`}
                         handleChange={handlePriceChange}
                       />
                       <span className="postOffer__currencySign">$</span>
@@ -554,19 +677,18 @@ export const PostOffer = () => {
               title={"Create"}
               type={"tertiary"}
               classNames={"postOffer__actionsConfirm"}
-              // handleClick={onConfirm}
               handleClick={handleCreateButtonClick}
             />
-      <Snackbar
-        open={openSnackbar}
-        onClose={handleCloseSnackbar}
-        autoHideDuration={4000}
-        message="Please fill all required fields."
-        className="postOffer__notification"
-        ContentProps={{
-          className: "postOffer__notification",
-        }}
-      />
+            <Snackbar
+              open={openSnackbar}
+              onClose={handleCloseSnackbar}
+              autoHideDuration={4000}
+              message="Please fill all required fields."
+              className="postOffer__notification"
+              ContentProps={{
+                className: "postOffer__notification",
+              }}
+            />
           </div>
         </div>
       </div>

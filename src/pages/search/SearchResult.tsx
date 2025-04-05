@@ -37,10 +37,6 @@ export const SearchResult: FC = () => {
         }
     };
 
-    const handlePrimaryButtonClick = (item: any) => {
-        navigate(`/offer/${item.id}`, { state: { item } });
-    };
-
     return (
         <>
             <div className="flex flex-col w-full items-center gap-[7.8rem]">
@@ -63,17 +59,16 @@ export const SearchResult: FC = () => {
                     
                     <div className="grid grid-cols-3 gap-[5.7rem]">
                         {searchResults.length > 0 ? (
-                            searchResults.map((item, index) => (
+                            searchResults.map((result, index) => (
                                 <OfferCard 
                                     key={index}
                                     primaryButtonText={'Send a request'} 
-                                    secondaryButtonText={'Learn more'}
-                                    onPrimaryClick={() => handlePrimaryButtonClick(item)}
-                                    data={item}
+                                    secondaryButtonText={'Learn more'} 
+                                    offerData={result} 
                                 />
                             ))
                         ) : (
-                            <h1>No offers found</h1>
+                            <p>No offers found</p> 
                         )}
                     </div>
                 </div>

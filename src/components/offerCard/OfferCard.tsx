@@ -1,5 +1,4 @@
 import { FC } from "react";
-import classNames from "classnames";
 import { Avatar, Box, Rating } from "@mui/material";
 import offerCardImage from './../../assets/images/offer.svg';
 import avatar from './../../assets/images/avatar.svg';
@@ -7,27 +6,54 @@ import message from './../../assets/icons/message.svg';
 import moreBtn from './../../assets/icons/more.svg';
 import { Button } from "../button/Button";
 import './OfferCard.scss';
+import { useNavigate } from "react-router-dom";
 
 interface IOfferCard {
-    data?: any;
-    primaryButtonText?: string;
-    secondaryButtonText?: string;
-    size?: 'small' | 'medium' | 'large';
-    onPrimaryClick?: () => void;
-    onSecondaryClick?: () => void;
+    primaryButtonText: string;
+    secondaryButtonText: string;
+    offerData: {
+        price?: string;
+        available_space?: string;
+        available_weight?: string;
+        user_flight?: {
+            flight: {
+                departure_datetime?: string;
+                arrival_datetime?: string;
+                from_airport?: {
+                    airport_name?: string;
+                    city?: {
+                        city_name?: string;
+                    };
+                };
+                to_airport?: {
+                    airport_name?: string;
+                };
+            };
+        };
+        user?: {
+            full_name?: string;
+            email?: string;
+        };
+    };
 }
 
-export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick}) => {
+export const OfferCard: FC<IOfferCard> = ({ primaryButtonText, secondaryButtonText, offerData }) => {
+    const { price, available_space, available_weight, user_flight, user,  } = offerData;
+    const { from_airport, to_airport, departure_datetime, arrival_datetime } = user_flight?.flight || {};
+
+    const navigate = useNavigate();
+
+    const handlePrimaryButtonClick = () => {
+        const uniqueIdentifier = JSON.stringify(offerData);
+        
+        navigate(`/offer/${encodeURIComponent(uniqueIdentifier)}`, { state: { offerData } });
+    };
+    
     return (
-        <div className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
+        <div className="offerCard border border-[#AEE6E6]">
             <div className="offerCard__image">
-                {data?.verified &&
-                    <div className="offerCard__imageFlag">
-                        <span>
-                        {data?.verified}
-                        </span>
-                    </div>
-                }
+                <div className="offerCard__imageFlag">
+                </div>
                 <img src={offerCardImage} alt="Offer card" className="offerCard__imageSvg" />
             </div>
             <div className="offerCard__details flex flex-col gap-3.5">
@@ -35,7 +61,7 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                     <div className="flex items-center gap-3">
                         <Avatar alt="Avatar" src={avatar} />
                         <span className="text-[#808080]">
-                            {data.user?.full_name || "Unknown User"}
+                            {user?.full_name || "Unknown User"} 
                         </span>
                     </div>
                     <div className="rate flex items-center gap-3">
@@ -52,34 +78,34 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                         Flight number
                     </h3>
                     <span className="offerCard__flight">
-                        {data.user_flight?.flight?.departure_datetime || "N/A"}
+                        {user_flight?.flight?.departure_datetime || "N/A"} 
                         </span>
                 </div>
                 <div className="offerCard__date">
-                    <span>{data.departure_datetime?.split('T')[0] || "N/A"}</span>
+                    <span>{departure_datetime?.split('T')[0] || "N/A"}</span> 
                 </div>
                 <div className="offerCard__direction flex items-center justify-between">
                     <div className='from'>
                         <span className="country">
-                            {data.from_airport?.city?.city_name || "Unknown City"}
+                            {from_airport?.city?.city_name || "Unknown City"} 
                         </span>,
                         <span className="city">
-                            {data.from_airport?.airport_name || "Unknown Airport"}
+                            {from_airport?.airport_name || "Unknown Airport"} 
                         </span>
                     </div>
                     <div className='to'>
                         <span className="country">
-                            {data.to_airport?.airport_name || "Unknown Destination"}
+                            {to_airport?.airport_name || "Unknown Destination"}
                         </span>
                     </div>
                 </div>
                 <div className="offerCard__time">
-                    <span>{data.departure_datetime?.split('T')[1] || "N/A"}</span>
-                    <span>{data.arrival_datetime?.split('T')[1] || "N/A"}</span>
+                    <span>{departure_datetime?.split('T')[1] || "N/A"}</span>
+                    <span>{arrival_datetime?.split('T')[1] || "N/A"}</span>
                 </div>
                 <div className="offerCard__space flex items-center justify-between">
                     <span>Available space</span>
-                    <span>{data.available_weight || "0"} kg, {data.available_space || "0"} m³</span>
+                    <span>{available_weight || "0"} kg, {available_space || "0"} m³</span> 
                 </div>
                 <div className="offerCard__userActions">
                     <button className="button">
@@ -89,9 +115,9 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                         <img src={moreBtn} alt="More buttons Icon" />
                     </button>
                 </div>
-                <div className={classNames(`cardActions flex items-center mt-[3rem] ${!primaryButtonText || !primaryButtonText ? 'justify-end' : 'justify-between'}`)}>
-                    {primaryButtonText && <Button title={primaryButtonText} type={'primary'} outline={true} {...(onPrimaryClick && { handleClick: onPrimaryClick })} />}
-                    {secondaryButtonText && <Button title={secondaryButtonText} type={'primary'} {...(onPrimaryClick && { handleClick: onSecondaryClick })} />}
+                <div className="cardActions flex items-center justify-between mt-[3rem]">
+                    <Button title={primaryButtonText} type={'primary'} outline={true} handleClick={handlePrimaryButtonClick} />
+                    <Button title={secondaryButtonText} type={'primary'} handleClick={() => {}} />
                 </div>
             </div>
         </div>
