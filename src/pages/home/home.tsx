@@ -19,12 +19,15 @@ const checkmark = <img src={checkedIcon} alt="Checked" />;
 const homeData = [
   {
     id: 1,
-    user: "Ed Sheeren",
+    user: {
+      full_name: "Ed Sheeren",
+      email: "ed@example.com", 
+    },
     rating: 5,
     reviews: 435,
     category: "Electronics",
     title: "Phone Charger",
-    price: 30,
+    price: "30",
     from: "Armenia, Yerevan",
     to: "Moscow, Russia",
     startDate: "12.12.2024",
@@ -38,7 +41,10 @@ const homeData = [
   },
   {
     id: 2,
-    user: "Ed Sheeren",
+    user: {
+      full_name: "Ed Sheeren",
+      email: "ed@example.com",
+    },
     rating: 5,
     reviews: 435,
     category: "Flight",
@@ -62,7 +68,7 @@ const homeData = [
 export const Home: FC = () => {
   return (
     <div className="home">
-      <Search />
+      <Search onSearchResults={() => {}} />
       <div className="hero">
         <div className="hero-content">
           <h1>
@@ -111,7 +117,7 @@ export const Home: FC = () => {
               <div key={item.id} className="card-container">
                 <h2 className="card-title">{cardTitle}</h2>
                 <OfferCard
-                  data={item}
+                  offerData={item}
                   secondaryButtonText="Reject"
                   primaryButtonText="Approve"
                 />
@@ -184,8 +190,16 @@ export const Home: FC = () => {
         </div>
 
         <div className="buttons">
-          <Button title="Find items" type="primary" classNames="custom-button"/>
-          <Button title="Find flights" type="secondary" classNames="custom-button secondary-button"/>
+          <Button
+            title="Find items"
+            type="primary"
+            classNames="custom-button"
+          />
+          <Button
+            title="Find flights"
+            type="secondary"
+            classNames="custom-button secondary-button"
+          />
         </div>
       </div>
 

@@ -1,36 +1,36 @@
-import {FC, useState} from "react";
-import {Link} from "../components/link/Link";
-import {Avatar, Badge} from "@mui/material";
-import avatar from './../assets/images/avatar.svg'
-import logo from './../assets/images/logo.svg'
-import notification from './../assets/icons/notification.svg'
-import './Header.scss';
-import {ProfilePopover} from "../components/profilePopover/profilePopover";
-
+import { FC, useState } from "react";
+import { Link } from "../components/link/Link";
+import { Avatar, Badge } from "@mui/material";
+import avatar from "./../assets/images/avatar.svg";
+import logo from "./../assets/images/logo.svg";
+import notification from "./../assets/icons/notification.svg";
+import "./Header.scss";
+import { ProfilePopover } from "../components/profilePopover/profilePopover";
+import { Button } from "../components/button/Button";
 interface IHeader {
-    withNavItems?: boolean;
+  withNavItems?: boolean;
 }
 
-export const Header: FC<IHeader> = ({withNavItems = true}) => {
-    const [isPopoverOpened, setIsPopoverOpened] = useState(false)
-    const isLoggedIn = !!localStorage.getItem('access');
+export const Header: FC<IHeader> = ({ withNavItems = true }) => {
+  const [isPopoverOpened, setIsPopoverOpened] = useState(false);
+  const isLoggedIn = !!localStorage.getItem("access");
 
-    return (
-        <header className="header w-full relative">
-            <a href={'/'} className="header-logo">
-                <img src={logo} alt="UGOGO Logo" />
-            </a>
-            {withNavItems &&
-                <nav className="nav">
-                    <a href="/">Home</a>
-                    <a href="#">How it works</a>
-                    <a href="/post-offer">Post an offer</a>
-                    <a href="/search-result">Find an offer</a>
-                    <a href="#">Price</a>
-                    <a href="#">Contact Us</a>
-                </nav>
-            }
-            {isLoggedIn ?
+  return (
+    <header className="header w-full relative">
+      <a href={"/"} className="header-logo">
+        <img src={logo} alt="UGOGO Logo" />
+      </a>
+      {withNavItems && (
+        <nav className="nav">
+          <a href="/">Home</a>
+          <a href="#">How it works</a>
+          <a href="/post-offer">Post an offer</a>
+          <a href="/search-result">Find an offer</a>
+          <a href="#">Price</a>
+          <a href="#">Contact Us</a>
+        </nav>
+      )}
+      {isLoggedIn ?
                 <div className="flex items-center gap-5">
                     <Badge>
                         <img src={notification} alt="Notifications"/>
@@ -44,10 +44,15 @@ export const Header: FC<IHeader> = ({withNavItems = true}) => {
                 </div>
                 :
                 <div className="auth-buttons">
-                    <Link title={'Login'} href={'login'} type={'primary'}/>
-                    <Link title={'Register'} href={'registration'} type={'secondary'}/>
-                </div>
+                <a href="/login">
+                  <Button title="Login" type="primary" classNames="login" />
+                </a>
+                <a href="/registration">
+                  <Button title="Register" type="secondary" classNames="register" />
+                </a>
+              </div>
+        
             }
-        </header>
-    );
-}
+    </header>
+  );
+};
