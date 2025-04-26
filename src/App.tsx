@@ -1,7 +1,9 @@
 import React from "react";
 import { Header } from "./layouts/Header";
 import { SingleProductPage } from "./pages/singleProductPage/SingleProductPage";
-import { PostOffer } from "./pages/postOffer/PostOffer";
+// import { PostOffer } from "./pages/postOffer/PostOffer";
+import  PostOffer  from "./pages/postOffer/PostOffer";
+
 import {
   BrowserRouter,
   Navigate,
