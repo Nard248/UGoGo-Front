@@ -1,5 +1,30 @@
-.postOffer__actionsConfirm.disabled {
-    background-color: #d3d3d3; /* Light gray color for disabled state */
-    cursor: not-allowed;
-  }
-  
+.item-add-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; 
+  width: 100%;
+  background-color: white; 
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.step-form {
+  width: 100%;
+  max-width: 727px; 
+  padding: 30px 40px;
+  border-radius: 12px;
+}
+
+.step-navigation {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 1rem;
+}
