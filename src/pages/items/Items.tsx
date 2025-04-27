@@ -32,10 +32,7 @@ export const Items = () => {
                 <Button title={'Add item'} type={'primary'} handleClick={() => {navigate("/add-item")}} />
             </div>
             <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                {items.map((item) => (
-                        <OfferCard onSecondaryClick={findOffer} secondaryButtonText={'Delete'} data={item}/>
-                    ))
-                }
+                <OfferCard primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'} offerData={{}}/>
             </div>
             <div className="flex justify-end gap-[4rem]">
                 <Button title={'How it works'} type={'secondary'} handleClick={() => {}} />

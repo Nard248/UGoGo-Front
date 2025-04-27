@@ -1,0 +1,80 @@
+.offerCardMini {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #aee6e6;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 1px 1px 6px 0 #00000040;
+  background: #fff;
+  width: 352px;
+  height: 415px;
+  border-radius: 20px;
+  border-width: 1px;
+
+  &__image {
+    width: 100%;
+    height: auto;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__header {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    width: 100%;
+  }
+
+  &__username {
+    font-family: "Source Sans Pro", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #808080;
+  }
+  &__rating {
+    display: flex;
+    align-items: center;
+    margin-left: 90px;
+    gap: 5px;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 500;
+    font-size: 16px;
+    color: #4d4d4d;
+  }
+
+  &__direction {
+    display: flex;
+    gap: 60px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: #000000;
+  }
+
+  &__date {
+    gap: 138px;
+    display: flex;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 400;
+    font-size: 14px;
+    color: #808080;
+  }
+
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 12px;
+    text-align: center;
+    margin: 10px auto;
+    width: 95px;
+    height: 34px;
+    gap: 8px;
+  }
+}
