@@ -1,5 +1,5 @@
 import { FC } from "react";
-import "./home.scss";
+import "./Home.scss";
 import { Search } from "../../components/search/Search";
 import airplaneIcon from "../../assets/icons/airplaneIcon.svg";
 import briefcaseIcon from "../../assets/icons/briefcaseIcon.svg";
@@ -62,7 +62,7 @@ const homeData = [
 export const Home: FC = () => {
   return (
     <div className="home">
-      <Search />
+      <Search onSearchResults={() => {}} />
       <div className="hero">
         <div className="hero-content">
           <h1>
