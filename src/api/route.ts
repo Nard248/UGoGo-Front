@@ -1,5 +1,5 @@
 import { api } from "./api";
-import {IItemCreate, ILogin, IOfferCreate} from "../types/global";
+import {IItemCreate, ILogin, IOfferCreate, IPay, IPayData} from "../types/global";
 
 export const login = async (data: ILogin) => {
   return await api.post(`/users/token/`, data);
@@ -41,8 +41,10 @@ export const getItems = async () => {
   return await api.get(`/items/items/`);
 };
 
-export const createItem = async (data: IItemCreate) => {
-  return await api.post(`/items/items/unified_create/`, data);
+export const createItem = async (data: FormData) => {
+  return await api.post(`/items/create_item/`, data, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
 };
 
 export const emailVerification = async (data: {
@@ -77,4 +79,20 @@ export const searchOffer = async (params: {
 
 export const getAllOffers = async () => {
   return await api.get(`/offers/get_all_offers/`);
+};
+
+export const getAllRequests = async () => {
+  return await api.get(`/flight-requests/list-requests/`);
+};
+
+export const requestsAction = async (data: {request_id: string | number, action: 'accept' | 'reject'}) => {
+  return await api.post(`/flight-requests/action/`, data);
+};
+
+export const pay = async (data: IPay): Promise<{ data: IPayData }> => {
+  return await api.post(`/flight-requests/create/`, data);
+};
+
+export const confirmSession = async (data: {session_id: string}) => {
+  return await api.post(`/flight-requests/stripe/confirm-session/`, data);
 };

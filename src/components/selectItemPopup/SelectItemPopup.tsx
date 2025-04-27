@@ -48,7 +48,7 @@ export const SelectItemPopup: FC<ISelectItemPopup> = ({data, onClose}) => {
                                 "relative flex flex-col justify-center items-center gap-[2rem] border-solid border-[#D5D7DA] border rounded-[.5rem] w-[20.5rem] h-[20.5rem] p-[1.5rem]",
                                 {'!border-[#73B2B2] text-[#73B2B2]': selectedItem === item.id}
                             )}
-                            disabled={item.verified !== 'verified'}
+                            disabled={item.verified.toLowerCase().trim() !== 'verified'}
                             onClick={() => handleCardClick(item.id)}
                         >
                             <div className="">
@@ -59,7 +59,7 @@ export const SelectItemPopup: FC<ISelectItemPopup> = ({data, onClose}) => {
                                         </span>
                                     </div>
                                 }
-                                <img className="object-scale-down" src={iconSvg}/>
+                                <img className="object-scale-down" src={item?.pictures[0]?.image}/>
                             </div>
                             <h3>
                                 {item.name}

@@ -2,6 +2,7 @@ import axios from "axios";
 
 export const api = axios.create({
   baseURL: `https://ugogo-auhdbad8drdma7f6.canadacentral-01.azurewebsites.net`,
+  // baseURL: `http://192.168.5.53:8000`,
 });
 
 api.interceptors.request.use(
@@ -13,7 +14,7 @@ api.interceptors.request.use(
       headers: {
         ...(accessToken !== null && { Authorization: `Bearer ${accessToken}` }),
         ...request.headers,
-        "Access-Control-Allow-Origin": "*",
+        // "Access-Control-Allow-Origin": "*",
       },
     };
   },
