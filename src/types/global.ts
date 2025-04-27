@@ -66,10 +66,8 @@ export interface IItemCreate {
     pickup_surname?: string,
     pickup_phone?: string,
     pickup_email?: string,
-    category_ids?: number[],
-    pictures?: {
-        image_path: string
-    }[],
+    category_ids?: string[],
+    uploaded_pictures?: Blob[],
     state?: string
 }
 
@@ -96,4 +94,22 @@ interface IOfferData {
         full_name?: string;
         email?: string;
     }
+}
+
+export interface IPay {
+    item: number,
+    offer: number,
+    comments?: string
+}
+
+export interface IPayData {
+    checkout_url: string;
+    comments: string;
+    created_at: string;
+    id: number;
+    item: number;
+    offer: number;
+    payment: null;
+    requester: number;
+    updated_at: string;
 }

@@ -42,7 +42,7 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                         <Rating
                             name="hover-feedback"
                             precision={0.5}
-                            max={5} 
+                            max={5}
                         />
                         <span>5 (435)</span>
                     </div>
@@ -81,17 +81,17 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                     <span>Available space</span>
                     <span>{data.available_weight || "0"} kg, {data.available_space || "0"} m³</span>
                 </div>
-                <div className="offerCard__userActions">
-                    <button className="button">
-                        <img src={message} alt="Message Icon" />
-                    </button>
-                    <button className="button">
-                        <img src={moreBtn} alt="More buttons Icon" />
-                    </button>
-                </div>
+                {/*<div className="offerCard__userActions">*/}
+                {/*    <button className="button">*/}
+                {/*        <img src={message} alt="Message Icon" />*/}
+                {/*    </button>*/}
+                {/*    <button className="button">*/}
+                {/*        <img src={moreBtn} alt="More buttons Icon" />*/}
+                {/*    </button>*/}
+                {/*</div>*/}
                 <div className={classNames(`cardActions flex items-center mt-[3rem] ${!primaryButtonText || !primaryButtonText ? 'justify-end' : 'justify-between'}`)}>
                     {primaryButtonText && <Button title={primaryButtonText} type={'primary'} outline={true} {...(onPrimaryClick && { handleClick: onPrimaryClick })} />}
-                    {secondaryButtonText && <Button title={secondaryButtonText} type={'primary'} {...(onPrimaryClick && { handleClick: onSecondaryClick })} />}
+                    {secondaryButtonText && <Button title={secondaryButtonText} type={'primary'} {...(onSecondaryClick && { handleClick: onSecondaryClick })} />}
                 </div>
             </div>
         </div>

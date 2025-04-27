@@ -105,6 +105,7 @@ function App() {
               <Route path="payment" element={<Payment />} />
               <Route path="payment-history" element={<PaymentHistory />} />
               <Route path="payment-success" element={<PaymentConfirmation />} />
+              <Route path="payment-error" element={<PaymentConfirmation isError={true} />} />
               <Route path="search-result" element={<SearchResult />} />
               <Route path="add-profile-info" element={<AddProfileInfo />} />
               <Route

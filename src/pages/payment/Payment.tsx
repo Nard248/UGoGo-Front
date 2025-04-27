@@ -1,12 +1,11 @@
-import { AlertMessage } from "../../components/alertMessage/AlertMessage"
 import {Button} from "../../components/button/Button";
-import visaLogo from './../../assets/icons/visa-logo.svg'
-import moreIcon from './../../assets/icons/more.svg'
 import warning from './../../assets/icons/warning.svg'
 import {Divider} from "../../components/divider/Divider";
 import Checkbox from "@mui/material/Checkbox/Checkbox";
 import {useEffect, useState} from "react";
 import {Loading} from "../../components/loading/Loading";
+import { IPay } from "../../types/global";
+import { pay } from "../../api/route";
 
 export const Payment = () => {
     const [item, setItem] = useState(null);
@@ -19,8 +18,25 @@ export const Payment = () => {
         setItem(data);
     }, []);
 
-    const addPaymentMethod = () => {
+    const onPay = async () => {
+        const itemData = localStorage.getItem('selectedItem');
+        const offerData = localStorage.getItem('offer');
+        if (!itemData || !offerData) {
+            return
+        }
 
+        const {id: itemId} = JSON.parse(itemData);
+        const {id: offerId, comments} = JSON.parse(offerData);
+
+        const payload: IPay = {
+            item: itemId,
+            offer: offerId,
+            comments: comments
+        }
+
+        const data = await pay(payload);
+        const {checkout_url} = data.data;
+        window.location.href = checkout_url
     }
 
     return (
@@ -31,23 +47,46 @@ export const Payment = () => {
             </h1>
             <div className="flex gap-16 w-full">
                 <div className="flex flex-col gap-14 w-[50%]">
-                    <AlertMessage
-                        type={'warning'}
-                        text={
-                            'Your booking is on hold until 01/01/25 12:00 AM. If your reserve change we will get back to you.'
-                        }
-                    />
+                    {/*<AlertMessage*/}
+                    {/*    type={'warning'}*/}
+                    {/*    text={*/}
+                    {/*        'Your booking is on hold until 01/01/25 12:00 AM. If your reserve change we will get back to you.'*/}
+                    {/*    }*/}
+                    {/*/>*/}
+                    <div className="flex flex-col border border-solid border-[#D5D7DA] rounded-xl">
+                        <div className="bg-[#FFF1E7] py-[2.1rem] px-[2.4rem] rounded-t-xl">
+                            <h3 className="">
+                                Price Details
+                            </h3>
+                        </div>
+                        <div
+                            className="flex flex-col gap-[1.2rem] py-[4.5rem] px-[1.8rem] border-t border-solid border-[#D5D7DA]">
+                            <div className="flex justify-between ">
+                                <span className="">Delivery fee</span>
+                                <span className="">$10</span>
+                            </div>
+                            <div className="flex justify-between ">
+                                <span className="">Commission fee</span>
+                                <span className="">$1</span>
+                            </div>
+                            <Divider size={'small'} appearance={'neutral'}/>
+                            <div className="flex justify-between ">
+                                <span className=" ">Total</span>
+                                <span className="">$11</span>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex flex-col px-2.5 py-7 border border-solid border-[#D5D7DA] rounded-xl">
                         <h3 className="mb-5 text-xl font-medium	">
                             Book Information
                         </h3>
-                        <AlertMessage
-                            type={'success'}
-                            text={
-                                'Congratulations! We have sent your book details to the traveler'
-                            }
-                            className={'mb-[39px]'}
-                        />
+                        {/*<AlertMessage*/}
+                        {/*    type={'success'}*/}
+                        {/*    text={*/}
+                        {/*        'Congratulations! We have sent your book details to the traveler'*/}
+                        {/*    }*/}
+                        {/*    className={'mb-[39px]'}*/}
+                        {/*/>*/}
                         <table>
                             <tr className="text-left">
                                 <th>Full name</th>
@@ -60,42 +99,6 @@ export const Payment = () => {
                                 <td>+1010101010</td>
                             </tr>
                         </table>
-                    </div>
-                    <div className="flex flex-col">
-                        <h3 className={'text-[2rem] text-medium mb-[2.4rem]'}>
-                            Payment Details
-                        </h3>
-                        <span className="text-[1.6rem] mb-[4.3rem]">
-                    Add and manage your payment methods using our secure payment system.
-                </span>
-                        <div
-                            className="flex py-3.5 px-2 border-solid border-y border-y-[#B3B3B3] mb-[2.9rem] justify-between">
-                            <div className="flex gap-2.5">
-                                <div className="flex rounded border-[#F5F5F5] py-2.5 px-2">
-                                    <img src={visaLogo} alt="Visa Logo"/>
-                                </div>
-                                <div className="flex flex-col">
-                                    <div className="flex items-center gap-1.5">
-                                <span>
-                                    VISA
-                                </span>
-                                        <span>
-                                    .......8888
-                                </span>
-                                    </div>
-                                    <div>
-                                        Expiration: 08/28
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex cursor-pointer">
-                                <img src={moreIcon} alt="Dots"/>
-                            </div>
-                        </div>
-                        <div>
-                            <Button title={'Add payment method'} type={'primary'}
-                                    handleClick={addPaymentMethod}/>
-                        </div>
                     </div>
                     <div className="flex py-8 px-7 border-solid border border-[#D5D7DA] rounded-xl">
                         <div className="flex gap-4 items-start">
@@ -143,29 +146,6 @@ export const Payment = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col border border-solid border-[#D5D7DA] rounded-xl">
-                        <div className="bg-[#FFF1E7] py-[2.1rem] px-[2.4rem] rounded-t-xl">
-                            <h3 className="">
-                                Price Details
-                            </h3>
-                        </div>
-                        <div
-                            className="flex flex-col gap-[1.2rem] py-[4.5rem] px-[1.8rem] border-t border-solid border-[#D5D7DA]">
-                            <div className="flex justify-between ">
-                                <span className="">Delivery fee</span>
-                                <span className="">$10</span>
-                            </div>
-                            <div className="flex justify-between ">
-                                <span className="">Commission fee</span>
-                                <span className="">$1</span>
-                            </div>
-                            <Divider size={'small'} appearance={'neutral'}/>
-                            <div className="flex justify-between ">
-                                <span className=" ">Total</span>
-                                <span className="">$11</span>
-                            </div>
-                        </div>
-                    </div>
                     <div
                         className="flex flex-col border border-solid border-[#D5D7DA] rounded-xl px-[4.2rem] py-[3rem] gap-[3.4rem]">
                         <div className="flex">
@@ -186,8 +166,7 @@ export const Payment = () => {
                         and <a href="/" className="text-[#D96A1D]">Privacy Policy</a>
                     </span>
                         </div>
-                        <Button title={'Pay for my booking'} type={'primary'} handleClick={() => {
-                        }}/>
+                        <Button title={'Pay for my booking'} type={'primary'} handleClick={onPay}/>
                     </div>
                 </div>
             </div>

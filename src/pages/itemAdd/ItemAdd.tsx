@@ -1,5 +1,4 @@
 import React, {ChangeEvent, FC, useEffect, useState} from "react";
-import './ItemAdd.scss';
 import {Label} from "../../components/label/Label";
 import {Input} from "../../components/input/Input";
 import {Button} from "../../components/button/Button";
@@ -9,6 +8,7 @@ import {ImageLabel} from "../../components/image/ImageLabel";
 import {createItem, getCategories} from "../../api/route";
 import {IItemCreate} from "../../types/global";
 import {useNavigate} from "react-router-dom";
+import './ItemAdd.scss';
 
 export const ItemAdd: FC = () => {
     const navigate = useNavigate();
@@ -43,25 +43,44 @@ export const ItemAdd: FC = () => {
         if (!target.files?.length) {
             return
         }
+
+        const images = itemFormData.uploaded_pictures?.length ? itemFormData.uploaded_pictures : [];
+
+        setItemFormData({...itemFormData, uploaded_pictures: [...images, target.files[0]]})
+
         const newFiles = Array.from(target.files).map((file) => {
             return {
                 ...file,
-                blob: URL.createObjectURL(file)
+                src: URL.createObjectURL(file)
             };
         })
 
         setFiles([...files, ...newFiles])
     }
 
-    const onAddCategory = () => {
-
-    }
-
     const onConfirm = async () => {
-        setItemFormData({...itemFormData, category_ids: categories.map(item => item.id)})
+        if (!selectedCategories?.length) {
+            return
+        }
+
+        const payload = new FormData();
+
+        setItemFormData({...itemFormData, category_ids:  selectedCategories.map(item => item.toString())})
+
+        Object.keys(itemFormData).forEach(item => {
+            if (item === 'uploaded_pictures') {
+                itemFormData.uploaded_pictures?.forEach(file => {
+                    payload.append('uploaded_pictures', file);
+                })
+            } else {
+                // @ts-ignore
+                payload.append(item, itemFormData[item]);
+            }
+        });
+
         try {
-            const data = await createItem(itemFormData);
-            navigate('/single-product-page?modal=book');
+            await createItem(payload);
+            navigate('/offer/3?modal=book');
         } catch (e) {
             console.error(e)
         }
@@ -162,7 +181,7 @@ export const ItemAdd: FC = () => {
                             <div className="postOffer__detailedForm__prefferedCategory__form__content">
                                 <ImageLabel upload={onImageUpload}/>
                                 {!!files.length && files.map(file => (
-                                    <ImageComponent src={file.blob} alt={'item'}/>
+                                    <ImageComponent src={file.src} alt={'item'}/>
                                 ))}
                             </div>
                         </div>

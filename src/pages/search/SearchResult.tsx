@@ -38,6 +38,7 @@ export const SearchResult: FC = () => {
     };
 
     const handlePrimaryButtonClick = (item: any) => {
+        localStorage.setItem('offer', JSON.stringify(item));
         navigate(`/offer/${item.id}`, { state: { item } });
     };
 
@@ -66,9 +67,8 @@ export const SearchResult: FC = () => {
                             searchResults.map((item, index) => (
                                 <OfferCard 
                                     key={index}
-                                    primaryButtonText={'Send a request'} 
-                                    secondaryButtonText={'Learn more'}
-                                    onPrimaryClick={() => handlePrimaryButtonClick(item)}
+                                    secondaryButtonText={'View & Book'}
+                                    onSecondaryClick={() => handlePrimaryButtonClick(item)}
                                     data={item}
                                 />
                             ))
