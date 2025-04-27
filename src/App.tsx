@@ -29,7 +29,8 @@ import { Transaction } from "./pages/transaction/Transaction";
 import "./assets/scss/index.scss";
 import { TwoFactorConfirmation } from "./pages/auth/TwoFactorConfirmation";
 import { PaymentHistory } from "./pages/transaction/PaymentHistory";
-import { Home } from "./pages/home/home";
+import { Home } from "./pages/home/Home";
+
 const Protected = () => {
   const location = useLocation();
   const accessToken = localStorage.getItem("access");
