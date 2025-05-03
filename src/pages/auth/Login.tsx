@@ -88,7 +88,7 @@ export const Login: FC = () => {
             localStorage.setItem('refresh', data.refresh);
             localStorage.setItem('access', data.access);
             setIsLoading(false);
-            navigate('/post-offer')
+            navigate('/')
         }
     }
 

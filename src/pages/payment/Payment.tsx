@@ -6,8 +6,12 @@ import {useEffect, useState} from "react";
 import {Loading} from "../../components/loading/Loading";
 import { IPay } from "../../types/global";
 import { pay } from "../../api/route";
+import {ConfirmationPopup} from "../../components/confirmationPopup/ConfirmationPopup";
+import {useNavigate} from "react-router-dom";
 
 export const Payment = () => {
+    const navigate = useNavigate();
+    const [isError, setIsError] = useState(false);
     const [item, setItem] = useState(null);
 
     useEffect(() => {
@@ -28,15 +32,22 @@ export const Payment = () => {
         const {id: itemId} = JSON.parse(itemData);
         const {id: offerId, comments} = JSON.parse(offerData);
 
-        const payload: IPay = {
-            item: itemId,
-            offer: offerId,
-            comments: comments
-        }
+        try {
+            const payload: IPay = {
+                item: itemId,
+                offer: offerId,
+                comments: comments
+            }
 
-        const data = await pay(payload);
-        const {checkout_url} = data.data;
-        window.location.href = checkout_url
+            const data = (await pay(payload)).data;
+
+            if (data.checkout_url) {
+                window.location.href = data.checkout_url
+            }
+        } catch (e) {
+            setIsError(true);
+            console.log(e);
+        }
     }
 
     return (
@@ -170,6 +181,16 @@ export const Payment = () => {
                     </div>
                 </div>
             </div>
+            {isError &&
+                <ConfirmationPopup
+                    isError={true}
+                    secondaryButtonText={'Cancel'}
+                    secondaryButtonClick={() => setIsError(false)}
+                    primaryButtonText={'Redirect to Verify'}
+                    primaryButtonClick={() => navigate('/profile-verification')}
+                    message={'You are not verified!'}
+                />
+            }
         </div>
         :
         <Loading/>
