@@ -26,7 +26,7 @@ export const Requests = () => {
             all: requests,
             completed: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'completed'),
             pending: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'pending'),
-            in_progress: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'in_progress'),
+            in_process: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'in_process'),
             rejected: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'rejected'),
         }
     }, [requests])
@@ -58,7 +58,7 @@ export const Requests = () => {
                         <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}}/>
                         <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}}/>
                         <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="In progress" value={'in_progress'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                        <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}}/>
                         <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}}/>
                     </Tabs>
                     <div className="flex flex-col gap-[6rem] w-full">

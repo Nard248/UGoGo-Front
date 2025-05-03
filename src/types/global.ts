@@ -103,6 +103,7 @@ export interface IPay {
 }
 
 export interface IPayData {
+    error?: string;
     checkout_url: string;
     comments: string;
     created_at: string;
@@ -112,4 +113,10 @@ export interface IPayData {
     payment: null;
     requester: number;
     updated_at: string;
+}
+
+export interface IPID {
+    pid_type: 'national_id' | 'passport';
+    pid_picture: File;
+    pid_selfie: File;
 }

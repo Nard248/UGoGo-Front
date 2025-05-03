@@ -96,3 +96,9 @@ export const pay = async (data: IPay): Promise<{ data: IPayData }> => {
 export const confirmSession = async (data: {session_id: string}) => {
   return await api.post(`/flight-requests/stripe/confirm-session/`, data);
 };
+
+export const profileVerification = async (data: FormData) => {
+  return await api.post(`/users/pid-upload/`, data, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+};
