@@ -12,6 +12,7 @@ import accountIcon from "../../assets/icons/account_circle.svg";
 import accountHoverIcon from "../../assets/icons/account_circle_hover.svg";
 import logoutIcon from "../../assets/icons/logout.svg";
 import logoutHoverIcon from "../../assets/icons/logoutHover.svg";
+import coin from "../../assets/icons/coin.svg";
 import { logout, getUserDetails } from "../../api/route";
 
 interface User {
@@ -140,6 +141,22 @@ export const ProfilePopover: FC = () => {
 
             <div
               className="flex items-center gap-[.8rem] cursor-pointer"
+              onClick={() => handleNavigation("/payout")}
+              onMouseEnter={() => setRequestsIcon(coin)}
+              onMouseLeave={() => setRequestsIcon(coin)}
+            >
+              <img
+                src={coin}
+                alt="Requests Icon"
+                className="w-[20px] h-[20px]"
+              />
+              <span className="text-[1.4rem] text-[#808080] hover:text-[#F9A34B]">
+                Payout
+              </span>
+            </div>
+
+            <div
+              className="flex items-center gap-[.8rem] cursor-pointer"
               onClick={() => handleNavigation("/requests")}
               onMouseEnter={() => setRequestsIcon(requestsHoverIcon)}
               onMouseLeave={() => setRequestsIcon(requestsIcon)}
@@ -186,12 +203,10 @@ export const ProfilePopover: FC = () => {
               </span>
             </div>
           </div>
-
-
-            <Divider
-              appearance="neutral"
-              size="small"
-            />
+          <Divider
+            appearance="neutral"
+            size="small"
+          />
           <div className="flex flex-col gap-[.8rem] px-[2.1rem] py-[1.6rem]">
             <div
               className="flex items-center gap-[.8rem] cursor-pointer"
