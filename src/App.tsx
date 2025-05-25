@@ -30,6 +30,8 @@ import "./assets/scss/index.scss";
 import { TwoFactorConfirmation } from "./pages/auth/TwoFactorConfirmation";
 import { PaymentHistory } from "./pages/transaction/PaymentHistory";
 import { Home } from "./pages/home/Home";
+import {Payout} from "./pages/payout/Payout";
+import { Balance } from "./pages/balance/Balance";
 
 const Protected = () => {
   const location = useLocation();
@@ -115,6 +117,8 @@ function App() {
               <Route path="offers" element={<Offers />} />
               <Route path="items" element={<Items />} />
               <Route path="transaction" element={<Transaction />} />
+              <Route path="payout" element={<Payout />} />
+              <Route path="balance" element={<Balance />} />
               <Route path="/" element={<Home />} />
             </Route>
             <Route element={<Public />}>
