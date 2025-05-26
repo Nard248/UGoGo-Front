@@ -8,23 +8,25 @@ import {register} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
 import './Login.scss';
 
+const initialState = {
+    email: {
+        value: undefined,
+        errorMessage: null
+    },
+    password: {
+        value: undefined,
+        errorMessage: null
+    },
+    fullName: {
+        value: undefined,
+        errorMessage: null
+    }
+}
+
 export const Registration = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [registerForm, setRegisterForm] = useState<IRegisterForm>({
-        email: {
-            value: undefined,
-            errorMessage: null
-        },
-        password: {
-            value: undefined,
-            errorMessage: null
-        },
-        fullName: {
-            value: undefined,
-            errorMessage: null
-        }
-    })
+    const [registerForm, setRegisterForm] = useState<IRegisterForm>(initialState)
 
     const handleNameChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> ) => {
         const {value} = event.target;
@@ -102,6 +104,7 @@ export const Registration = () => {
                 navigate('/email-verification')
             }
         } catch (e) {
+            setIsLoading(false);
             console.log(e);
         }
     }

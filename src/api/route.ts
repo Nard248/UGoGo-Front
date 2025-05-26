@@ -1,5 +1,5 @@
 import { api } from "./api";
-import {IItemCreate, ILogin, IOfferCreate, IPay, IPayData} from "../types/global";
+import {IBankCard, IItemCreate, ILogin, IOfferCreate, IPay, IPayData, IPayout} from "../types/global";
 
 export const login = async (data: ILogin) => {
   return await api.post(`/users/token/`, data);
@@ -101,4 +101,16 @@ export const profileVerification = async (data: FormData) => {
   return await api.post(`/users/pid-upload/`, data, {
     headers: { "Content-Type": "multipart/form-data" }
   });
+};
+
+export const createBankCard = async (data: IBankCard) => {
+  return await api.post(`/users/bankcards/`, data);
+};
+
+export const getBankCard = async (): Promise<IBankCard[]> => {
+  return (await api.get(`/users/bankcards/`)).data;
+};
+
+export const payout = async (data: IPayout) => {
+  return (await api.post(`/users/pay-out/`));
 };
