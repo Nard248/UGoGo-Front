@@ -18,6 +18,7 @@ interface IOfferCard {
 }
 
 export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick}) => {
+    console.log(data);
     return (
         <div className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
             <div className="offerCard__image">
@@ -49,14 +50,15 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                 </div>
                 <div className="flex items-center justify-between">
                     <h3 className="offerCard__flightNumber">
-                        Flight number
+                        {data.user_flight.flight.from_airport.city.country.country_name}, {data.user_flight.flight.from_airport.city.city_name}
                     </h3>
-                    <span className="offerCard__flight">
-                        {data.user_flight?.flight?.departure_datetime || "N/A"}
-                        </span>
+                    <h3 className="offerCard__flightNumber">
+                        {data.user_flight.flight.to_airport.city.country.country_name}, {data.user_flight.flight.to_airport.city.city_name}
+                    </h3>
                 </div>
                 <div className="offerCard__date">
-                    <span>{data.departure_datetime?.split('T')[0] || "N/A"}</span>
+                    <span>{`${new Date(data.departure_datetime).getHours()}:${new Date(data.departure_datetime).getMinutes().toString().padStart(2, '0')}` || "N/A"}</span>
+                    <span>{`${new Date(data.arrival_datetime).getHours()}:${new Date(data.arrival_datetime).getMinutes().toString().padStart(2, '0')}` || "N/A"}</span>
                 </div>
                 <div className="offerCard__direction flex items-center justify-between">
                     <div className='from'>

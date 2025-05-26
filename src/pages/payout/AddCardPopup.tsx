@@ -1,16 +1,45 @@
-import {FC} from "react";
+import {ChangeEvent, FC, useState} from "react";
 import close from "../../assets/icons/closeIcon.svg";
 import {Button} from "../../components/button/Button";
 import {Label} from "../../components/label/Label";
 import {Input} from "../../components/input/Input";
+import {IBankCard} from "../../types/global";
+
+
 
 interface IConfirmationPopup {
     buttonText?: string;
-    onClick?: () => void;
+    onClick: (data: IBankCard) => void;
     onClose: () => void;
 }
 
+function formatCardNumber(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 16);
+    const groups = digits.match(/.{1,4}/g);
+    return groups ? groups.join(" ") : "";
+}
+
+function formatExpiry(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 4);
+    if (digits.length <= 2) return digits;
+    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+}
+
 export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
+    const [formData, setFormData] = useState<IBankCard>({} as IBankCard)
+
+    const handleCardNumberChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+        const formatted = formatCardNumber(e.target.value)
+        e.target.value = formatted;
+        setFormData({...formData, card_number: e.target.value.split(' ').join('')});
+    }
+
+    const handleExpDateChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+        const formatted = formatExpiry(e.target.value)
+        e.target.value = formatted;
+        setFormData({...formData, expiration_date: e.target.value})
+    }
+
     return (
         <div
             className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex justify-center items-center w-full h-full bg-[#d0e3eb8c]">
@@ -41,21 +70,18 @@ export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
                     <div className="flex justify-center gap-[5rem]">
                         <div className="flex flex-col gap-[1rem] w-full">
                             <Label title="Card number" htmlFor="amount">
-                                <Input type="number" handleChange={() => {
-                                }}/>
+                                <Input type="text" handleChange={(e) => handleCardNumberChange(e)} />
                             </Label>
                             <Label title="Name on card" htmlFor="amount">
-                                <Input type="number" handleChange={() => {
-                                }}/>
+                                <Input type="text" handleChange={(e) => setFormData({...formData, card_holder_name: e.target.value})}/>
                             </Label>
                             <div className="flex items-end gap-[1.5rem]">
                                 <div className="flex flex-col gap-[1.5rem]">
                                     <Label title="Valid through" htmlFor="amount">
-                                        <Input type="number" handleChange={() => {
-                                        }}/>
+                                        <Input type="text" handleChange={(e) => handleExpDateChange(e)}/>
                                     </Label>
                                 </div>
-                                <Button type="primary" title="Add card"/>
+                                <Button type="primary" title="Add card" handleClick={() => onClick(formData)}/>
                             </div>
                         </div>
                     </div>
