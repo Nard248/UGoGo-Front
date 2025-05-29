@@ -2,23 +2,29 @@ import { Label } from "../../components/label/Label"
 import {Input} from "../../components/input/Input";
 import {Button} from "../../components/button/Button";
 import plusIcon from "./../../assets/icons/plus.svg"
-import {useSearchParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {createPortal} from "react-dom";
-import {SelectItemPopup} from "../../components/selectItemPopup/SelectItemPopup";
 import {AddCardPopup} from "./AddCardPopup";
 import {IBankCard, IPayout} from "../../types/global";
-import {createBankCard, getBankCard, payout} from "../../api/route";
+import {createBankCard, getBankCard, payout, verifyPayout} from "../../api/route";
+import {VerificationPopup} from "./VerificationPopup";
+
+function maskCardNumber(cardNumber: string): string {
+    const visibleDigits = 4;
+    const maskedSection = '*'.repeat(cardNumber.length - visibleDigits);
+    const visibleSection = cardNumber.slice(-visibleDigits);
+    return maskedSection + visibleSection;
+}
 
 export const Payout = () => {
     const [isAddCardPopupOpen, setIsAddCardPopupOpen] = useState(false);
+    const [isVerificationPopupOpen, setIsVerificationPopupOpen] = useState(false);
     const [cards, setCards] = useState<IBankCard[]>([]);
     const [selectedCard, setSelectedCard] = useState<IBankCard | null>(null);
     const [formData, setFormData] = useState<IPayout>({} as IPayout);
 
     const getCards = async () => {
         const cards = await getBankCard();
-        console.log({cards});
         setCards(cards);
     }
     useEffect(() => {
@@ -30,14 +36,33 @@ export const Payout = () => {
     }
 
     const onCardCreate = async (data: IBankCard) => {
-        const createdCard = await createBankCard(data);
-        console.log({createdCard});
+        try {
+            await createBankCard(data);
+            setIsAddCardPopupOpen(false);
+            await getCards()
+        } catch (e) {
+            console.log(e);
+        }
     }
 
-    const onPayout = async () => {
-        console.log(formData);
-        const data = await payout(formData);
-        console.log({data});
+    const onVerify = async () => {
+        try {
+            const isVerified = await verifyPayout();
+            setIsVerificationPopupOpen(true);
+        } catch (e) {
+            console.log(e);
+        }
+
+    }
+
+    const onPayout = async (code: string) => {
+        setFormData({...formData, verification_code: code})
+        try {
+            await payout({...formData, verification_code: code});
+        } catch (e) {
+            console.log(e);
+        }
+        setIsVerificationPopupOpen(false);
     }
 
     return (
@@ -54,9 +79,10 @@ export const Payout = () => {
                         {!!cards.length &&
                             cards.map(card => (
                                 <div
-                                    className={`flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1rem] max-h-[13.5rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem] ${card.card_id === selectedCard?.card_id ? 'ml-[5rem]' : ''}`} onClick={() => {
+                                    className={`flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1rem] max-h-[13.5rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem] cursor-pointer ${card.id === selectedCard?.id ? 'ml-[5rem]' : ''}`}
+                                    onClick={() => {
                                     setSelectedCard(card);
-                                    setFormData({...formData, card_id: card.card_id || 0})
+                                    setFormData({...formData, id: card.id || 0})
                                 }}>
                                     <div className="flex justify-between items-center">
                                     <span>
@@ -67,7 +93,7 @@ export const Payout = () => {
                                     </span>
                                     </div>
                                     <div className="flex items-center">
-                                        **** **** **** 6749
+                                        {maskCardNumber(card.card_number)}
                                     </div>
                                 </div>
                             ))
@@ -96,11 +122,12 @@ export const Payout = () => {
                         <Label title="Amount to transfer" htmlFor="amount">
                             <Input type="number" placeholder="USD" handleChange={(e) => setFormData({...formData, transfer_amount: +e.target.value})}/>
                         </Label>
-                        <Button type="primary" title="Transfer to the card" handleClick={onPayout}/>
+                        <Button type="primary" title="Transfer to the card" disabled={!formData.transfer_amount || !formData.id} handleClick={onVerify}/>
                     </div>
                 </div>
             </div>
             {isAddCardPopupOpen && createPortal(<AddCardPopup onClick={onCardCreate} onClose={() => setIsAddCardPopupOpen(false)} />, document.body)}
+            {isVerificationPopupOpen && createPortal(<VerificationPopup onClick={onPayout} />, document.body)}
         </div>
     )
 }

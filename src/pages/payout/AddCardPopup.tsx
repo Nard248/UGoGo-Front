@@ -4,6 +4,7 @@ import {Button} from "../../components/button/Button";
 import {Label} from "../../components/label/Label";
 import {Input} from "../../components/input/Input";
 import {IBankCard} from "../../types/global";
+import classNames from "classnames";
 
 
 
@@ -23,6 +24,17 @@ function formatExpiry(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 4);
     if (digits.length <= 2) return digits;
     return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+}
+
+function isExpirationDateValid(value: string) {
+    if (!value || value.length < 5) {
+        return;
+    }
+
+    const currentYearArr = `${new Date().getFullYear()}`.split('')
+    const currentYear = `${currentYearArr[2]}${currentYearArr[3]}`
+
+    return +value.split('/')[1] < +currentYear;
 }
 
 export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
@@ -53,7 +65,7 @@ export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
                 <div className="flex w-full justify-between">
                     <div className="flex w-full rounded-full items-center mb-[1.3rem]">
                         <div
-                            className="flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1rem] max-h-[13.5rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem]">
+                            className="flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1.5rem] max-h-[20rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem]">
                             <div className="flex justify-between items-center">
                                 <span>
                                     VISA
@@ -62,13 +74,23 @@ export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
                                     NFC
                                 </span>
                             </div>
-                            <div className="flex items-center">
-                                **** **** **** 6749
+                            <div className="flex justify-between items-center min-h-[2.4rem]">
+                                <span>
+                                    {formData.card_number && formatCardNumber(formData.card_number)}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center min-h-[2.4rem]">
+                                <span>
+                                    {formData.card_holder_name && formData.card_holder_name.toUpperCase()}
+                                </span>
+                                <span>
+                                    {formData.expiration_date && formatExpiry(formData.expiration_date)}
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div className="flex justify-center gap-[5rem]">
-                        <div className="flex flex-col gap-[1rem] w-full">
+                    <div className="flex flex-col gap-[1rem] w-full">
                             <Label title="Card number" htmlFor="amount">
                                 <Input type="text" handleChange={(e) => handleCardNumberChange(e)} />
                             </Label>
@@ -77,11 +99,21 @@ export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
                             </Label>
                             <div className="flex items-end gap-[1.5rem]">
                                 <div className="flex flex-col gap-[1.5rem]">
-                                    <Label title="Valid through" htmlFor="amount">
-                                        <Input type="text" handleChange={(e) => handleExpDateChange(e)}/>
+                                    <Label title="Valid through" htmlFor="amount"
+                                           classnames={classNames({
+                                               '!text-[#D32F2F]': isExpirationDateValid(formData.expiration_date),
+                                           })}
+                                    >
+                                        <Input type="text"
+                                               classnames={classNames({
+                                                   '!text-[#D32F2F]': isExpirationDateValid(formData.expiration_date),
+                                                   '!border-[#FFCDD2]': isExpirationDateValid(formData.expiration_date),
+                                                   '!border-solid': isExpirationDateValid(formData.expiration_date)
+                                               })}
+                                               handleChange={(e) => handleExpDateChange(e)}/>
                                     </Label>
                                 </div>
-                                <Button type="primary" title="Add card" handleClick={() => onClick(formData)}/>
+                                <Button type="primary" title="Add card" disabled={isExpirationDateValid(formData.expiration_date) || !formData.expiration_date} handleClick={() => onClick(formData)}/>
                             </div>
                         </div>
                     </div>

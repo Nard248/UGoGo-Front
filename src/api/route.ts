@@ -112,5 +112,9 @@ export const getBankCard = async (): Promise<IBankCard[]> => {
 };
 
 export const payout = async (data: IPayout) => {
-  return (await api.post(`/users/pay-out/`));
+  return (await api.post(`/users/pay-out/`, data));
+};
+
+export const verifyPayout = async () => {
+  return (await api.post(`/users/send-verification-code/`));
 };
