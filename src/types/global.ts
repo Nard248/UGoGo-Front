@@ -122,7 +122,7 @@ export interface IPID {
 }
 
 export interface IBankCard {
-    card_id?: number;
+    id?: number;
     card_number: string;
     card_holder_name: string;
     expiration_date: string
@@ -131,5 +131,5 @@ export interface IBankCard {
 export interface IPayout {
     transfer_amount: number;
     verification_code: string;
-    card_id: number
+    id: number
 }
