@@ -1,13 +1,15 @@
 import React, {useRef, useState, KeyboardEvent, useEffect, FC} from "react";
 import {Button} from "../../components/button/Button";
 import classNames from "classnames";
+import closeIcon from './../../assets/icons/closeIcon.svg';
 import './VerificationPopup.scss'
 
 type VerificationPopup = {
     onClick: (code: string) => void
+    onClose: () => void
 }
 
-export const VerificationPopup: FC<VerificationPopup> = ({onClick}) => {
+export const VerificationPopup: FC<VerificationPopup> = ({onClick, onClose}) => {
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const inputRefs = useRef<HTMLInputElement[]>([]);
     const [email, setEmail] = useState<string | null>(null);
@@ -46,7 +48,6 @@ export const VerificationPopup: FC<VerificationPopup> = ({onClick}) => {
 
     const onPayout = () => {
         const verifyCode = code.join("");
-        console.log(verifyCode)
         onClick(verifyCode)
     }
 
@@ -55,6 +56,11 @@ export const VerificationPopup: FC<VerificationPopup> = ({onClick}) => {
             className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex justify-center items-center w-full h-full bg-[#d0e3eb8c]">
             <div
                 className="flex flex-col p-[3rem] gap-[2rem] w-[90rem] max-h-[60rem] rounded-[.8rem] border-[#D5D7DA] border-solid border bg-[#fff]">
+                <div className="w-full flex justify-end items-center">
+                    <div className="w-[2rem] h-[2rem] cursor-pointer" onClick={onClose}>
+                        <img src={closeIcon} alt=""/>
+                    </div>
+                </div>
             <div className="emailVerificationContainer flex flex-col">
                 <div className="flex flex-col items-center gap-[1rem] text-center">
                     <h1 className="text-[2.5rem] font-bold max-w-[50%]">

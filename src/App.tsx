@@ -36,7 +36,7 @@ import { Balance } from "./pages/balance/Balance";
 const Protected = () => {
   const location = useLocation();
   const accessToken = localStorage.getItem("access");
-  const withSidenav = !["/payment-success", "/search-result"].includes(
+  const withSidenav = !["/", "/payment-success", "/search-result"].includes(
     location.pathname
   );
   // const withHeader = ['/search-result'].includes(location.pathname);

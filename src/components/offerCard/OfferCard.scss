@@ -51,11 +51,14 @@
     font-weight: 500;
   }
   &__flightNumber {
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 700;
   }
   &__date {
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
     font-weight: 400;
     line-width: 18.4px;
     color: #808080;

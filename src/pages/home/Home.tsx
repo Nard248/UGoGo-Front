@@ -1,5 +1,4 @@
 import { FC } from "react";
-import "./Home.scss";
 import { Search } from "../../components/search/Search";
 import airplaneIcon from "../../assets/icons/airplaneIcon.svg";
 import briefcaseIcon from "../../assets/icons/briefcaseIcon.svg";
@@ -14,50 +13,11 @@ import { OfferCardMini } from "../../components/offerCard/OfferCardMini";
 import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
+import "./Home.scss";
+
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
-const homeData = [
-  {
-    id: 1,
-    user: "Ed Sheeren",
-    rating: 5,
-    reviews: 435,
-    category: "Electronics",
-    title: "Phone Charger",
-    price: 30,
-    from: "Armenia, Yerevan",
-    to: "Moscow, Russia",
-    startDate: "12.12.2024",
-    endDate: "21.12.2024",
-    image: "phone-charger.jpg",
-    status: "Open",
-    buttons: [
-      { text: "Approve", type: "primary" },
-      { text: "Reject", type: "secondary" },
-    ],
-  },
-  {
-    id: 2,
-    user: "Ed Sheeren",
-    rating: 5,
-    reviews: 435,
-    category: "Flight",
-    title: "Flight number",
-    flightNumber: "LH123",
-    from: "Armenia, Yerevan",
-    to: "Moscow, Russia",
-    startDate: "12.12.2024",
-    startTime: "13:30",
-    endTime: "15:30",
-    availableSpace: "kg 12, 5x4x3",
-    image: "flight.jpg",
-    status: "Open",
-    buttons: [
-      { text: "Send a request", type: "primary" },
-      { text: "Learn more", type: "secondary" },
-    ],
-  },
-];
+const homeData: any = [];
 
 export const Home: FC = () => {
   return (
@@ -95,38 +55,41 @@ export const Home: FC = () => {
         </div>
       </div>
 
-      <div className="cards-section">
-        <div className="blue-background"></div>
+      {!!homeData.length &&
+          <div className="cards-section">
+            <div className="blue-background"></div>
 
-        <div className="cards-wrapper">
-          {homeData.map((item) => {
-            const customTitles: Record<string, string> = {
-              Electronics: "Post your item and find trusted travelers",
-              Flight: "Make money by carrying packages along your route",
-            };
+            <div className="cards-wrapper">
+              {/*@ts-ignore*/}
+              {homeData.map((item) => {
+                const customTitles: Record<string, string> = {
+                  Electronics: "Post your item and find trusted travelers",
+                  Flight: "Make money by carrying packages along your route",
+                };
 
-            const cardTitle = customTitles[item.category] ?? "Exclusive Offer";
+                const cardTitle = customTitles[item.category] ?? "Exclusive Offer";
 
-            return (
-              <div key={item.id} className="card-container">
-                <h2 className="card-title">{cardTitle}</h2>
-                <OfferCard
-                  data={item}
-                  secondaryButtonText="Reject"
-                  primaryButtonText="Approve"
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                return (
+                    <div key={item.id} className="card-container">
+                      <h2 className="card-title">{cardTitle}</h2>
+                      <OfferCard
+                          data={item}
+                          secondaryButtonText="Reject"
+                          primaryButtonText="Approve"
+                      />
+                    </div>
+                );
+              })}
+            </div>
+          </div>
+      }
 
       <div className="solutions-section">
         <h2>Multiple solutions to meet your delivery challenges</h2>
         <Divider
-          appearance="neutral"
-          size="normal"
-          className="divider-solutions"
+            appearance="neutral"
+            size="normal"
+            className="divider-solutions"
         />
 
         <div className="solutions-grid">
@@ -134,7 +97,7 @@ export const Home: FC = () => {
           <div className="horizontal-divider"></div>
 
           <div className="solution">
-            <img src={addlocationIcon} alt="Travel Route" className="icon" />
+            <img src={addlocationIcon} alt="Travel Route" className="icon"/>
             <div className="solution-text">
               <h3>Post your travel route and earn extra cash</h3>
               <p>

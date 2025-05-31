@@ -66,14 +66,14 @@ export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
                     <div className="flex w-full rounded-full items-center mb-[1.3rem]">
                         <div
                             className="flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1.5rem] max-h-[20rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem]">
-                            <div className="flex justify-between items-center">
-                                <span>
-                                    VISA
-                                </span>
-                                <span>
-                                    NFC
-                                </span>
-                            </div>
+                            {/*<div className="flex justify-between items-center">*/}
+                            {/*    <span>*/}
+                            {/*        VISA*/}
+                            {/*    </span>*/}
+                            {/*    <span>*/}
+                            {/*        NFC*/}
+                            {/*    </span>*/}
+                            {/*</div>*/}
                             <div className="flex justify-between items-center min-h-[2.4rem]">
                                 <span>
                                     {formData.card_number && formatCardNumber(formData.card_number)}
