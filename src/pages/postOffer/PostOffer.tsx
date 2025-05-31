@@ -69,7 +69,6 @@ export const PostOffer = () => {
 
   const getAirportsData = async () => {
     const data = await getAirports();
-    console.log(data.data.results);
 
     setAirports(data.data.results);
   };
