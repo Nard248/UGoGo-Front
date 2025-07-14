@@ -23,6 +23,10 @@ export const SingleProductPage: FC = () => {
     const [comments, setComments] = useState<string | null>(null);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
         getSingleProduct(`${id}`).then(data => {
             setData(data.data.offer)
         })
