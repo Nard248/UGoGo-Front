@@ -57,29 +57,29 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                 </div>
                 <div className="flex items-center justify-between">
                     <h3 className="offerCard__flightNumber">
-                        {data.user_flight.flight.from_airport.city.country.country_name}, {data.user_flight.flight.from_airport.city.city_name}
+                        {data?.user_flight?.flight?.from_airport?.city?.country?.country_name || ""}, {data?.user_flight?.flight?.from_airport?.city?.city_name || ""}
                     </h3>
                     <div className="w-[1.7rem] h-[1.7rem]">
                         <img src={airplaneDark} alt=""/>
                     </div>
                     <h3 className="offerCard__flightNumber text-end">
-                        {data.user_flight.flight.to_airport.city.country.country_name}, {data.user_flight.flight.to_airport.city.city_name}
+                        {data?.user_flight?.flight?.to_airport?.city?.country?.country_name || ""}, {data?.user_flight?.flight?.to_airport?.city?.city_name || ""}
                     </h3>
                 </div>
                 <div className="offerCard__date">
                     <div className="flex flex-col gap-[1rem]">
                         <span>
-                            {formatTime(new Date(data.user_flight.flight.departure_datetime))}
+                            {data?.user_flight?.flight?.departure_datetime ? formatTime(new Date(data.user_flight.flight.departure_datetime)) : ""}
                         </span>
                         <span>
-                            {formatDate(new Date(data.user_flight.flight.departure_datetime))}
+                            {data?.user_flight?.flight?.departure_datetime ? formatDate(new Date(data.user_flight.flight.departure_datetime)) : ""}
                         </span>
                     </div>
                     <div className="flex flex-col gap-[1rem]">
                         <span>
-                            {formatTime(new Date(data.user_flight.flight.arrival_datetime))}
+                            {data?.user_flight?.flight?.arrival_datetime ? formatTime(new Date(data.user_flight.flight.arrival_datetime)) : ""}
                         </span>
-                        <span>{formatDate(new Date(data.user_flight.flight.arrival_datetime))}</span>
+                        <span>{data?.user_flight?.flight?.arrival_datetime ? formatDate(new Date(data.user_flight.flight.arrival_datetime)) : ""}</span>
                     </div>
                 </div>
                 {/*<div className="offerCard__direction flex items-center justify-between">*/}
