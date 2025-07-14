@@ -123,23 +123,24 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
           htmlFor="arrivalTime"
           classnames="postOffer__label"
         >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              views={["day"]}
-              value={
-                offerFormData.departure_datetime.value
-                  ? dayjs(offerFormData.departure_datetime.value)
-                  : null
-              }
-              onChange={onDateChange}
-              minDate={dayjs()}
-              slotProps={{
-                textField: {
-                  sx: { width: "100%" },
-                },
-              }}
-            />
-          </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                views={["day"]}
+                format="YYYY-MM-DD"
+                value={
+                  offerFormData.departure_datetime.value
+                    ? dayjs(offerFormData.departure_datetime.value)
+                    : null
+                }
+                onChange={onDateChange}
+                minDate={dayjs()}
+                slotProps={{
+                  textField: {
+                    sx: { width: "100%" },
+                  },
+                }}
+              />
+            </LocalizationProvider>
         </Label>
       </div>
 
