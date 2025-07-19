@@ -12,8 +12,8 @@ import { useState, useEffect } from "react";
 
 interface SearchProps {
   onSearchResults: (searchParams: {
-    origin_airport: number;
-    destination_airport: number;
+    origin_airport: string;
+    destination_airport: string;
     takeoff_date: string;
   }) => void;
 }
@@ -58,7 +58,7 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
     setOfferFormData((prevState) => ({
       ...prevState,
       [type === "to" ? "to_airport_id" : "from_airport_id"]: {
-        value: selectedAirport.id,
+        value: selectedAirport.airport_code,
         errorMessage: null,
       },
     }));
@@ -91,7 +91,7 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
   };
 
   const filteredToAirports = airports.filter(
-    (airport) => airport.id !== offerFormData.from_airport_id.value
+    (airport) => airport.airport_code !== offerFormData.from_airport_id.value
   );
 
   return (
