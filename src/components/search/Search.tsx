@@ -35,7 +35,25 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
     const fetchAirports = async () => {
       try {
         const data = await getAirports();
-        setAirports(data.data.results);
+        const results = data.data.results;
+        setAirports(results);
+
+        if (results.length) {
+          setOfferFormData((prevState) => ({
+            ...prevState,
+            from_airport_id: {
+              value:
+                prevState.from_airport_id.value || results[0].airport_code,
+              errorMessage: null,
+            },
+            to_airport_id: {
+              value:
+                prevState.to_airport_id.value ||
+                (results[1] ? results[1].airport_code : results[0].airport_code),
+              errorMessage: null,
+            },
+          }));
+        }
       } catch (error) {
         console.error("Error fetching airports:", error);
       }
@@ -45,7 +63,7 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
 
   const onSelectChange = (
     event: ChangeEvent<HTMLSelectElement>,
-    type: string
+    type: "from" | "to"
   ) => {
     const { value } = event.target;
     if (!value) return;
@@ -55,13 +73,35 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
     );
     if (!selectedAirport) return;
 
-    setOfferFormData((prevState) => ({
-      ...prevState,
-      [type === "to" ? "to_airport_id" : "from_airport_id"]: {
-        value: selectedAirport.airport_code,
-        errorMessage: null,
-      },
-    }));
+    setOfferFormData((prevState) => {
+      const newState = { ...prevState };
+
+      if (type === "from") {
+        newState.from_airport_id = { value, errorMessage: null };
+        if (prevState.to_airport_id.value === value) {
+          const alternative = airports.find(
+            (airport) => airport.airport_code !== value
+          );
+          newState.to_airport_id = {
+            value: alternative ? alternative.airport_code : "",
+            errorMessage: null,
+          };
+        }
+      } else {
+        newState.to_airport_id = { value, errorMessage: null };
+        if (prevState.from_airport_id.value === value) {
+          const alternative = airports.find(
+            (airport) => airport.airport_code !== value
+          );
+          newState.from_airport_id = {
+            value: alternative ? alternative.airport_code : "",
+            errorMessage: null,
+          };
+        }
+      }
+
+      return newState;
+    });
   };
 
   const onDateChange = (date: Dayjs | null) => {
@@ -104,6 +144,7 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
           placeholder="Select departure airport"
           classnames="postOffer__input cursor-pointer"
           handleSelectChange={(event) => onSelectChange(event, "from")}
+          value={offerFormData.from_airport_id.value}
         />
       </div>
 
@@ -117,6 +158,7 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
           placeholder="Select destination airport"
           classnames="postOffer__input cursor-pointer"
           handleSelectChange={(event) => onSelectChange(event, "to")}
+          value={offerFormData.to_airport_id.value}
         />
       </div>
 
