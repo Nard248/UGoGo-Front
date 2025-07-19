@@ -8,6 +8,7 @@ type Props = {
   classnames?: string;
   options: { id: number; airport_name: string; airport_code: string }[];
   handleSelectChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+  value?: string;
 };
 
 export const Select: FC<Props> = ({
@@ -17,12 +18,14 @@ export const Select: FC<Props> = ({
   classnames,
   options,
   handleSelectChange,
+  value,
 }) => {
   return (
     <select
       id={id}
       className={`select ${classnames ? classnames : ""}`}
       onChange={(event) => handleSelectChange(event)}
+      {...(value !== undefined ? { value } : {})}
     >
       <option value="" disabled defaultValue={""}>
         {placeholder}
