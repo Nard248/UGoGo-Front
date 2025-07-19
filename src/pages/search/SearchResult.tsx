@@ -5,7 +5,7 @@ import { Button } from "../../components/button/Button";
 import { Filter } from "../singleProductPage/Filter";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
-import { searchOffer, getAllOffers } from "../../api/route";
+import { searchOffer, getAllOffers, advancedSearchOffer } from "../../api/route";
 import { Loading } from "../../components/loading/Loading";
 
 export const SearchResult: FC = () => {
@@ -40,6 +40,18 @@ export const SearchResult: FC = () => {
             setSearchResults(response.data);
         } catch (error) {
             console.error("Search Error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleFilterApply = async (params: Record<string, any>) => {
+        setIsLoading(true);
+        try {
+            const response = await advancedSearchOffer(params);
+            setSearchResults(response.data);
+        } catch (error) {
+            console.error('Advanced search error:', error);
         } finally {
             setIsLoading(false);
         }
@@ -90,7 +102,7 @@ export const SearchResult: FC = () => {
             </div>
 
             {isFilterOpened && createPortal(
-                <Filter onClose={() => setIsFilterOpened(false)} />,
+                <Filter onClose={() => setIsFilterOpened(false)} onApply={handleFilterApply} />,
                 document.body
             )}
         </>
