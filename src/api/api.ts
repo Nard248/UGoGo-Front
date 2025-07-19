@@ -1,5 +1,4 @@
 import axios from "axios";
-import {redirect} from "react-router-dom";
 
 export const api = axios.create({
   baseURL: `https://ugogo-auhdbad8drdma7f6.canadacentral-01.azurewebsites.net`,
@@ -29,19 +28,26 @@ api.interceptors.response.use(
   async (error: any) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {      
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const refreshToken = localStorage.getItem("refresh");
-          if (!refreshToken) {
-            redirect('/login')
-          };
-          const { data } = await api.post("/users/token/refresh/", {
-            refresh: refreshToken,
-          });
-          localStorage.setItem("access", data.access);
+        if (!refreshToken) {
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+          window.location.href = "/login";
+          return Promise.reject(error);
+        }
+
+        const { data } = await api.post("/users/token/refresh/", {
+          refresh: refreshToken,
+        });
+
+        localStorage.setItem("access", data.access);
+        if (data.refresh) {
           localStorage.setItem("refresh", data.refresh);
+        }
 
         originalRequest.headers.Authorization = `Bearer ${data.access}`;
         return api(originalRequest);
