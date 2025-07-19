@@ -4,6 +4,7 @@
   height: 100vh;
   inset: 0;
   background: #cccccc85;
+  overflow-y: auto;
 
   &__popup {
     width: 50%;
@@ -11,6 +12,8 @@
     border-radius: 8px;
     background: #fff;
     margin-top: 2rem;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   &__header {

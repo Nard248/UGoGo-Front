@@ -77,6 +77,10 @@ export const searchOffer = async (params: {
   return await api.get(`/offers/search_offer/`, { params });
 };
 
+export const advancedSearchOffer = async (params: Record<string, any>) => {
+  return await api.get(`/offers/advanced_search/`, { params });
+};
+
 export const getAllOffers = async () => {
   return await api.get(`/offers/get_all_offers/`);
 };

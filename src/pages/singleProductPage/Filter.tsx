@@ -1,21 +1,79 @@
 import { Slider } from '@mui/material';
 import closeIcon from './../../assets/icons/closeIcon.svg';
 import './Filter.scss'
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {Input} from "../../components/input/Input";
 import {Label} from "../../components/label/Label";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {DatePicker, DateTimePicker, LocalizationProvider, TimePicker} from "@mui/x-date-pickers";
+import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import Checkbox from "@mui/material/Checkbox/Checkbox";
 import { Button } from '../../components/button/Button';
+import { getCategories } from '../../api/route';
 
 interface IFilter {
-    onClose?: () => void
+    onClose?: () => void,
+    onApply: (params: Record<string, any>) => void
 }
 
-export const Filter: FC<IFilter> = ({onClose}) => {
-    const [value, setValue] = useState<number[]>([20, 37]);
+export const Filter: FC<IFilter> = ({onClose, onApply}) => {
+    const [value, setValue] = useState<number[]>([0, 100]);
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    const [departureAfter, setDepartureAfter] = useState<any>(null);
+    const [arrivalBefore, setArrivalBefore] = useState<any>(null);
+    const [weight, setWeight] = useState('');
+    const [space, setSpace] = useState('');
+    const [categories, setCategories] = useState<any[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        const fetchCategories = async () => {
+            try {
+                const data = await getCategories();
+                setCategories(data.data);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchCategories();
+        return () => {
+            document.body.style.overflow = '';
+        }
+    }, []);
+
+    const handleSliderChange = (_: any, newValue: number | number[]) => {
+        if (Array.isArray(newValue)) {
+            setValue(newValue);
+            setMinPrice(String(newValue[0]));
+            setMaxPrice(String(newValue[1]));
+        }
+    };
+
+    const handleApply = () => {
+        const params: Record<string, any> = {};
+        if (minPrice) params.min_price = minPrice;
+        if (maxPrice) params.max_price = maxPrice;
+        if (departureAfter) params.departure_after = dayjs(departureAfter).toISOString();
+        if (arrivalBefore) params.arrival_before = dayjs(arrivalBefore).toISOString();
+        if (weight) params.weight = weight;
+        if (space) params.space = space;
+        if (selectedCategories.length) params.categories = selectedCategories;
+        onApply(params);
+        onClose && onClose();
+    };
+
+    const handleClear = () => {
+        setValue([0, 100]);
+        setMinPrice('');
+        setMaxPrice('');
+        setDepartureAfter(null);
+        setArrivalBefore(null);
+        setWeight('');
+        setSpace('');
+        setSelectedCategories([]);
+    };
 
     return (
         <div className="filter">
@@ -40,11 +98,10 @@ export const Filter: FC<IFilter> = ({onClose}) => {
                         </span>
                         <div className="flex flex-col gap-[2rem] w-3/6">
                             <Slider
-                                getAriaLabel={() => 'Temperature range'}
+                                getAriaLabel={() => 'Price range'}
                                 value={value}
-                                // onChange={handleChange}
+                                onChange={handleSliderChange}
                                 valueLabelDisplay="auto"
-                                // getAriaValueText={valuetext}
                                 sx={{
                                     color: '#F9A34B',
                                     '&.Mui-checked': {
@@ -60,10 +117,9 @@ export const Filter: FC<IFilter> = ({onClose}) => {
                                             id={'minimum'}
                                             type={'text'}
                                             classnames={'inputField'}
-                                            // errorMessage={loginForm.email.errorMessage}
-                                            handleChange={() => {
-                                            }}
-                                        />
+                                            value={minPrice}
+                                            handleChange={e => setMinPrice(e.target.value)}
+                                            />
                                     </Label>
                                 </div>
                                 <div>
@@ -73,10 +129,9 @@ export const Filter: FC<IFilter> = ({onClose}) => {
                                             id={'maximum'}
                                             type={'text'}
                                             classnames={'inputField'}
-                                            // errorMessage={loginForm.email.errorMessage}
-                                            handleChange={() => {
-                                            }}
-                                        />
+                                            value={maxPrice}
+                                            handleChange={e => setMaxPrice(e.target.value)}
+                                            />
                                     </Label>
                                 </div>
                             </div>
@@ -87,111 +142,48 @@ export const Filter: FC<IFilter> = ({onClose}) => {
                             <span>
                                 Departure date & time
                             </span>
-                            <div className="flex gap-[1.6rem]">
-                                <div className="">
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker label="Basic date picker"/>
-                                    </LocalizationProvider>
-                                </div>
-                                <div className="w-2/6">
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <TimePicker label="Basic time picker"/>
-                                    </LocalizationProvider>
-                                </div>
-                            </div>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateTimePicker
+                                    value={departureAfter}
+                                    onChange={(newValue) => setDepartureAfter(newValue)}
+                                    slotProps={{ textField: { sx: { width: '100%' } } }}
+                                />
+                            </LocalizationProvider>
                         </div>
                         <div className="flex flex-col gap-[2rem] w-3/6">
                             <span>
                                 Arrival date & time
                             </span>
-                            <div className="flex gap-[1.6rem]">
-                                <div className="">
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker label="Basic date picker"/>
-                                    </LocalizationProvider>
-                                </div>
-                                <div className="w-2/6">
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <TimePicker label="Basic time picker"/>
-                                    </LocalizationProvider>
-                                </div>
-                            </div>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DateTimePicker
+                                    value={arrivalBefore}
+                                    onChange={(newValue) => setArrivalBefore(newValue)}
+                                    slotProps={{ textField: { sx: { width: '100%' } } }}
+                                />
+                            </LocalizationProvider>
                         </div>
                     </div>
                     <div className="flex flex-col items-start gap-[1rem]">
-                        <div className="flex flex-row-reverse items-center gap-[.8rem]">
-                            <Label title={'Personal items'} htmlFor={'personalItems'}
-                                   classnames={''}>
-                                <Checkbox id={'personalItems'}
-                                          sx={{
-                                              color: '#F9A34B',
-                                              padding: '.5rem',
-                                              '&.Mui-checked': {
-                                                  color: '#F9A34B',
-                                              },
-                                          }}
-                                />
-                            </Label>
-                        </div>
-                        <div className="flex flex-row-reverse items-center gap-[.8rem]">
-                            <Label title={'Packaged Food'} htmlFor={'packagedFood'}
-                                   classnames={''}>
-                                <Checkbox id={'packagedFood'}
-                                          sx={{
-                                              color: '#F9A34B',
-                                              padding: '.5rem',
-                                              '&.Mui-checked': {
-                                                  color: '#F9A34B',
-                                              },
-                                          }}
-                                />
-                            </Label>
-                        </div>
-                        <div className="flex flex-row-reverse items-center gap-[.8rem]">
-                            <Label title={'Lightweight'} htmlFor={'lightweight'}
-                                   classnames={''}>
-                                <Checkbox
-                                    id={'lightweight'}
-                                    sx={{
-                                        color: '#F9A34B',
-                                        padding: '.5rem',
-                                        '&.Mui-checked': {
+                        {categories.map(cat => (
+                            <div key={cat.id} className="flex flex-row-reverse items-center gap-[.8rem]">
+                                <Label title={cat.name} htmlFor={`category-${cat.id}`} classnames={''}>
+                                    <Checkbox
+                                        id={`category-${cat.id}`}
+                                        checked={selectedCategories.includes(cat.id)}
+                                        onChange={() => {
+                                            setSelectedCategories(prev => prev.includes(cat.id) ? prev.filter(c => c !== cat.id) : [...prev, cat.id]);
+                                        }}
+                                        sx={{
                                             color: '#F9A34B',
-                                        },
-                                    }}
-                                />
-                            </Label>
-                        </div>
-                        <div className="flex flex-row-reverse items-center gap-[.8rem]">
-                            <Label title={'Household items'} htmlFor={'householdItems'}
-                                   classnames={''}>
-                                <Checkbox
-                                    id={'householdItems'}
-                                    sx={{
-                                        color: '#F9A34B',
-                                        padding: '.5rem',
-                                        '&.Mui-checked': {
-                                            color: '#F9A34B',
-                                        },
-                                    }}
-                                />
-                            </Label>
-                        </div>
-                        <div className="flex flex-row-reverse items-center gap-[.8rem]">
-                            <Label title={'Electronic Accessories'} htmlFor={'electronicAccessories'}
-                                   classnames={''}>
-                                <Checkbox
-                                    id={'electronicAccessories'}
-                                    sx={{
-                                        color: '#F9A34B',
-                                        padding: '.5rem',
-                                        '&.Mui-checked': {
-                                            color: '#F9A34B',
-                                        },
-                                    }}
-                                />
-                            </Label>
-                        </div>
+                                            padding: '.5rem',
+                                            '&.Mui-checked': {
+                                                color: '#F9A34B',
+                                            },
+                                        }}
+                                    />
+                                </Label>
+                            </div>
+                        ))}
                     </div>
                     <div className="flex justify-between gap-[10rem]">
                         <div className="flex flex-col gap-[2rem] w-3/6">
@@ -203,26 +195,22 @@ export const Filter: FC<IFilter> = ({onClose}) => {
                                     id={'wight'}
                                     type={'text'}
                                     classnames={'inputField'}
-                                    // errorMessage={loginForm.email.errorMessage}
-                                    handleChange={() => {
-                                    }}
+                                    value={weight}
+                                    handleChange={e => setWeight(e.target.value)}
                                 />
                                 <Input
                                     id={'dimension'}
                                     type={'text'}
                                     classnames={'inputField'}
-                                    // errorMessage={loginForm.email.errorMessage}
-                                    handleChange={() => {
-                                    }}
+                                    value={space}
+                                    handleChange={e => setSpace(e.target.value)}
                                 />
                             </div>
                         </div>
                     </div>
                     <div className="flex justify-between">
-                        <Button title={'Clear'} type={'secondary'} handleClick={() => {
-                        }}/>
-                        <Button title={'Apply filter'} type={'primary'} handleClick={() => {
-                        }}/>
+                        <Button title={'Clear'} type={'secondary'} handleClick={handleClear}/>
+                        <Button title={'Apply filter'} type={'primary'} handleClick={handleApply}/>
                     </div>
                 </div>
             </div>
