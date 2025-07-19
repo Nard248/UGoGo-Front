@@ -13,7 +13,7 @@ import { OfferCardMini } from "../../components/offerCard/OfferCardMini";
 import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
-import "./Home.scss";
+import "./home.scss";
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
