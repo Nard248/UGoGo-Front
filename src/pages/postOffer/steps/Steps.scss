@@ -1,0 +1,603 @@
+// Steps.scss
+
+.step1FlightDetails {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  .MuiTypography-root {
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .MuiGrid-container {
+    margin-top: 1rem;
+  }
+
+  .MuiTextField-root,
+  .MuiSelect-root {
+    background: #fafafa;
+    border-radius: 8px;
+  }
+
+  .MuiInputBase-root {
+    background: #fafafa;
+    border-radius: 8px;
+  }
+
+  .MuiInputLabel-root {
+    color: #666;
+  }
+
+  .MuiMenuItem-root {
+    font-size: 0.95rem;
+  }
+}
+
+// DARK MODE
+.dark {
+  .step1FlightDetails {
+    background-color: #1e1e1e;
+    box-shadow: none;
+    border: 1px solid #333;
+
+    .MuiTypography-root {
+      color: #f5f5f5;
+    }
+
+    .MuiTextField-root,
+    .MuiSelect-root,
+    .MuiInputBase-root {
+      background: #2c2c2c;
+      color: #f5f5f5;
+    }
+
+    .MuiInputLabel-root {
+      color: #bbb;
+    }
+
+    .MuiMenuItem-root {
+      background: #2c2c2c;
+      color: #f5f5f5;
+    }
+  }
+}
+
+.postOffer {
+  &__detailedForm {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+
+    &__prefferedCategory,
+    &__itemDetails {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    &__prefferedCategory__form,
+    &__itemDetails__form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      &__header {
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 1rem;
+
+        &__title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #333;
+        }
+      }
+
+      &__content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        &__item {
+          width: 100%;
+        }
+      }
+    }
+
+    &__itemDetails__form__content__item {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #555;
+  }
+
+  &__inputWrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+
+      &.error {
+        border-color: #ff5a5f;
+      }
+
+      &:focus {
+        border-color: #0070f3;
+        outline: none;
+      }
+    }
+  }
+
+  &__kg,
+  &__unit {
+    position: absolute;
+    right: 1rem;
+    font-size: 0.9rem;
+    color: #888;
+  }
+
+  &__dimensionsWrapper {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__dimensionInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+
+    &.error {
+      border-color: #ff5a5f;
+    }
+
+    &:focus {
+      border-color: #0070f3;
+      outline: none;
+    }
+  }
+
+  &__flightDetails__form__content {
+    margin-top: 2rem;
+
+    label {
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+
+      input[type="checkbox"] {
+        margin-right: 0.5rem;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #222;
+  }
+
+  &__header {
+    margin-bottom: 1rem;
+  }
+}
+
+.error {
+  border-color: #ff5a5f !important;
+}
+
+.step3 {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 0;
+
+  label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+
+      &.error {
+        border-color: red;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+  }
+}
+
+
+
+// Steps.scss
+.step-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+  width: 321px;
+  height: 538px;
+}
+
+.step-title {
+  background-color: #fce9dc; 
+  padding: 16px 24px;
+  font-weight: 600;
+  font-size: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  width: 321px;
+  height: 62px;
+  gap: 10px;
+  border-width: 1px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 20px;
+}
+
+.step-form-flight {
+  padding: 24px;
+  margin-top: 0px !important;
+
+  .MuiFormControl-root {
+    margin-bottom: 20px;
+
+    .MuiInputBase-root {
+      border-radius: 8px !important;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+      height: 42px;
+      margin-top: 5px;
+    }
+
+    .MuiOutlinedInput-notchedOutline {
+      border: none; 
+    }
+
+    .MuiInputLabel-root {
+      font-size: 14px;
+      color: #757575;
+    }
+  }
+
+  .MuiSelect-select {
+    padding: 10px 12px;
+  }
+
+  .MuiMenuItem-root {
+    font-size: 14px;
+  }
+  .MuiTextField-root,
+  .MuiSelect-root,
+  .MuiSelect-select {
+    border-radius: 8px !important;
+    height: 42px;
+  }
+}
+
+.step-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  background: #fce9dc;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 0px !important;
+
+  .step-button {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 24px;
+    border-radius: 8px;
+
+    &.primary {
+      background-color: #1976d2;
+      color: #ffffff;
+
+      &:hover {
+        background-color: #1565c0;
+      }
+    }
+  }
+}
+
+.offer-step-category {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  width: 100%;
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__header {
+    background-color: #fce9dc; 
+    padding: 16px 24px;
+    font-size: 18px;
+    font-weight: 600;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #333;
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 24px;
+  }
+}
+
+.card {
+  background-color: #f7f7f7;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  &--selected {
+    border-color: #2cb1bc; 
+    background-color: #ffffff;
+  }
+
+  .card-icon {
+    margin-bottom: 12px;
+    img {
+      max-width: 48px;
+      height: auto;
+    }
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+// step3
+.postOffer__detailedForm__itemDetails {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+
+  width: 307px;
+  height: 407px;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &__header {
+      background-color: #fce9dc !important; 
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+
+      &__title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+        color: #000;
+      }
+    }
+
+    &__content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      &__item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .postOffer__label {
+          font-weight: 500;
+          font-size: 0.9rem;
+          color: #333;
+          margin-bottom: 0.3rem;
+        }
+
+        .postOffer__inputWrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          .postOffer__input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+
+            &.error {
+              border-color: #ff6b6b;
+            }
+
+            &:focus {
+              border-color: #6366f1;
+            }
+          }
+
+          .postOffer__kg,
+          .postOffer__unit {
+            font-size: 0.9rem;
+            color: #6b7280;
+          }
+        }
+      }
+    }
+  }
+}
+
+.postOffer__dimensionsWrapper {
+  display: flex;
+  gap: 0.5rem;
+
+  .postOffer__inputWrapper {
+    flex: 1;
+
+    .postOffer__dimensionInput {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+
+      &.error {
+        border-color: #ff6b6b;
+      }
+
+      &:focus {
+        border-color: #6366f1;
+      }
+    }
+
+    .postOffer__unit {
+      position: absolute;
+      right: 0.8rem;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+  }
+}
+
+.postOffer__flightDetails__form__content {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    gap: 0.5rem;
+    display: flex;
+    align-items: center;
+  }
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    accent-color: #f9a34b;
+  }
+}
+
+// step 4
+.step-price-details {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+  max-width: 450px;
+  margin: 0 auto;
+  width: 307px;
+  height: 307px;
+
+  .step-title {
+    background-color: #fef1e9;
+    padding: 1rem;
+    font-weight: bold;
+    font-size: 18px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 30px;
+    text-align: center; 
+  }
+
+  .step-body {
+    padding: 24px;
+    height: calc(100% - 70px); 
+    box-sizing: border-box;
+  }
+
+  .input,
+  textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+
+  .label {
+    margin-bottom: 1rem;
+
+    &:first-of-type {
+      margin-top: 2rem;
+    }
+  }
+}

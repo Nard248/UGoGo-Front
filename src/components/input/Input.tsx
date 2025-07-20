@@ -14,9 +14,11 @@ type Props = {
      * like a controlled component and the value will be passed to the
      * underlying input element.
      */
-    value?: string;
+    // value?: string;
     handleChange: (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => void;
+    // handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     errorMessage?: string | null;
+    value?: string | number; // ✅ ADD THIS
 }
 
 export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames, value, handleChange, errorMessage}) => {

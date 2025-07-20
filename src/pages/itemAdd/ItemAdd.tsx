@@ -1,235 +1,141 @@
-import React, {ChangeEvent, FC, useEffect, useState} from "react";
-import {Label} from "../../components/label/Label";
-import {Input} from "../../components/input/Input";
-import {Button} from "../../components/button/Button";
-import {Card} from "../../components/card/Card";
-import {ImageComponent} from "../../components/image/Image";
-import {ImageLabel} from "../../components/image/ImageLabel";
-import {createItem, getCategories} from "../../api/route";
-import {IItemCreate} from "../../types/global";
-import {useNavigate} from "react-router-dom";
-import './ItemAdd.scss';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export const ItemAdd: FC = () => {
-    const navigate = useNavigate();
-    const [selectedCategories, setSelectedCategories] = useState<number[] | null>()
-    const [categories, setCategories] = useState<any[]>([]);
-    const [files, setFiles] = useState<any[]>([]);
-    const [itemFormData, setItemFormData] = useState<IItemCreate>(
-        {} as IItemCreate
-    );
+import Step1ItemDetails from './steps/Step1ItemDetails';
+import Step2PickUpPersonDetails from './steps/Step2PickUpPersonDetails';
+import Step3ItemImage from './steps/Step3ItemImage';
+import Step4ItemCategory from './steps/Step4ItemCategory';
 
-    const handleCardClick = (id: number) => {
-        if (selectedCategories?.includes(id)) {
-            const _selectedCategories = selectedCategories.filter(item => item !== id);
-            setSelectedCategories(_selectedCategories);
-            return;
-        }
-        const _selectedCategories = selectedCategories?.length ? [...selectedCategories, id] : [id];
-        setSelectedCategories(_selectedCategories);
+import { IItemCreate } from "../../types/global";
+import { createItem } from "../../api/route";
+
+import "./ItemAdd.scss";
+
+export const ItemAdd: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [itemFormData, setItemFormData] = useState<IItemCreate>({} as IItemCreate);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const steps = [
+    <Step1ItemDetails
+      key="step1"
+      itemFormData={itemFormData}
+      setItemFormData={setItemFormData}
+      nextStep={nextStep}
+    />,
+    <Step2PickUpPersonDetails
+      key="step2"
+      itemFormData={itemFormData}
+      setItemFormData={setItemFormData}
+      nextStep={nextStep}
+      prevStep={prevStep}
+    />,
+    <Step3ItemImage
+      key="step3"
+      itemFormData={itemFormData}
+      setItemFormData={setItemFormData}
+      nextStep={nextStep}
+      prevStep={prevStep}
+    />,
+    <Step4ItemCategory
+      key="step4"
+      itemFormData={itemFormData}
+      setItemFormData={setItemFormData}
+      nextStep={nextStep}
+      prevStep={prevStep}
+    />,
+  ];
+
+  async function nextStep() {
+    if (currentStep < steps.length) {
+      setCurrentStep(currentStep + 1);
+      return;
     }
 
-    const getCategoriesData = async () => {
-        const data = await getCategories();
-        setCategories(data.data)
-    }
+    setLoading(true);
+    setError(null);
 
-    useEffect(() => {
-        getCategoriesData();
-    }, [])
+    try {
+      const formData = new FormData();
 
-    const onImageUpload = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
-        const target = e.target as HTMLInputElement
-        if (!target.files?.length) {
-            return
-        }
+      // Append fields if present
+      if (itemFormData.name) formData.append('name', itemFormData.name);
+      if (itemFormData.weight !== undefined) formData.append('weight', String(itemFormData.weight));
+      if (itemFormData.dimensions) formData.append('dimensions', itemFormData.dimensions);
 
-        const images = itemFormData.uploaded_pictures?.length ? itemFormData.uploaded_pictures : [];
+      if (itemFormData.fragile !== undefined) formData.append('fragile', String(itemFormData.fragile));
+      if (itemFormData.description) formData.append('description', itemFormData.description);
 
-        setItemFormData({...itemFormData, uploaded_pictures: [...images, target.files[0]]})
+      if (itemFormData.pickup_name) formData.append('pickup_name', itemFormData.pickup_name);
+      if (itemFormData.pickup_surname) formData.append('pickup_surname', itemFormData.pickup_surname);
+      if (itemFormData.pickup_phone) formData.append('pickup_phone', itemFormData.pickup_phone);
+      if (itemFormData.pickup_email) formData.append('pickup_email', itemFormData.pickup_email);
+      if (itemFormData.state) formData.append('state', itemFormData.state);
 
-        const newFiles = Array.from(target.files).map((file) => {
-            return {
-                ...file,
-                src: URL.createObjectURL(file)
-            };
-        })
-
-        setFiles([...files, ...newFiles])
-    }
-
-    const onConfirm = async () => {
-        if (!selectedCategories?.length) {
-            return
-        }
-
-        const payload = new FormData();
-
-        setItemFormData({...itemFormData, category_ids:  selectedCategories.map(item => item.toString())})
-
-        Object.keys(itemFormData).forEach(item => {
-            if (item === 'uploaded_pictures') {
-                itemFormData.uploaded_pictures?.forEach(file => {
-                    payload.append('uploaded_pictures', file);
-                })
-            } else {
-                // @ts-ignore
-                payload.append(item, itemFormData[item]);
-            }
+      if (itemFormData.category_ids && itemFormData.category_ids.length) {
+        itemFormData.category_ids.forEach(id => {
+          formData.append('category_ids[]', id.toString());
         });
+      }
 
-        try {
-            await createItem(payload);
-            navigate('/offer/3?modal=book');
-        } catch (e) {
-            console.error(e)
-        }
+      if (itemFormData.pictures && itemFormData.pictures.length) {
+        itemFormData.pictures.forEach(pic => {
+          if (pic.file instanceof File) {
+            formData.append('uploaded_pictures', pic.file);
+          }
+        });
+      }
+
+      // Debug: log form data key-values
+Array.from(formData.entries()).forEach(([key, value]) => {
+  console.log(key, value);
+});
+
+      await createItem(formData);
+
+      navigate('/single-product-page?modal=book');
+    } catch (e) {
+      console.error("Error creating item:", e);
+      setError("There was an error creating the item.");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    return (
-        <div className="postOffer">
-            <div className="flex justify-between items-center mb-[2.1rem]">
-                <h1 className="font-medium text-[2rem]">Add an item</h1>
-            </div>
-            <div className="postOffer__content flex justify-between gap-20">
-                <div className="postOffer__flightDetails">
-                    <div className="postOffer__flightDetails__form postOffer__form">
-                        <div className="postOffer__flightDetails__form__header postOffer__header">
-                            <h3 className="postOffer__flightDetails__form__header__title postOffer__title">
-                                Item details
-                            </h3>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Dimensions'} htmlFor={'dimensions'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Length x Width x Height'} id={'dimensions'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={(event) => setItemFormData({...itemFormData, dimensions: event.target.value})}
-                                />
-                            </Label>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Name'} htmlFor={'name'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Laptop'} id={'name'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={(event) => setItemFormData({...itemFormData, name: event.target.value})}
-                                />
-                            </Label>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Wight'} htmlFor={'wight'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'1 kg'} id={'wight'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={(event) => setItemFormData({...itemFormData, weight: +event.target.value})}
-                                />
-                            </Label>
-                        </div>
-                    </div>
-                    <div className="postOffer__flightDetails__form postOffer__form">
-                        <div className="postOffer__flightDetails__form__header postOffer__header">
-                            <h3 className="postOffer__flightDetails__form__header__title postOffer__title">
-                                Pick-up person details
-                            </h3>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Name'} htmlFor={'pickUpName'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'John'} id={'pickUpName'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_name: event.target.value})}
-                                />
-                            </Label>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Surname'} htmlFor={'surname'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Doe'} id={'surname'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_surname: event.target.value})}
-                                />
-                            </Label>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Phone'} htmlFor={'phone'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Phone'} id={'phone'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_phone: event.target.value})}
-                                />
-                            </Label>
-                        </div>
-                        <div className="postOffer__flightDetails__form__content">
-                            <Label title={'Email'} htmlFor={'email'}
-                                   classnames={'postOffer__label'}>
-                                <Input type={'text'} placeholder={'Email'} id={'email'}
-                                       classnames={'postOffer__input'}
-                                       handleChange={(event) => setItemFormData({...itemFormData, pickup_email: event.target.value})}
-                                />
-                            </Label>
-                        </div>
-                    </div>
-                </div>
-                <div className="postOffer__detailedForm grow shrink">
-                    <div className="postOffer__detailedForm__prefferedCategory">
-                        <div className="postOffer__detailedForm__prefferedCategory__form postOffer__form">
-                            <div className="postOffer__detailedForm__prefferedCategory__form__header postOffer__header">
-                                <h3 className="postOffer__detailedForm__prefferedCategory__form__header__title postOffer__title">Item
-                                    image</h3>
-                            </div>
-                            <div className="postOffer__detailedForm__prefferedCategory__form__content">
-                                <ImageLabel upload={onImageUpload}/>
-                                {!!files.length && files.map(file => (
-                                    <ImageComponent src={file.src} alt={'item'}/>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="postOffer__detailedForm__itemDetails">
-                        <div className="postOffer__detailedForm__prefferedCategory">
-                            <div className="postOffer__detailedForm__prefferedCategory__form postOffer__form">
-                                <div
-                                    className="postOffer__detailedForm__prefferedCategory__form__header postOffer__header">
-                                    <h3 className="postOffer__detailedForm__prefferedCategory__form__header__title postOffer__title">Item
-                                        preferred category</h3>
-                                </div>
-                                <div className="postOffer__detailedForm__prefferedCategory__form__content">
-                                    {categories?.map(({id, name, icon_path}) => (
-                                        <Card key={id} id={id} title={name} iconSrc={icon_path} iconName={name}
-                                              selected={selectedCategories?.includes(id)} handleCardClick={handleCardClick}/>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="postOffer__detailedForm__priceDetails">
-                        <div className="postOffer__detailedForm__itemDetails__form__content__item w-full">
-                            <Label title={'Description'} htmlFor={'availableDimensions'}
-                               classnames={'postOffer__label'}>
-                            <Input type={'textarea'} placeholder={'Enter a description...'}
-                                   id={'availableDimensions'}
-                                   classnames={'postOffer__input'}
-                                   handleChange={(event) => setItemFormData({...itemFormData, description: event.target.value})}
-                            />
-                        </Label>
-                        <span>
-                            Enter specific details about an item
-                        </span>
-                    </div>
-                </div>
-                <div className="postOffer__actions">
-                    <Button
-                        title={'Confirm'}
-                        type={'primary'}
-                        classNames={'postOffer__actionsConfirm'}
-                        handleClick={onConfirm}
-                    />
-                </div>
-            </div>
-            </div>
-        </div>
+  function prevStep() {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  }
 
-    )
-}
+  return (
+    <div className="item-add-container">
+      <div className="step-form">{steps[currentStep - 1]}</div>
 
+      <div className="step-navigation">
+        {currentStep > 1 && (
+          <button type="button" onClick={prevStep} disabled={loading}>
+            Previous
+          </button>
+        )}
+
+        {currentStep < steps.length && (
+          <button type="button" onClick={nextStep} disabled={loading}>
+            Next
+          </button>
+        )}
+
+        {currentStep === steps.length && (
+          <button type="button" onClick={nextStep} disabled={loading}>
+            {loading ? 'Submitting...' : 'Submit'}
+          </button>
+        )}
+      </div>
+
+      {error && <p className="error-message">{error}</p>}
+    </div>
+  );
+};

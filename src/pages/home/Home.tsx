@@ -17,7 +17,57 @@ import "./home.scss";
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
+
 const homeData: any = [];
+
+// const homeData = [
+//   {
+//     id: 1,
+//     user: {
+//       full_name: "Ed Sheeren",
+//       email: "ed@example.com", 
+//     },
+//     rating: 5,
+//     reviews: 435,
+//     category: "Electronics",
+//     title: "Phone Charger",
+//     price: "30",
+//     from: "Armenia, Yerevan",
+//     to: "Moscow, Russia",
+//     startDate: "12.12.2024",
+//     endDate: "21.12.2024",
+//     image: "phone-charger.jpg",
+//     status: "Open",
+//     buttons: [
+//       { text: "Approve", type: "primary" },
+//       { text: "Reject", type: "secondary" },
+//     ],
+//   },
+//   {
+//     id: 2,
+//     user: {
+//       full_name: "Ed Sheeren",
+//       email: "ed@example.com",
+//     },
+//     rating: 5,
+//     reviews: 435,
+//     category: "Flight",
+//     title: "Flight number",
+//     flightNumber: "LH123",
+//     from: "Armenia, Yerevan",
+//     to: "Moscow, Russia",
+//     startDate: "12.12.2024",
+//     startTime: "13:30",
+//     endTime: "15:30",
+//     availableSpace: "kg 12, 5x4x3",
+//     image: "flight.jpg",
+//     status: "Open",
+//     buttons: [
+//       { text: "Send a request", type: "primary" },
+//       { text: "Learn more", type: "secondary" },
+//     ],
+//   },
+// ];
 
 export const Home: FC = () => {
   return (
@@ -69,6 +119,7 @@ export const Home: FC = () => {
 
                 const cardTitle = customTitles[item.category] ?? "Exclusive Offer";
 
+
                 return (
                     <div key={item.id} className="card-container">
                       <h2 className="card-title">{cardTitle}</h2>
@@ -83,6 +134,20 @@ export const Home: FC = () => {
             </div>
           </div>
       }
+
+            {/* return (
+              <div key={item.id} className="card-container">
+                <h2 className="card-title">{cardTitle}</h2>
+                <OfferCard
+                  offerData={item}
+                  secondaryButtonText="Reject"
+                  primaryButtonText="Approve"
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div> */}
 
       <div className="solutions-section">
         <h2>Multiple solutions to meet your delivery challenges</h2>
@@ -147,8 +212,16 @@ export const Home: FC = () => {
         </div>
 
         <div className="buttons">
-          <Button title="Find items" type="primary" classNames="custom-button"/>
-          <Button title="Find flights" type="secondary" classNames="custom-button secondary-button"/>
+          <Button
+            title="Find items"
+            type="primary"
+            classNames="custom-button"
+          />
+          <Button
+            title="Find flights"
+            type="secondary"
+            classNames="custom-button secondary-button"
+          />
         </div>
       </div>
 

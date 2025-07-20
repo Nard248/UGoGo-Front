@@ -41,7 +41,7 @@ export const getItems = async () => {
   return await api.get(`/items/items/`);
 };
 
-export const createItem = async (data: FormData) => {
+export const createItem = async (data: FormData) => {    
   return await api.post(`/items/create_item/`, data, {
     headers: { "Content-Type": "multipart/form-data" }
   });
