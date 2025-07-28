@@ -1,21 +1,15 @@
-// import {FC, useState} from "react";
-// import {Link} from "../components/link/Link";
-// import {Avatar, Badge} from "@mui/material";
-// import avatar from './../assets/images/avatar.svg'
-// import logo from './../assets/images/logo.svg'
-import message from './../assets/icons/message.svg'
-// import './Header.scss';
-// import {ProfilePopover} from "../components/profilePopover/profilePopover";
 
 import { FC, useState } from "react";
-import { Link } from "../components/link/Link";
 import { Avatar, Badge } from "@mui/material";
 import avatar from "./../assets/images/avatar.svg";
 import logo from "./../assets/images/logo.svg";
-import notification from "./../assets/icons/notification.svg";
-import "./Header.scss";
 import { ProfilePopover } from "../components/profilePopover/profilePopover";
 import { Button } from "../components/button/Button";
+import classNames from "classnames";
+import {useLocation} from "react-router-dom";
+import message from './../assets/icons/message.svg'
+import "./Header.scss";
+
 interface IHeader {
   withNavItems?: boolean;
 }
@@ -23,6 +17,7 @@ interface IHeader {
 export const Header: FC<IHeader> = ({ withNavItems = true }) => {
   const [isPopoverOpened, setIsPopoverOpened] = useState(false);
   const isLoggedIn = !!localStorage.getItem("access");
+  const {pathname} = useLocation()
 
 // <<<<<<< HEAD
 //     return (
@@ -47,12 +42,24 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
       </a>
       {withNavItems && (
         <nav className="nav">
-          <a href="/">Home</a>
-          <a href="#">How it works</a>
-          <a href="/post-offer">Post an offer</a>
-          <a href="/search-result">Find an offer</a>
-          <a href="#">Price</a>
-          <a href="#">Contact Us</a>
+          <a className={classNames({
+              selectedLink: pathname === '/'
+          })} href="/">Home</a>
+          <a className={classNames({
+              //selectedLink:
+          })} href="#">How it works</a>
+          <a className={classNames({
+              selectedLink: pathname === '/post-offer'
+          })} href="/post-offer">Post an offer</a>
+          <a className={classNames({
+              selectedLink: pathname === '/search-result'
+          })} href="/search-result">Find an offer</a>
+          <a className={classNames({
+              //selectedLink:
+          })} href="#">Price</a>
+          <a className={classNames({
+              //selectedLink:
+          })} href="#">Contact Us</a>
         </nav>
       )}
       {isLoggedIn ?

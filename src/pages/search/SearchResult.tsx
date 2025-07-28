@@ -89,6 +89,7 @@ export const SearchResult: FC = () => {
                             searchResults.map((item, index) => (
                                 <OfferCard
                                     key={index}
+                                    withRate={false}
                                     secondaryButtonText={'View & Book'}
                                     onSecondaryClick={() => handlePrimaryButtonClick(item)}
                                     data={item}

@@ -153,6 +153,11 @@ export interface IPayout {
     id: number
 }
 
+export interface User {
+    name: string;
+    email: string;
+}
+
   
   // user?: {
   //   full_name?: string;

@@ -2,7 +2,7 @@ import {OfferCard} from "../../components/offerCard/OfferCard";
 import {Button} from "../../components/button/Button";
 import {getAllRequests, requestsAction} from "../../api/route";
 import {SyntheticEvent, useEffect, useMemo, useState} from "react";
-import {Tab, Tabs } from "@mui/material";
+import {Tab, Tabs} from "@mui/material";
 import {Loading} from "../../components/loading/Loading";
 
 export const Requests = () => {
@@ -50,7 +50,7 @@ export const Requests = () => {
 
     return (
         <>{isLoading ?
-            <Loading />
+            <Loading/>
             :
             !!requests.length ?
                 <div className="flex flex-col gap-3 w-full">
@@ -68,11 +68,18 @@ export const Requests = () => {
                         <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
                             {/*@ts-ignore*/}
                             {!requestsWithFilters[tabValue].length ?
-                                <h1>You don't have requests with status <b>{tabValue.split('_').join(' ').toUpperCase()}</b></h1>
+                                <h1>You don't have requests with
+                                    status <b>{tabValue.split('_').join(' ').toUpperCase()}</b></h1>
                                 :
                                 // @ts-ignore
                                 requestsWithFilters[tabValue].map(request => (
-                                    <OfferCard onPrimaryClick={() => handleActionsOnRequest(request.item.id, 'reject')} primaryButtonText={'Decline'} onSecondaryClick={() => handleActionsOnRequest(request.item.id, 'accept')} secondaryButtonText={'Accept'} data={request.item}/>
+                                    <OfferCard key={request.id}
+                                               onPrimaryClick={() => handleActionsOnRequest(request.item.id, 'reject')}
+                                               primaryButtonText={'Decline'}
+                                               onSecondaryClick={() => handleActionsOnRequest(request.item.id, 'accept')}
+                                               secondaryButtonText={'Accept'}
+                                               data={request.offer}
+                                    />
                                 ))}
                         </div>
                         <div className="flex justify-end gap-[4rem]">

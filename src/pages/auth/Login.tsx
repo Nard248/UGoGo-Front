@@ -5,8 +5,8 @@ import {Input} from "../../components/input/Input";
 import {Label} from "../../components/label/Label";
 import {NavLink, useNavigate} from 'react-router-dom';
 import { Button } from '../../components/button/Button';
-import {ILogin, ILoginForm} from "../../types/global";
-import {login} from "../../api/route";
+import {ILogin, ILoginForm, User} from "../../types/global";
+import {getUserDetails, login} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
 
 export const Login: FC = () => {
@@ -23,6 +23,7 @@ export const Login: FC = () => {
         },
         rememberMe: false
     })
+    const [user, setUser] = useState<User>({ name: "NULL", email: "NULL" });
 
     const handleEmailChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> ) => {
         const {value} = event.target;
@@ -78,7 +79,6 @@ export const Login: FC = () => {
             password: loginForm.password.value
         }
         const {data} = await login(formData);
-
         if (!data?.isEmailVerified) {
             localStorage.setItem('email', loginForm.email.value);
             navigate('/email-verification');

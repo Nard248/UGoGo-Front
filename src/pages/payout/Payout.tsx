@@ -26,12 +26,21 @@ export const Payout = () => {
     const [formData, setFormData] = useState<IPayout>({} as IPayout);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState<string | null>(null);
+    const [amountError, setAmountError] = useState<string | null>(null);
+    const [balance, setBalance] = useState<number | null>(null)
+    const [currency, setCurrency] = useState("USD")
 
     const getCards = async () => {
         const cards = await getBankCard();
         setCards(cards);
     }
     useEffect(() => {
+        const cachedUser = localStorage.getItem("userDetails");
+        if (cachedUser) {
+            const {balance} = JSON.parse(cachedUser);
+            setBalance(+balance);
+        }
+
         getCards()
     }, [])
 
@@ -81,6 +90,15 @@ export const Payout = () => {
         }, 3000)
     }, [isError])
 
+    const handleAmountChange = (e: (React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>)) => {
+        if (+e.target.value > (balance ?? 0)) {
+            setAmountError('Amount is greater than your balance')
+        } else {
+            amountError && setAmountError(null)
+        }
+        setFormData({...formData, transfer_amount: +e.target.value});
+    }
+
     return (
         isLoading ?
             <Loading />
@@ -104,6 +122,7 @@ export const Payout = () => {
                                 {!!cards.length &&
                                     cards.map(card => (
                                         <div
+                                            key={card.id}
                                             className={`flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1rem] max-h-[13.5rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem] cursor-pointer ${card.id === selectedCard?.id ? 'ml-[5rem]' : ''}`}
                                             onClick={() => {
                                                 setSelectedCard(card);
@@ -141,13 +160,13 @@ export const Payout = () => {
                                     Total Balance
                                 </span>
                                     <span className="font-semibold">
-                                    200 USD
+                                    {balance} {currency}
                                 </span>
                                 </div>
                                 <Label title="Amount to transfer" htmlFor="amount">
-                                    <Input type="number" placeholder="USD" handleChange={(e) => setFormData({...formData, transfer_amount: +e.target.value})}/>
+                                    <Input type="number" placeholder="USD" errorMessage={amountError} handleChange={handleAmountChange}/>
                                 </Label>
-                                <Button type="primary" title="Transfer to the card" classNames={"text-[1.4rem]"} disabled={!formData.transfer_amount || !formData.id} handleClick={onVerify}/>
+                                <Button type="primary" title="Transfer to the card" classNames={"text-[1.4rem]"} disabled={!formData.transfer_amount || !formData.id || amountError !== null} handleClick={onVerify}/>
                             </div>
                         </div>
                     </div>
