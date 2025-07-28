@@ -9,6 +9,8 @@ import './OfferCard.scss';
 
 interface IOfferCard {
     data?: any;
+    withRate?: boolean;
+    withOfferStatus?: boolean;
     primaryButtonText?: string;
     secondaryButtonText?: string;
     size?: 'small' | 'medium' | 'large';
@@ -24,8 +26,7 @@ const formatTime = (date: Date) => {
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
 }
 
-export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick}) => {
-    console.log(data);
+export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick, withOfferStatus = true, withRate = true}) => {
     return (
         <div className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
             <div className="offerCard__image">
@@ -46,14 +47,16 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                             {data.user?.full_name || "Unknown User"}
                         </span>
                     </div>
-                    <div className="rate flex items-center gap-3">
-                        <Rating
-                            name="hover-feedback"
-                            precision={0.5}
-                            max={5}
-                        />
-                        <span>5 (435)</span>
-                    </div>
+                    {withRate &&
+                        <div className="rate flex items-center gap-3">
+                            <Rating
+                                name="hover-feedback"
+                                precision={0.5}
+                                max={5}
+                            />
+                            <span>5 (435)</span>
+                        </div>
+                    }
                 </div>
                 <div className="flex items-center justify-between">
                     <h3 className="offerCard__flightNumber">

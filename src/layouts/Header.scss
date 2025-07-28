@@ -21,6 +21,21 @@
   font-size: 16px;
 }
 
+.selectedLink {
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background-color: #00a7ab;
+    display: block;
+  }
+}
+
 .nav a:hover {
   color: #007bff;
 }

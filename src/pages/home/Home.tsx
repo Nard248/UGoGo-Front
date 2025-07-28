@@ -1,4 +1,4 @@
-import { FC } from "react";
+import {FC, useEffect} from "react";
 import { Search } from "../../components/search/Search";
 import airplaneIcon from "../../assets/icons/airplaneIcon.svg";
 import briefcaseIcon from "../../assets/icons/briefcaseIcon.svg";
@@ -13,13 +13,37 @@ import { OfferCardMini } from "../../components/offerCard/OfferCardMini";
 import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
-import "./home.scss";
+import "./Home.scss";
+import {getUserDetails} from "../../api/route";
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
 const homeData: any = [];
 
 export const Home: FC = () => {
+
+  const fetchUser = async () => {
+    const userDetails = localStorage.getItem("userDetails");
+
+    if (userDetails) {
+      return;
+    }
+
+    try {
+      const userData = await getUserDetails();
+      if (userData) {
+        const userObject = { name: userData.full_name, email: userData.email, balance: userData.balance };
+        localStorage.setItem("userDetails", JSON.stringify(userObject));
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser()
+  })
+
   return (
     <div className="home">
       <Search onSearchResults={() => {}} />

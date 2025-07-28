@@ -1,6 +1,7 @@
 import {ChangeEvent, FC} from "react";
 import masterCardLogo from './../../assets/icons/mastercard.svg'
 import './Input.scss'
+import classNames from "classnames";
 
 type Props = {
     id?: string;
@@ -23,7 +24,7 @@ type Props = {
 
 export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames, value, handleChange, errorMessage}) => {
     return (
-        <>
+        <div className={classNames("flex flex-col gap-[0.5rem]")}>
             {type === 'textarea' ?
                 <textarea
                     name="notes"
@@ -54,14 +55,17 @@ export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames,
                         name={name}
                         type={type}
                         placeholder={placeholder}
-                        className={`input ${classnames ? classnames : ''}`}
+                        className={classNames(`input ${classnames ? classnames : ''}`, {
+                            'error': errorMessage,
+                            'text-[#F04438]': errorMessage
+                        })}
                         value={value}
                         onChange={(event) => handleChange(event)}
                     />
             }
             {errorMessage &&
-                <span className="errorMessage">{errorMessage}</span>
+                <span className="text-[1.4rem] text-[#F04438] font-normal ml-[.5rem]">{errorMessage}</span>
             }
-        </>
+        </div>
     )
 }

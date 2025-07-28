@@ -63,7 +63,7 @@ export const EmailVerification = () => {
             const verifyCode = code.join("");
             const data = await emailVerification({email, email_verification_code: verifyCode});
             localStorage.removeItem('email');
-            navigate('/post-offer')
+            navigate('/')
         } catch (e) {
             setError(true);
             console.log(e);

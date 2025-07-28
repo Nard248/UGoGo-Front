@@ -14,11 +14,9 @@ import logoutIcon from "../../assets/icons/logout.svg";
 import logoutHoverIcon from "../../assets/icons/logoutHover.svg";
 import coin from "../../assets/icons/coin.svg";
 import { logout, getUserDetails } from "../../api/route";
+import {User} from "../../types/global";
 
-interface User {
-  name: string;
-  email: string;
-}
+
 
 export const ProfilePopover: FC = () => {
   const navigate = useNavigate();
@@ -34,28 +32,11 @@ export const ProfilePopover: FC = () => {
 
   const [user, setUser] = useState<User>({ name: "NULL", email: "NULL" });
 
-
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const cachedUser = localStorage.getItem("userDetails");
-        if (cachedUser) {
-          setUser(JSON.parse(cachedUser));
-          return;
-        }
-  
-        const userData = await getUserDetails();
-        if (userData) {
-          const userObject = { name: userData.full_name, email: userData.email };
-          setUser(userObject);
-          localStorage.setItem("userDetails", JSON.stringify(userObject));
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
-  
-    fetchUser();
+    const cachedUser = localStorage.getItem("userDetails");
+    if (cachedUser) {
+      setUser(JSON.parse(cachedUser));
+    }
 
     const handleClickOutside = (event: MouseEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
@@ -79,6 +60,8 @@ export const ProfilePopover: FC = () => {
       if (!refreshToken) {
         localStorage.removeItem("access");
         localStorage.removeItem("refresh");
+        localStorage.removeItem("email");
+        localStorage.removeItem("userDetails");
         navigate("/login");
         return;
       }
@@ -86,11 +69,15 @@ export const ProfilePopover: FC = () => {
       await logout(refreshToken);
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
+      localStorage.removeItem("email");
+      localStorage.removeItem("userDetails");
       navigate("/login");
     } catch (error) {
       console.error("Logout failed", error);
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
+      localStorage.removeItem("email");
+      localStorage.removeItem("userDetails");
       navigate("/login");
     }
   };
