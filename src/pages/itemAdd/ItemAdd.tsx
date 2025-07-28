@@ -96,7 +96,7 @@ Array.from(formData.entries()).forEach(([key, value]) => {
 
       await createItem(formData);
 
-      navigate('/single-product-page?modal=book');
+      navigate('/items');
     } catch (e) {
       console.error("Error creating item:", e);
       setError("There was an error creating the item.");
@@ -118,19 +118,19 @@ Array.from(formData.entries()).forEach(([key, value]) => {
       <div className="step-navigation">
         {currentStep > 1 && (
           <button type="button" onClick={prevStep} disabled={loading}>
-            Previous
+            {/* Previous */}
           </button>
         )}
 
         {currentStep < steps.length && (
           <button type="button" onClick={nextStep} disabled={loading}>
-            Next
+            {/* Next */}
           </button>
         )}
 
         {currentStep === steps.length && (
           <button type="button" onClick={nextStep} disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit'}
+            {/* {loading ? 'Submitting...' : 'Submit'} */}
           </button>
         )}
       </div>

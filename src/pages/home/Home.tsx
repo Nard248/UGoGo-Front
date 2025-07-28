@@ -14,6 +14,7 @@ import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
 import "./home.scss";
+import { useNavigate } from "react-router-dom";
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
@@ -70,6 +71,12 @@ const homeData: any = [];
 // ];
 
 export const Home: FC = () => {
+    const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/search-result"); // or "/search-result" whatever your route is
+  };
+
   return (
     <div className="home">
       <Search onSearchResults={() => {}} />
@@ -83,8 +90,8 @@ export const Home: FC = () => {
             securely
           </p>
           <div className="hero-buttons">
-            <Button title="Find items" type="primary" />
-            <Button title="Find flights" type="secondary" />
+            {/* <Button title="Find items" type="primary" /> */}
+            <Button title="Find flights" type="secondary" handleClick={handleClick}/>
           </div>
         </div>
         <div className="hero-divider"></div>
