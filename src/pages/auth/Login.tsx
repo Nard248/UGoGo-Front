@@ -6,7 +6,7 @@ import {Label} from "../../components/label/Label";
 import {NavLink, useNavigate} from 'react-router-dom';
 import { Button } from '../../components/button/Button';
 import {ILogin, ILoginForm, User} from "../../types/global";
-import {getUserDetails, login} from "../../api/route";
+import {login} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
 
 export const Login: FC = () => {
