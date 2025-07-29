@@ -29,6 +29,7 @@ export const Offers = () => {
                 <h3 className="text-[2rem] font-medium">My offers</h3>
                 <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
                     <OfferCard
+                        withRate={false}
                         primaryButtonText={"Accept"}
                         secondaryButtonText={"Decline"}
                         data={{}}

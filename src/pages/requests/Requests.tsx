@@ -74,6 +74,7 @@ export const Requests = () => {
                                 // @ts-ignore
                                 requestsWithFilters[tabValue].map(request => (
                                     <OfferCard key={request.id}
+                                               withRate={false}
                                                onPrimaryClick={() => handleActionsOnRequest(request.item.id, 'reject')}
                                                primaryButtonText={'Decline'}
                                                onSecondaryClick={() => handleActionsOnRequest(request.item.id, 'accept')}

@@ -45,7 +45,6 @@ export const Payout = () => {
     const userDetails = async () => {
         const userData = await getUserDetails();
         const userObject = { name: userData.full_name, email: userData.email, balance: userData.balance };
-        console.log({userObject});
         localStorage.setItem("userDetails", JSON.stringify(userObject));
     }
 
