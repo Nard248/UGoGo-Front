@@ -156,6 +156,7 @@ export interface IPayout {
 export interface User {
     name: string;
     email: string;
+    balance?: number
 }
 
   

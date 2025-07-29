@@ -30,7 +30,7 @@ export const ProfilePopover: FC = () => {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(true);
 
-  const [user, setUser] = useState<User>({ name: "NULL", email: "NULL" });
+  const [user, setUser] = useState<User>({ name: "NULL", email: "NULL", balance: 0 });
 
   useEffect(() => {
     const cachedUser = localStorage.getItem("userDetails");
@@ -106,6 +106,11 @@ export const ProfilePopover: FC = () => {
                   {user.email}
                 </span>
               </div>
+              <div className="flex items-center profile__avatar__details__rate__value">
+                <span>Balance</span>
+                <span> - </span>
+                <span>{user.balance || 0} USD</span>
+                </div>
             </div>
           </div>
           <Divider appearance="neutral" size="small" className="mt-[1.6rem]" />
