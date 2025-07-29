@@ -82,23 +82,29 @@ export const SearchResult: FC = () => {
                         />
                     </div>
                     
-                    <div className="grid grid-cols-3 gap-[5.7rem] min-h-[10rem]">
-                        {isLoading ? (
+                    {isLoading ? (
+                        <div className="min-h-[10rem] flex justify-center items-center">
                             <Loading />
-                        ) : searchResults.length > 0 ? (
-                            searchResults.map((item, index) => (
-                                <OfferCard
-                                    key={index}
-                                    withRate={false}
-                                    secondaryButtonText={'View & Book'}
-                                    onSecondaryClick={() => handlePrimaryButtonClick(item)}
-                                    data={item}
-                                />
-                            ))
-                        ) : (
-                            <h1>No offers found</h1>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-3 gap-[5.7rem] min-h-[10rem]">
+                            {searchResults.length > 0 ? (
+                                searchResults.map((item, index) => (
+                                    <OfferCard
+                                        key={index}
+                                        withRate={false}
+                                        secondaryButtonText={'View & Book'}
+                                        onSecondaryClick={() => handlePrimaryButtonClick(item)}
+                                        data={item}
+                                    />
+                                ))
+                            ) : (
+                                <div className="col-span-3 flex justify-center">
+                                    <h1>No offers found</h1>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 
