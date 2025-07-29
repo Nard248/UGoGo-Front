@@ -8,8 +8,8 @@ interface IConfirmationPopup {
     message: string;
     primaryButtonText: string;
     primaryButtonClick: () => void;
-    secondaryButtonText: string;
-    secondaryButtonClick: () => void;
+    secondaryButtonText?: string;
+    secondaryButtonClick?: () => void;
 }
 
 export const ConfirmationPopup: FC<IConfirmationPopup> = ({isError, message, primaryButtonText, primaryButtonClick, secondaryButtonText, secondaryButtonClick}) => {
@@ -26,7 +26,7 @@ export const ConfirmationPopup: FC<IConfirmationPopup> = ({isError, message, pri
                     Thank you for trusting us!
                 </span>
                 <div className="flex justify-between gap-[5rem]">
-                    <Button title={secondaryButtonText} type={'secondary'} handleClick={secondaryButtonClick}/>
+                    {secondaryButtonText && <Button title={secondaryButtonText} type={'secondary'} handleClick={secondaryButtonClick}/>}
                     <Button title={primaryButtonText} type={'primary'} handleClick={primaryButtonClick}/>
                 </div>
             </div>
