@@ -150,7 +150,7 @@ export interface IBankCard {
 export interface IPayout {
     transfer_amount: number;
     verification_code: string;
-    id: number
+    card_id: number
 }
 
 export interface User {
