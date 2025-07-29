@@ -56,7 +56,7 @@ export const Payout = () => {
         const cachedUser = localStorage.getItem("userDetails");
         if (cachedUser) {
             const {balance} = JSON.parse(cachedUser);
-            setBalance(+balance);
+            setBalance(balance || 0);
         }
 
         getCards()
@@ -187,7 +187,7 @@ export const Payout = () => {
                                 <span>
                                     Total Balance
                                 </span>
-                                    <span className="font-semibold">
+                                <span className="font-semibold">
                                     {balance} {currency}
                                 </span>
                                 </div>
