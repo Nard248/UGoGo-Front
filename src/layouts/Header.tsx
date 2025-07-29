@@ -45,18 +45,18 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
           <a className={classNames({
               selectedLink: pathname === '/'
           })} href="/">Home</a>
-          <a className={classNames({
-              //selectedLink:
-          })} href="#">How it works</a>
+          {/*<a className={classNames({*/}
+          {/*    //selectedLink:*/}
+          {/*})} href="#">How it works</a>*/}
           <a className={classNames({
               selectedLink: pathname === '/post-offer'
           })} href="/post-offer">Post an offer</a>
           <a className={classNames({
               selectedLink: pathname === '/search-result'
           })} href="/search-result">Find an offer</a>
-          <a className={classNames({
-              //selectedLink:
-          })} href="#">Price</a>
+          {/*<a className={classNames({*/}
+          {/*    //selectedLink:*/}
+          {/*})} href="#">Price</a>*/}
           <a className={classNames({
               //selectedLink:
           })} href="#">Contact Us</a>
