@@ -64,7 +64,7 @@ const Protected = () => {
     <>
       <Header withNavItems={withHeader} />
       <div className="flex w-full">
-        {withSidenav && <Sidenav />}
+        {/*{withSidenav && <Sidenav />}*/}
         <Outlet />
       </div>
     </>
