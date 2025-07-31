@@ -32,6 +32,8 @@ export const Footer: FC = () => {
                                 </a>
                             ))}
                         </div>
+                    </div>
+                    
                     <div className="footer-links">
                         {[
                             {
@@ -76,24 +78,21 @@ export const Footer: FC = () => {
                             </div>
                         ))}
                     </div>
-                    </div>
 
-
-                        <div>
-                            <h4>Contact us</h4>
-                            <ul className="contact-info">
-                                {[
-                                    { src: EmailIcon, text: "contact@company.com", href: "mailto:contact@company.com" },
-                                    { src: PhoneIcon, text: "(414) 687 - 5892", href: "tel:+14146875892" },
-                                    { src: LocationIcon, text: "794 Mcallister St, San Francisco, 94102" },
-                                ].map((item, index) => (
-                                    <li key={index}>
-                                        <img src={item.src} alt="" />
-                                        {item.href ? <a href={item.href}>{item.text}</a> : <span>{item.text}</span>}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                    <div>
+                        <h4>Contact us</h4>
+                        <ul className="contact-info">
+                            {[
+                                { src: EmailIcon, text: "contact@company.com", href: "mailto:contact@company.com" },
+                                { src: PhoneIcon, text: "(414) 687 - 5892", href: "tel:+14146875892" },
+                                { src: LocationIcon, text: "794 Mcallister St, San Francisco, 94102" },
+                            ].map((item, index) => (
+                                <li key={index}>
+                                    <img src={item.src} alt="" />
+                                    {item.href ? <a href={item.href}>{item.text}</a> : <span>{item.text}</span>}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
 

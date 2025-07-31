@@ -112,8 +112,26 @@
       display: flex;
       align-items: center;
       gap: 10px;
+
+      img {
+        width: 20px !important;
+        height: 20px !important;
+        flex-shrink: 0; // Prevents the icon from shrinking
+      }
+
+      a, span {
+        text-decoration: none;
+        color: #808080;
+        font-size: 16px;
+        transition: color 0.3s;
+
+        &:hover {
+          color: #f7931e;
+        }
+      }
     }
   }
+
 
   .footer-bottom {
     display: flex;
