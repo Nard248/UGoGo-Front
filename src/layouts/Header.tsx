@@ -64,9 +64,9 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
       )}
       {isLoggedIn ?
                 <div className="flex items-center gap-5">
-                    <Badge className={'cursor-pointer'}>
-                        <img  src={message} alt="Message"/>
-                    </Badge>
+                    {/*<Badge className={'cursor-pointer'}>*/}
+                    {/*    <img  src={message} alt="Message"/>*/}
+                    {/*</Badge>*/}
                     <div>
                         <Avatar alt="Avatar image" src={avatar} className="cursor-pointer" onClick={() => setIsPopoverOpened(!isPopoverOpened)}/>
                         {isPopoverOpened &&
