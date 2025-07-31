@@ -248,11 +248,13 @@ export const Home: FC = () => {
             title="Find items"
             type="primary"
             classNames="custom-button"
+            handleClick={() => navigate('/items')}
           />
           <Button
             title="Find flights"
             type="secondary"
             classNames="custom-button secondary-button"
+            handleClick={() => navigate('/search-result')}
           />
         </div>
       </div>

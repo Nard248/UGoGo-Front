@@ -1,5 +1,6 @@
 import "./Footer.scss";
 import { FC } from "react";
+import { Link } from "react-router-dom";
 import Logo from "../assets/images/logo.png";
 import FacebookIcon from "../assets/icons/Facebook.svg";
 import InstagramIcon from "../assets/icons/Instagram.svg";
@@ -31,21 +32,36 @@ export const Footer: FC = () => {
                                 </a>
                             ))}
                         </div>
-                    </div>
-
                     <div className="footer-links">
                         {[
                             {
                                 title: "Product",
-                                links: ["Features", "Pricing", "Send an item", "Truck item", "Post an offer", "Manage offer"],
+                                links: [
+                                    { label: "Features", path: "/features" },
+                                    { label: "Pricing", path: "/pricing" },
+                                    { label: "Send an item", path: "/add-item" },
+                                    { label: "Truck item", path: "/truck-item" },
+                                    { label: "Post an offer", path: "/post-offer" },
+                                    { label: "Manage offer", path: "/manage-offer" },
+                                ],
                             },
                             {
                                 title: "Company",
-                                links: ["About", "Contact us", "Careers", "Culture", "Blog"],
+                                links: [
+                                    { label: "About", path: "/about" },
+                                    { label: "Contact us", path: "/contact-us" },
+                                    { label: "Careers", path: "/careers" },
+                                    { label: "Culture", path: "/culture" },
+                                    { label: "Blog", path: "/blog" },
+                                ],
                             },
                             {
                                 title: "Support",
-                                links: ["Getting started", "Help center", "Chat support"],
+                                links: [
+                                    { label: "Getting started", path: "/getting-started" },
+                                    { label: "Help center", path: "/help-center" },
+                                    { label: "Chat support", path: "/chat-support" },
+                                ],
                             },
                         ].map((section, index) => (
                             <div key={index}>
@@ -53,12 +69,15 @@ export const Footer: FC = () => {
                                 <ul>
                                     {section.links.map((link, linkIndex) => (
                                         <li key={linkIndex}>
-                                            <a href="#">{link}</a>
+                                            <Link to={link.path}>{link.label}</Link>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
                         ))}
+                    </div>
+                    </div>
+
 
                         <div>
                             <h4>Contact us</h4>
@@ -81,7 +100,7 @@ export const Footer: FC = () => {
                 <div className="footer-bottom">
                     <p>Copyright © 2024 UGOGO</p>
                     <p>
-                        <a href="#">Terms and Conditions</a> | <a href="#">Privacy Policy</a>
+                        <Link to="/terms">Terms and Conditions</Link> | <Link to="/privacy-policy">Privacy Policy</Link>
                     </p>
                 </div>
             </div>

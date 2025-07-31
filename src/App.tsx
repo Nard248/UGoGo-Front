@@ -34,6 +34,23 @@ import { PaymentHistory } from "./pages/transaction/PaymentHistory";
 import { Home } from "./pages/home/Home";
 import {Payout} from "./pages/payout/Payout";
 import { Balance } from "./pages/balance/Balance";
+import {
+  About,
+  Blog,
+  Careers,
+  ChatSupport,
+  Contact,
+  Culture,
+  Features,
+  GettingStarted,
+  HelpCenter,
+  ManageOffer,
+  Pricing,
+  PrivacyPolicy,
+  SendItem,
+  Terms,
+  TruckItem,
+} from "./pages/info";
 
 const Protected = () => {
   const location = useLocation();
@@ -121,6 +138,21 @@ function App() {
               <Route path="transaction" element={<Transaction />} />
               <Route path="payout" element={<Payout />} />
               <Route path="balance" element={<Balance />} />
+              <Route path="features" element={<Features />} />
+              <Route path="pricing" element={<Pricing />} />
+              <Route path="send-item" element={<SendItem />} />
+              <Route path="truck-item" element={<TruckItem />} />
+              <Route path="manage-offer" element={<ManageOffer />} />
+              <Route path="about" element={<About />} />
+              <Route path="contact-us" element={<Contact />} />
+              <Route path="careers" element={<Careers />} />
+              <Route path="culture" element={<Culture />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="getting-started" element={<GettingStarted />} />
+              <Route path="help-center" element={<HelpCenter />} />
+              <Route path="chat-support" element={<ChatSupport />} />
+              <Route path="terms" element={<Terms />} />
+              <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/" element={<Home />} />
             </Route>
             <Route element={<Public />}>
