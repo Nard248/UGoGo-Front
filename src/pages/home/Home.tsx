@@ -155,6 +155,7 @@ export const Home: FC = () => {
                     <div key={item.id} className="card-container">
                       <h2 className="card-title">{cardTitle}</h2>
                       <OfferCard
+                          withRate={false}
                           data={item}
                           secondaryButtonText="Reject"
                           primaryButtonText="Approve"

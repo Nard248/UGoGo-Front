@@ -150,12 +150,13 @@ export interface IBankCard {
 export interface IPayout {
     transfer_amount: number;
     verification_code: string;
-    id: number
+    card_id: number
 }
 
 export interface User {
     name: string;
     email: string;
+    balance?: number
 }
 
   

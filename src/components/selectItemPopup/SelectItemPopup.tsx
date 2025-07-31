@@ -32,7 +32,7 @@ export const SelectItemPopup: FC<ISelectItemPopup> = ({data, onClose}) => {
     }
 
     return (
-        <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex justify-center items-center w-full h-full bg-[#d0e3eb8c]">
+        <div className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex justify-center items-center w-full h-full bg-[#d0e3eb8c] z-50">
             <div className="flex flex-col p-[3rem] gap-[2rem] w-[90rem] max-h-[60rem] rounded-[.8rem] border-[#D5D7DA] border-solid border bg-[#fff]">
                 <div className="flex justify-between">
                     <h3 className="text-[2rem] font-medium">

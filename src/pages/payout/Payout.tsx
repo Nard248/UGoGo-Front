@@ -1,4 +1,4 @@
-import { Label } from "../../components/label/Label"
+import {Label} from "../../components/label/Label"
 import {Input} from "../../components/input/Input";
 import {Button} from "../../components/button/Button";
 import plusIcon from "./../../assets/icons/plus.svg"
@@ -6,10 +6,12 @@ import {useEffect, useState} from "react";
 import {createPortal} from "react-dom";
 import {AddCardPopup} from "./AddCardPopup";
 import {IBankCard, IPayout} from "../../types/global";
-import {createBankCard, getBankCard, payout, verifyPayout} from "../../api/route";
+import {createBankCard, getBankCard, getUserDetails, payout, verifyPayout} from "../../api/route";
 import {VerificationPopup} from "./VerificationPopup";
 import {Loading} from "../../components/loading/Loading";
 import {AlertMessage} from "../../components/alertMessage/AlertMessage";
+import {ConfirmationPopup} from "../../components/confirmationPopup/ConfirmationPopup";
+import {useNavigate} from "react-router-dom";
 
 function maskCardNumber(cardNumber: string): string {
     const visibleDigits = 4;
@@ -19,6 +21,7 @@ function maskCardNumber(cardNumber: string): string {
 }
 
 export const Payout = () => {
+    const navigate = useNavigate();
     const [isAddCardPopupOpen, setIsAddCardPopupOpen] = useState(false);
     const [isVerificationPopupOpen, setIsVerificationPopupOpen] = useState(false);
     const [cards, setCards] = useState<IBankCard[]>([]);
@@ -28,17 +31,32 @@ export const Payout = () => {
     const [isError, setIsError] = useState<string | null>(null);
     const [amountError, setAmountError] = useState<string | null>(null);
     const [balance, setBalance] = useState<number | null>(null)
-    const [currency, setCurrency] = useState("USD")
+    const [currency, setCurrency] = useState("USD");
+    const [paymentStatus, setPaymentStatus] = useState<{
+        isError: boolean;
+        message: string
+    } | null>(null);
 
     const getCards = async () => {
         const cards = await getBankCard();
         setCards(cards);
     }
+
+    const userDetails = async () => {
+        const userData = await getUserDetails();
+        const userObject = { name: userData.full_name, email: userData.email, balance: userData.balance };
+        localStorage.setItem("userDetails", JSON.stringify(userObject));
+    }
+
+    useEffect(() => {
+        userDetails()
+    }, []);
+
     useEffect(() => {
         const cachedUser = localStorage.getItem("userDetails");
         if (cachedUser) {
             const {balance} = JSON.parse(cachedUser);
-            setBalance(+balance);
+            setBalance(balance || 0);
         }
 
         getCards()
@@ -73,8 +91,18 @@ export const Payout = () => {
     const onPayout = async (code: string) => {
         setFormData({...formData, verification_code: code})
         try {
-            await payout({...formData, verification_code: code});
+            const data = await payout({...formData, verification_code: code});
+            if (data.data.status === 200) {
+                setPaymentStatus({
+                    isError: false,
+                    message: "Payment processed successfully!"
+                })
+            }
         } catch (e) {
+            setPaymentStatus({
+                isError: false,
+                message: "Something was wrong!!"
+            })
             console.log(e);
         }
         setIsVerificationPopupOpen(false);
@@ -101,7 +129,7 @@ export const Payout = () => {
 
     return (
         isLoading ?
-            <Loading />
+            <Loading/>
             :
             <>
                 {isError &&
@@ -126,7 +154,7 @@ export const Payout = () => {
                                             className={`flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1rem] max-h-[13.5rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem] cursor-pointer ${card.id === selectedCard?.id ? 'ml-[5rem]' : ''}`}
                                             onClick={() => {
                                                 setSelectedCard(card);
-                                                setFormData({...formData, id: card.id || 0})
+                                                setFormData({...formData, card_id: card.id || 0})
                                             }}>
                                             <div className="flex justify-between items-center">
                                             <span>
@@ -159,21 +187,34 @@ export const Payout = () => {
                                 <span>
                                     Total Balance
                                 </span>
-                                    <span className="font-semibold">
+                                <span className="font-semibold">
                                     {balance} {currency}
                                 </span>
                                 </div>
                                 <Label title="Amount to transfer" htmlFor="amount">
-                                    <Input type="number" placeholder="USD" errorMessage={amountError} handleChange={handleAmountChange}/>
+                                    <Input type="number" placeholder="USD" errorMessage={amountError}
+                                           handleChange={handleAmountChange}/>
                                 </Label>
-                                <Button type="primary" title="Transfer to the card" classNames={"text-[1.4rem]"} disabled={!formData.transfer_amount || !formData.id || amountError !== null} handleClick={onVerify}/>
+                                <Button type="primary" title="Transfer to the card" classNames={"text-[1.4rem]"}
+                                        disabled={!formData.transfer_amount || !formData.card_id || amountError !== null}
+                                        handleClick={onVerify}/>
                             </div>
                         </div>
                     </div>
 
-                    {isAddCardPopupOpen && createPortal(<AddCardPopup onClick={onCardCreate} onClose={() => setIsAddCardPopupOpen(false)} />, document.body)}
-                    {isVerificationPopupOpen && createPortal(<VerificationPopup onClick={onPayout} onClose={() => setIsVerificationPopupOpen(false)} />, document.body)}
+                    {isAddCardPopupOpen && createPortal(<AddCardPopup onClick={onCardCreate}
+                                                                      onClose={() => setIsAddCardPopupOpen(false)}/>, document.body)}
+                    {isVerificationPopupOpen && createPortal(<VerificationPopup onClick={onPayout}
+                                                                                onClose={() => setIsVerificationPopupOpen(false)}/>, document.body)}
                 </div>
+                {paymentStatus &&
+                    <ConfirmationPopup
+                    isError={paymentStatus.isError}
+                    primaryButtonText={'Close'}
+                    primaryButtonClick={() => navigate('/')}
+                    message={paymentStatus.message}
+                    />
+                }
             </>
     )
 }
