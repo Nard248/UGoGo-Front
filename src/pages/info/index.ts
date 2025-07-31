@@ -1,0 +1,15 @@
+export { About } from './About';
+export { Contact } from './Contact';
+export { Careers } from './Careers';
+export { Culture } from './Culture';
+export { Blog } from './Blog';
+export { Features } from './Features';
+export { Pricing } from './Pricing';
+export { SendItem } from './SendItem';
+export { TruckItem } from './TruckItem';
+export { ManageOffer } from './ManageOffer';
+export { GettingStarted } from './GettingStarted';
+export { HelpCenter } from './HelpCenter';
+export { ChatSupport } from './ChatSupport';
+export { Terms } from './Terms';
+export { PrivacyPolicy } from './PrivacyPolicy';
