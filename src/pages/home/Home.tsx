@@ -16,6 +16,7 @@ import checkedIcon from "../../assets/icons/checked.svg";
 import { useNavigate } from "react-router-dom";
 import {getUserDetails} from "../../api/route";
 import "./home.scss";
+
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
 
@@ -247,11 +248,13 @@ export const Home: FC = () => {
             title="Find items"
             type="primary"
             classNames="custom-button"
+            handleClick={() => navigate('/items')}
           />
           <Button
             title="Find flights"
             type="secondary"
             classNames="custom-button secondary-button"
+            handleClick={() => navigate('/search-result')}
           />
         </div>
       </div>
