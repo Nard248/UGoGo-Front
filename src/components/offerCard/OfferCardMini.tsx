@@ -1,6 +1,6 @@
 import { FC } from "react";
 import classNames from "classnames";
-import { Avatar, Rating } from "@mui/material";
+import { Avatar } from "@mui/material";
 import offerCardImage from "./../../assets/images/offer.svg";
 import avatar from "./../../assets/images/avatar.svg";
 import "./OfferCardMini.scss";
@@ -20,10 +20,6 @@ export const OfferCardMini: FC<IOfferCardMini> = ({ data }) => {
                 <div className="offerCardMini__header">
                     <Avatar alt="Avatar" src={avatar} />
                     <span className="offerCardMini__username">Ed Sheeren</span>
-                    <div className="offerCardMini__rating">
-                        <Rating name="read-only" value={5} readOnly max={1} />
-                        <span>5 (435)</span>
-                    </div>
                 </div>
                 <div className="offerCardMini__direction">
                     <span>Armenia, Yerevan</span>
