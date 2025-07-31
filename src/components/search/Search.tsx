@@ -164,7 +164,7 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
 
       <div className="search__divider"></div>
 
-      <div className="search-field">
+      {/* <div className="search-field">
         <Label
           title="Arrival Date"
           htmlFor="arrivalTime"
@@ -189,7 +189,58 @@ export const Search: FC<SearchProps> = ({ onSearchResults }) => {
               />
             </LocalizationProvider>
         </Label>
-      </div>
+      </div> */
+     <div className="search-field">
+  <Label
+    title="Arrival Date"
+    htmlFor="arrivalTime"
+    classnames="postOffer__label"
+  >
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+     <DateTimePicker
+  views={["day"]}
+  format="YYYY-MM-DD"
+  value={
+    offerFormData.departure_datetime.value
+      ? dayjs(offerFormData.departure_datetime.value)
+      : null
+  }
+  onChange={onDateChange}
+  minDate={dayjs()}
+  slotProps={{
+    textField: {
+      placeholder: "Add date and time",
+      variant: "standard",
+      InputProps: {
+        disableUnderline: true,
+      },
+      sx: {
+        width: "100%",
+        backgroundColor: "transparent",
+        border: "none",
+        textAlign: "center",
+        '& input': {
+          textAlign: 'center',
+          padding: '8px 0',
+          color: '#333',
+        },
+        '& .MuiInputBase-root': {
+          backgroundColor: 'transparent',
+        },
+      },
+    },
+    openPickerButton: {
+      disableRipple: true,
+    },
+  }}
+  disableOpenPicker={false}
+/>
+
+    </LocalizationProvider>
+  </Label>
+</div>
+
+}
 
       <div className="search__divider"></div>
 
