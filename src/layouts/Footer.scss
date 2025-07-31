@@ -107,16 +107,30 @@
     }
   }
 
+  // Add consistent styling for Contact us section h4
+  .footer-top > div:last-child {
+    h4 {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #1B3A4B;
+    }
+  }
+
   .contact-info {
+    list-style: none;
+    padding: 0;
+
     li {
       display: flex;
       align-items: center;
       gap: 10px;
+      margin-bottom: 6px;
 
       img {
         width: 20px !important;
         height: 20px !important;
-        flex-shrink: 0; // Prevents the icon from shrinking
+        flex-shrink: 0;
       }
 
       a, span {
@@ -124,6 +138,7 @@
         color: #808080;
         font-size: 16px;
         transition: color 0.3s;
+        margin-block: 4px;
 
         &:hover {
           color: #f7931e;
@@ -131,7 +146,6 @@
       }
     }
   }
-
 
   .footer-bottom {
     display: flex;
