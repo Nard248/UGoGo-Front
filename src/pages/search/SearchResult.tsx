@@ -64,45 +64,47 @@ export const SearchResult: FC = () => {
 
     return (
         <>
-            <div className="flex flex-col w-full items-center gap-[7.8rem]">
-                <Search onSearchResults={handleSearchResults} />
-                
-                <h1 className="text-[4rem]">
-                    {isSearching ? "Search Results" : "Available Offers"}
-                </h1>
+            <div className="flex flex-col w-full gap-[7.8rem]">
+                <div className="flex justify-center w-full">
+                    <Search onSearchResults={handleSearchResults} />
+                </div>
 
-                <div className="flex flex-col gap-[7.8rem]">
-                    <div className="flex justify-end w-full gap-[3.1rem]">
-                        <Button 
-                            title={'Filter'} 
-                            type={'tertiary'} 
-                            handleClick={() => setIsFilterOpened(true)} 
-                            icon={'filterIcon'} 
-                            alt={"Filter Icon"} 
+                <div className="flex justify-center w-full">
+                    <h1 className="text-[4rem]">
+                        {isSearching ? "Search Results" : "Available Offers"}
+                    </h1>
+                </div>
+
+                <div className="flex flex-col gap-[7.8rem] w-full max-w-[120rem] mx-auto px-[2rem]">
+                    <div className="flex justify-end w-full">
+                        <Button
+                            title={'Filter'}
+                            type={'tertiary'}
+                            handleClick={() => setIsFilterOpened(true)}
+                            icon={'filterIcon'}
+                            alt={"Filter Icon"}
                         />
                     </div>
-                    
+
                     {isLoading ? (
-                        <div className="min-h-[10rem] flex justify-center items-center">
+                        <div className="flex justify-center items-center min-h-[20rem] w-full">
                             <Loading />
                         </div>
+                    ) : searchResults.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-[5.7rem] w-full">
+                            {searchResults.map((item, index) => (
+                                <OfferCard
+                                    key={index}
+                                    withRate={false}
+                                    secondaryButtonText={'View & Book'}
+                                    onSecondaryClick={() => handlePrimaryButtonClick(item)}
+                                    data={item}
+                                />
+                            ))}
+                        </div>
                     ) : (
-                        <div className="grid grid-cols-3 gap-[5.7rem] min-h-[10rem]">
-                            {searchResults.length > 0 ? (
-                                searchResults.map((item, index) => (
-                                    <OfferCard
-                                        key={index}
-                                        withRate={false}
-                                        secondaryButtonText={'View & Book'}
-                                        onSecondaryClick={() => handlePrimaryButtonClick(item)}
-                                        data={item}
-                                    />
-                                ))
-                            ) : (
-                                <div className="col-span-3 flex justify-center">
-                                    <h1>No offers found</h1>
-                                </div>
-                            )}
+                        <div className="flex justify-center items-center min-h-[20rem] w-full">
+                            <h1>No offers found</h1>
                         </div>
                     )}
                 </div>
