@@ -21,6 +21,7 @@ export const Offers = () => {
         getMyFlights();
     }, []);
 
+
     useEffect(() => {
         if (notificationMessage) {
             const timer = setTimeout(() => {

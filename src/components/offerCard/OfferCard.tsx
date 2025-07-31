@@ -6,6 +6,7 @@ import avatar from './../../assets/images/avatar.svg';
 import airplaneDark from './../../assets/icons/airplaneDark.svg';
 import { Button } from "../button/Button";
 import './OfferCard.scss';
+import { useNavigate } from "react-router-dom";
 
 interface IOfferCard {
     data?: any;
@@ -27,9 +28,15 @@ const formatTime = (date: Date) => {
 }
 
 export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick, withOfferStatus = true, withRate = true}) => {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    if (data?.id) {
+      navigate(`/offer/${data.id}`, { state: { offer: data } });
+    }
+  };
     return (
-        <div className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
-            <div className="offerCard__image">
+        <div  className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
+            <div className="offerCard__image" onClick={handleClick}  style={{ cursor: "pointer" }}>
                 {data?.verified &&
                     <div className="offerCard__imageFlag">
                         <span>
@@ -44,7 +51,7 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
                     <div className="flex items-center gap-3">
                         <Avatar alt="Avatar" src={avatar} />
                         <span className="text-[#808080]">
-                            {data.user?.full_name || "Unknown User"}
+                            {data?.user_flight?.user?.full_name || "Unknown User"}
                         </span>
                     </div>
                     {withRate &&
