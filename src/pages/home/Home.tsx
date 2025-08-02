@@ -14,8 +14,9 @@ import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
 import { useNavigate } from "react-router-dom";
-import {getUserDetails} from "../../api/route";
-import "./home.scss";
+import {getUserDetails, searchOffer} from "../../api/route";
+import "./Home.scss";
+import {setSearchedResult} from "../../components/search/SearchService";
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
 
@@ -100,9 +101,23 @@ export const Home: FC = () => {
     fetchUser()
   })
 
+  const onOfferSearch = async (searchParams: {
+    origin_airport: string;
+    destination_airport: string;
+    takeoff_date: string;
+  }) => {
+    try {
+      const response = await searchOffer(searchParams);
+      setSearchedResult(response.data);
+      navigate("/search-result");
+    } catch (error) {
+      console.error("Search Error:", error);
+    }
+  }
+
   return (
     <div className="home">
-      <Search onSearchResults={() => {}} />
+      <Search onSearchResults={onOfferSearch} />
       <div className="hero">
         <div className="hero-content">
           <h1>

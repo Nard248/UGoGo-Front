@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router";
 import { searchOffer, getAllOffers, advancedSearchOffer } from "../../api/route";
 import { Loading } from "../../components/loading/Loading";
+import {getSearchedData} from "../../components/search/SearchService";
 
 export const SearchResult: FC = () => {
     const [isFilterOpened, setIsFilterOpened] = useState<boolean>(false);
@@ -16,6 +17,12 @@ export const SearchResult: FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const searchedData = getSearchedData();
+        if (searchedData) {
+            setSearchResults(searchedData)
+            setIsLoading(false);
+            return
+        }
         const fetchOffers = async () => {
             setIsLoading(true);
             try {
@@ -75,7 +82,7 @@ export const SearchResult: FC = () => {
                     </h1>
                 </div>
 
-                <div className="flex flex-col gap-[7.8rem] w-full max-w-[120rem] mx-auto px-[2rem]">
+                <div className="flex flex-col gap-[7.8rem] w-full max-w-[120rem] mx-auto px-[2rem] relative">
                     <div className="flex justify-end w-full">
                         <Button
                             title={'Filter'}

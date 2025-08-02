@@ -74,6 +74,7 @@ const Protected = () => {
     "/offers",
     "/items",
     "/transaction",
+    "/payout",
     "/",
   ].includes(location.pathname);
 

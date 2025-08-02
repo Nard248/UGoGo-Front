@@ -7,7 +7,6 @@ import {IBankCard} from "../../types/global";
 import classNames from "classnames";
 
 
-
 interface IConfirmationPopup {
     buttonText?: string;
     onClick: (data: IBankCard) => void;
@@ -20,10 +19,17 @@ function formatCardNumber(value: string) {
     return groups ? groups.join(" ") : "";
 }
 
-function formatExpiry(value: string) {
+function formatExpiry(value: string): string {
     const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length <= 2) return digits;
-    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+
+    let formatted: string;
+    if (digits.length <= 2) {
+        formatted = digits;
+    } else {
+        formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    }
+
+    return formatted;
 }
 
 function isExpirationDateValid(value: string) {
@@ -31,10 +37,14 @@ function isExpirationDateValid(value: string) {
         return;
     }
 
-    const currentYearArr = `${new Date().getFullYear()}`.split('')
-    const currentYear = `${currentYearArr[2]}${currentYearArr[3]}`
+    const month = parseInt(value.slice(0, 2), 10);
+    const year = parseInt(value.slice(3, 5), 10);
 
-    return +value.split('/')[1] < +currentYear;
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100;
+    const currentMonth = currentDate.getMonth() + 1;
+
+    return (month < 1 || month > 12) || (year < currentYear || (year === currentYear && month < currentMonth));
 }
 
 export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
@@ -90,12 +100,15 @@ export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
                         </div>
                     </div>
                     <div className="flex justify-center gap-[5rem]">
-                    <div className="flex flex-col gap-[1rem] w-full">
+                        <div className="flex flex-col gap-[1rem] w-full">
                             <Label title="Card number" htmlFor="amount">
-                                <Input type="text" handleChange={(e) => handleCardNumberChange(e)} />
+                                <Input type="text" handleChange={(e) => handleCardNumberChange(e)}/>
                             </Label>
                             <Label title="Name on card" htmlFor="amount">
-                                <Input type="text" handleChange={(e) => setFormData({...formData, card_holder_name: e.target.value})}/>
+                                <Input type="text" handleChange={(e) => setFormData({
+                                    ...formData,
+                                    card_holder_name: e.target.value
+                                })}/>
                             </Label>
                             <div className="flex items-end gap-[1.5rem]">
                                 <div className="flex flex-col gap-[1.5rem]">
@@ -113,7 +126,9 @@ export const AddCardPopup: FC<IConfirmationPopup> = ({onClick, onClose}) => {
                                                handleChange={(e) => handleExpDateChange(e)}/>
                                     </Label>
                                 </div>
-                                <Button type="primary" title="Add card" disabled={isExpirationDateValid(formData.expiration_date) || !formData.expiration_date} handleClick={() => onClick(formData)}/>
+                                <Button type="primary" title="Add card"
+                                        disabled={isExpirationDateValid(formData.expiration_date) || !formData.expiration_date}
+                                        handleClick={() => onClick(formData)}/>
                             </div>
                         </div>
                     </div>
