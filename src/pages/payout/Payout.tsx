@@ -146,7 +146,7 @@ export const Payout = () => {
                             Select the card you want to transfer to
                         </h2>
                         <div className="flex justify-between gap-[2rem]">
-                            <div className="flex flex-wrap flex-1 gap-[2rem]">
+                            <div className="flex flex-col flex-1 gap-[2rem]">
                                 {!!cards.length &&
                                     cards.map(card => (
                                         <div

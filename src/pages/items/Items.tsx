@@ -34,10 +34,10 @@ export const Items = () => {
             <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
                 <OfferCard withRate={false} primaryButtonText={'Find an offer'} secondaryButtonText={'Edit item'} data={{}}/>
             </div>
-            <div className="flex justify-end gap-[4rem]">
-                <Button title={'How it works'} type={'secondary'} handleClick={() => {}} />
-                <Button title={'Find offers'} type={'primary'} handleClick={() => {}} />
-            </div>
+            {/*<div className="flex justify-end gap-[4rem]">*/}
+            {/*    <Button title={'How it works'} type={'secondary'} handleClick={() => {}} />*/}
+            {/*    <Button title={'Find offers'} type={'primary'} handleClick={() => {}} />*/}
+            {/*</div>*/}
         </div>
 :
     <Loading />

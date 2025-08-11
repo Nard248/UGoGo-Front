@@ -55,23 +55,23 @@ export const Requests = () => {
             !!requests.length ?
                 <div className="flex flex-col gap-3 w-full">
                     <Tabs value={tabValue} onChange={handleChange} centered>
-                        <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                        <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                        <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                        <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                        <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                        <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
                     </Tabs>
                     <div className="flex flex-col gap-[6rem] w-full">
                         <h3 className="text-[2rem] font-medium">
                             My requests
                         </h3>
+                        {/*@ts-ignore*/}
+                        {!requestsWithFilters[tabValue].length ?
+                            <h1 className="text-center text-[2rem]">You don't have requests with
+                                status <b>{tabValue.split('_').join(' ').toUpperCase()}</b></h1>
+                            :
                         <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                            {/*@ts-ignore*/}
-                            {!requestsWithFilters[tabValue].length ?
-                                <h1>You don't have requests with
-                                    status <b>{tabValue.split('_').join(' ').toUpperCase()}</b></h1>
-                                :
-                                // @ts-ignore
+                            {// @ts-ignore
                                 requestsWithFilters[tabValue].map(request => (
                                     <OfferCard key={request.id}
                                                withRate={false}
@@ -83,12 +83,13 @@ export const Requests = () => {
                                     />
                                 ))}
                         </div>
-                        <div className="flex justify-end gap-[4rem]">
-                            <Button title={'How it works'} type={'secondary'} handleClick={() => {
-                            }}/>
-                            <Button title={'Find offers'} type={'primary'} handleClick={() => {
-                            }}/>
-                        </div>
+                        }
+                        {/*<div className="flex justify-end gap-[4rem]">*/}
+                        {/*    <Button title={'How it works'} type={'secondary'} handleClick={() => {*/}
+                        {/*    }}/>*/}
+                        {/*    <Button title={'Find offers'} type={'primary'} handleClick={() => {*/}
+                        {/*    }}/>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
                 :

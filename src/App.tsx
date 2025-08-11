@@ -15,7 +15,6 @@ import {
 import { Registration } from "./pages/auth/Registration";
 import { Login } from "./pages/auth/Login";
 import { ItemAdd } from "./pages/itemAdd/ItemAdd";
-import { Sidenav } from "./layouts/Sidenav";
 import { Payment } from "./pages/payment/Payment";
 import { PaymentConfirmation } from "./pages/paymentConfirmation/PaymentConfirmation";
 import { SearchResult } from "./pages/search/SearchResult";
@@ -51,6 +50,7 @@ import {
   Terms,
   TruckItem,
 } from "./pages/info";
+import classNames from "classnames";
 
 const Protected = () => {
   const location = useLocation();
@@ -116,7 +116,9 @@ const Public = () => {
 function App() {
   return (
     <div className="App">
-      <main className="mainContent">
+      <main className={classNames("mainContent", {
+        'p-0': window.location.pathname === '/'
+      })}>
         <BrowserRouter>
           <Routes>
             <Route element={<Protected />}>
