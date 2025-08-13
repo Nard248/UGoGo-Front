@@ -52,6 +52,8 @@ import {
 } from "./pages/info";
 import classNames from "classnames";
 
+import Messages from "./pages/messages/ChatPage"
+
 const Protected = () => {
   const location = useLocation();
   const accessToken = localStorage.getItem("access");
@@ -156,6 +158,8 @@ function App() {
               <Route path="chat-support" element={<ChatSupport />} />
               <Route path="terms" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="messages" element={<Messages />} /> {/* Updated this route to use the ChatApp component */}
+
               <Route path="/" element={<Home />} />
             </Route>
             <Route element={<Public />}>
