@@ -13,6 +13,8 @@ import accountHoverIcon from "../../assets/icons/account_circle_hover.svg";
 import logoutIcon from "../../assets/icons/logout.svg";
 import logoutHoverIcon from "../../assets/icons/logoutHover.svg";
 import coin from "../../assets/icons/coin.svg";
+import sentIcon from "../../assets/icons/airplaneIcon.svg";
+import sentHoverIcon from "../../assets/icons/airplane.svg";
 import { logout, getUserDetails } from "../../api/route";
 import {User} from "../../types/global";
 
@@ -23,6 +25,7 @@ export const ProfilePopover: FC = () => {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const [requestsIconState, setRequestsIcon] = useState(requestsIcon);
+  const [sentIconState, setSentIcon] = useState(sentIcon);
   const [itemsIconState, setItemsIcon] = useState(itemsIcon);
   const [flightsIconState, setFlightsIconState] = useState(flightsIcon);
   const [accountIconState, setAccountIcon] = useState(accountIcon);
@@ -160,6 +163,22 @@ export const ProfilePopover: FC = () => {
               />
               <span className="text-[1.4rem] text-[#808080] hover:text-[#F9A34B]">
                 My Requests
+              </span>
+            </div>
+
+            <div
+              className="flex items-center gap-[.8rem] cursor-pointer"
+              onClick={() => handleNavigation("/sent-requests")}
+              onMouseEnter={() => setSentIcon(sentHoverIcon)}
+              onMouseLeave={() => setSentIcon(sentIcon)}
+            >
+              <img
+                src={sentIconState}
+                alt="Sent Requests Icon"
+                className="w-[20px] h-[20px]"
+              />
+              <span className="text-[1.4rem] text-[#808080] hover:text-[#F9A34B]">
+                Sent Requests
               </span>
             </div>
 
