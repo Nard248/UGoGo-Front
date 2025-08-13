@@ -94,6 +94,10 @@ export const getAllRequests = async () => {
   return await api.get(`/flight-requests/list-requests/`);
 };
 
+export const getSentRequests = async () => {
+  return await api.get(`/flight-requests/sent-requests/`);
+};
+
 export const requestsAction = async (data: {request_id: string | number, action: 'accept' | 'reject'}) => {
   return await api.post(`/flight-requests/action/`, data);
 };

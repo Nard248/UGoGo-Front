@@ -24,6 +24,7 @@ import { ForgotPassword } from "./pages/auth/ForgotPassword";
 import { EmailVerification } from "./pages/auth/EmailVerification";
 import { ResetPassword } from "./pages/auth/ResetPassword";
 import { Requests } from "./pages/requests/Requests";
+import { SentRequests } from "./pages/sentRequests/SentRequests";
 import { Offers } from "./pages/offers/Offers";
 import { Items } from "./pages/items/Items";
 import { Transaction } from "./pages/transaction/Transaction";
@@ -71,6 +72,7 @@ const Protected = () => {
     "/add-profile-info",
     "/profile-verification",
     "/requests",
+    "/sent-requests",
     "/offers",
     "/items",
     "/transaction",
@@ -136,6 +138,7 @@ function App() {
                 element={<ProfileVerification />}
               />
               <Route path="requests" element={<Requests />} />
+              <Route path="sent-requests" element={<SentRequests />} />
               <Route path="offers" element={<Offers />} />
               <Route path="items" element={<Items />} />
               <Route path="transaction" element={<Transaction />} />
