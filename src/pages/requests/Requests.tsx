@@ -1,13 +1,15 @@
 import {OfferCard} from "../../components/offerCard/OfferCard";
 import {Button} from "../../components/button/Button";
-import {getAllRequests, requestsAction} from "../../api/route";
+import {getAllRequests, courierRequestAction} from "../../api/route";
 import {SyntheticEvent, useEffect, useMemo, useState} from "react";
-import {Tab, Tabs} from "@mui/material";
+import {Tab, Tabs, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material";
 import {Loading} from "../../components/loading/Loading";
 
 export const Requests = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [tabValue, setTabValue] = useState('all');
+    const [snackbar, setSnackbar] = useState<{open: boolean, message: string, severity: 'success' | 'error' | 'info' | 'warning'}>({open: false, message: '', severity: 'info'});
+    const [confirmDialog, setConfirmDialog] = useState<{open: boolean, requestId: string | number | null, action: 'accept' | 'reject' | null}>({open: false, requestId: null, action: null});
 
     const handleChange = (event: SyntheticEvent, newValue: string) => {
         setTabValue(newValue);
@@ -16,9 +18,15 @@ export const Requests = () => {
 
     const getRequests = async () => {
         setIsLoading(true)
-        const data = await getAllRequests();
-        setRequests(data.data.results);
-        setIsLoading(false)
+        try {
+            const data = await getAllRequests();
+            setRequests(data.data.results);
+        } catch (error) {
+            console.error('Failed to fetch requests:', error);
+            setSnackbar({open: true, message: 'Failed to load requests. Please try again.', severity: 'error'});
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const requestsWithFilters = useMemo(() => {
@@ -38,14 +46,36 @@ export const Requests = () => {
     const handleActionsOnRequest = async (id: string | number, type: 'accept' | 'reject') => {
         setIsLoading(true)
         try {
-            const data = await requestsAction({request_id: id, action: type});
+            const data = await courierRequestAction({request_id: id, action: type});
             if (!data.data.error) {
-                getRequests();
+                const actionText = type === 'accept' ? 'accepted' : 'declined';
+                setSnackbar({open: true, message: `Request ${actionText} successfully!`, severity: 'success'});
+                await getRequests();
+            } else {
+                setSnackbar({open: true, message: data.data.error || `Failed to ${type} request`, severity: 'error'});
             }
-        } catch (e) {
+        } catch (error: any) {
+            console.error('Request action error:', error);
+            const errorMessage = error.response?.data?.detail || error.response?.data?.error || `Failed to ${type} request. Please try again.`;
+            setSnackbar({open: true, message: errorMessage, severity: 'error'});
+        } finally {
             setIsLoading(false)
-            console.log(e);
         }
+    }
+
+    const handleConfirmAction = (id: string | number, action: 'accept' | 'reject') => {
+        setConfirmDialog({open: true, requestId: id, action: action});
+    }
+
+    const handleConfirmDialogClose = (confirmed: boolean) => {
+        if (confirmed && confirmDialog.requestId && confirmDialog.action) {
+            handleActionsOnRequest(confirmDialog.requestId, confirmDialog.action);
+        }
+        setConfirmDialog({open: false, requestId: null, action: null});
+    }
+
+    const handleSnackbarClose = () => {
+        setSnackbar({...snackbar, open: false});
     }
 
     return (
@@ -72,16 +102,19 @@ export const Requests = () => {
                             :
                         <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
                             {// @ts-ignore
-                                requestsWithFilters[tabValue].map(request => (
-                                    <OfferCard key={request.id}
-                                               withRate={false}
-                                               onPrimaryClick={() => handleActionsOnRequest(request.item.id, 'reject')}
-                                               primaryButtonText={'Decline'}
-                                               onSecondaryClick={() => handleActionsOnRequest(request.item.id, 'accept')}
-                                               secondaryButtonText={'Accept'}
-                                               data={request.offer}
-                                    />
-                                ))}
+                                requestsWithFilters[tabValue].map(request => {
+                                    const isDisabled = request.status?.toLowerCase().trim() === 'completed' || request.status?.toLowerCase().trim() === 'rejected';
+                                    return (
+                                        <OfferCard key={request.id}
+                                                   withRate={false}
+                                                   onPrimaryClick={!isDisabled ? () => handleConfirmAction(request.id, 'reject') : undefined}
+                                                   primaryButtonText={request.status?.toLowerCase().trim() === 'rejected' ? 'Declined' : 'Decline'}
+                                                   onSecondaryClick={!isDisabled ? () => handleConfirmAction(request.id, 'accept') : undefined}
+                                                   secondaryButtonText={request.status?.toLowerCase().trim() === 'completed' ? 'Accepted' : 'Accept'}
+                                                   data={request.offer}
+                                        />
+                                    );
+                                })}
                         </div>
                         }
                         {/*<div className="flex justify-end gap-[4rem]">*/}
@@ -95,6 +128,41 @@ export const Requests = () => {
                 :
                 <h1>No Requests found</h1>
         }
+        <Snackbar 
+            open={snackbar.open} 
+            autoHideDuration={6000} 
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+            <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                {snackbar.message}
+            </Alert>
+        </Snackbar>
+        <Dialog
+            open={confirmDialog.open}
+            onClose={() => handleConfirmDialogClose(false)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+                {confirmDialog.action === 'accept' ? 'Accept Request?' : 'Decline Request?'}
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {confirmDialog.action === 'accept' 
+                        ? 'Are you sure you want to accept this request? This will commit you to delivering the item.'
+                        : 'Are you sure you want to decline this request? This action cannot be undone.'}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button title="Cancel" type="secondary" handleClick={() => handleConfirmDialogClose(false)} />
+                <Button 
+                    title={confirmDialog.action === 'accept' ? 'Accept' : 'Decline'} 
+                    type="primary" 
+                    handleClick={() => handleConfirmDialogClose(true)} 
+                />
+            </DialogActions>
+        </Dialog>
         </>
     )
 }
