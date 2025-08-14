@@ -63,7 +63,7 @@ export const ChatSidebar: React.FC<Props> = ({ users }) => {
                 <span>{u.time}</span>
               </div>
             </div>
-            <div className="star" title="star">
+            {/* <div className="star" title="star">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 17.3l6.18 3.9-1.64-7.03L21.5 9.7l-7.19-.62L12 2 9.69 9.08 2.5 9.7l5 4.47L5.86 21.2 12 17.3z"
@@ -73,7 +73,7 @@ export const ChatSidebar: React.FC<Props> = ({ users }) => {
                   strokeLinejoin="round"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

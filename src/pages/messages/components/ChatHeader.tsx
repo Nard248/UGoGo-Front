@@ -12,13 +12,13 @@ export const ChatHeader: React.FC<Props> = ({ user }) => {
         <div className="avatar" />
         <div className="info">
           <h4>{user.name}</h4>
-          <div className="sub">
+          {/* <div className="sub">
             <span>⭐ 5 (435)</span>
-          </div>
+          </div> */}
         </div>
       </div>
 
-      <div className="header-actions">
+      {/* <div className="header-actions">
 <button aria-label="star" title="star" className="menu-dot">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
     <path
@@ -44,7 +44,7 @@ export const ChatHeader: React.FC<Props> = ({ user }) => {
             <circle cx="12" cy="19" r="1.6" fill="#333" />
           </svg>
         </button>
-      </div>
+      </div> */}
     </header>
   );
 };

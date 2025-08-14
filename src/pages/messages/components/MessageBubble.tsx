@@ -6,13 +6,25 @@ interface Props {
   message: IMessage;
 }
 
+const isEmojiOnly = (text: string) => {
+  return /^[\p{Emoji}\s]+$/u.test(text);
+};
+
 export const MessageBubble: React.FC<Props> = ({ message }) => {
   const cls = message.fromMe ? "message-bubble from-me" : "message-bubble from-others";
+
+  const emojiOnly = message.type === "text" && message.text
+    ? isEmojiOnly(message.text)
+    : false;
 
   return (
     <div className={`message-wrapper ${message.fromMe ? "align-right" : "align-left"}`}>
       <div className={cls}>
-        {message.type === "text" && <div className="text">{message.text}</div>}
+        {message.type === "text" && (
+          <div className={`message-text ${emojiOnly ? "emoji-only" : ""}`}>
+            {message.text}
+          </div>
+        )}
 
         {message.type === "audio" && (
           <div className="audio">
