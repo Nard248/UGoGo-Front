@@ -103,20 +103,6 @@ export const requestsAction = async (data: {request_id: string | number, action:
   return await api.post(`/flight-requests/action/`, data);
 };
 
-// For couriers to accept/decline requests on their offers
-export const courierRequestAction = async (data: {request_id: string | number, action: 'accept' | 'reject'}) => {
-  // Note: Backend team needs to implement this endpoint
-  // Fallback to the original endpoint if the new one doesn't exist yet
-  try {
-    return await api.post(`/flight-requests/courier-action/`, data);
-  } catch (error: any) {
-    if (error.response?.status === 404) {
-      // Fallback to original endpoint if new one doesn't exist
-      return await api.post(`/flight-requests/action/`, data);
-    }
-    throw error;
-  }
-};
 
 export const pay = async (data: IPay): Promise<{ data: IPayData }> => {
   return await api.post(`/flight-requests/create/`, data);

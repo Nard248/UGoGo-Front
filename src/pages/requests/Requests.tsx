@@ -1,6 +1,6 @@
 import {OfferCard} from "../../components/offerCard/OfferCard";
 import {Button} from "../../components/button/Button";
-import {getAllRequests, courierRequestAction} from "../../api/route";
+import {getAllRequests, requestsAction} from "../../api/route";
 import {SyntheticEvent, useEffect, useMemo, useState} from "react";
 import {Tab, Tabs, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material";
 import {Loading} from "../../components/loading/Loading";
@@ -46,7 +46,7 @@ export const Requests = () => {
     const handleActionsOnRequest = async (id: string | number, type: 'accept' | 'reject') => {
         setIsLoading(true)
         try {
-            const data = await courierRequestAction({request_id: id, action: type});
+            const data = await requestsAction({request_id: id, action: type});
             if (!data.data.error) {
                 const actionText = type === 'accept' ? 'accepted' : 'declined';
                 setSnackbar({open: true, message: `Request ${actionText} successfully!`, severity: 'success'});
