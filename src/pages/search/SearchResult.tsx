@@ -8,13 +8,17 @@ import { useNavigate } from "react-router";
 import { searchOffer, getAllOffers, advancedSearchOffer } from "../../api/route";
 import { Loading } from "../../components/loading/Loading";
 import {getSearchedData} from "../../components/search/SearchService";
+import {EmptyState} from "../../components/emptyState/EmptyState";
+import {useNotification} from "../../components/notification/NotificationProvider";
 
 export const SearchResult: FC = () => {
     const [isFilterOpened, setIsFilterOpened] = useState<boolean>(false);
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [hasFiltersApplied, setHasFiltersApplied] = useState<boolean>(false);
     const navigate = useNavigate();
+    const { showError, showInfo } = useNotification();
 
     useEffect(() => {
         const searchedData = getSearchedData();
@@ -30,6 +34,7 @@ export const SearchResult: FC = () => {
                 setSearchResults(response.data);
             } catch (error) {
                 console.error("Error fetching offers:", error);
+                showError('Failed to load offers. Please try again.');
             } finally {
                 setIsLoading(false);
             }
@@ -41,12 +46,14 @@ export const SearchResult: FC = () => {
     const handleSearchResults = async (searchParams: { origin_airport: string; destination_airport: string; takeoff_date: string }) => {
         setIsSearching(true);
         setIsLoading(true);
+        setHasFiltersApplied(false);
 
         try {
             const response = await searchOffer(searchParams);
             setSearchResults(response.data);
         } catch (error) {
             console.error("Search Error:", error);
+            showError('Search failed. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -54,11 +61,28 @@ export const SearchResult: FC = () => {
 
     const handleFilterApply = async (params: Record<string, any>) => {
         setIsLoading(true);
+        setHasFiltersApplied(true);
         try {
             const response = await advancedSearchOffer(params);
             setSearchResults(response.data);
         } catch (error) {
             console.error('Advanced search error:', error);
+            showError('Filter search failed. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleClearFilters = async () => {
+        setHasFiltersApplied(false);
+        setIsLoading(true);
+        try {
+            const response = await getAllOffers();
+            setSearchResults(response.data);
+            showInfo('Filters cleared. Showing all available offers.');
+        } catch (error) {
+            console.error('Error loading offers:', error);
+            showError('Failed to load offers. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -110,9 +134,29 @@ export const SearchResult: FC = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex justify-center items-center min-h-[20rem] w-full">
-                            <h1>No offers found</h1>
-                        </div>
+                        <EmptyState
+                            illustration="empty-search"
+                            title={isSearching ? "No matching offers found" : "No offers available"}
+                            description={
+                                isSearching 
+                                    ? "We couldn't find any offers matching your search criteria. Try adjusting your search parameters or browse all available offers."
+                                    : hasFiltersApplied 
+                                        ? "No offers match your current filters. Try adjusting your filter settings or clear them to see all offers."
+                                        : "There are currently no offers available. Check back later or create an alert to be notified when new offers are posted."
+                            }
+                            primaryAction={{
+                                label: hasFiltersApplied ? "Clear filters" : "Browse all offers",
+                                onClick: hasFiltersApplied ? handleClearFilters : () => {
+                                    setIsSearching(false);
+                                    setHasFiltersApplied(false);
+                                    handleClearFilters();
+                                }
+                            }}
+                            secondaryAction={{
+                                label: "Post your offer",
+                                onClick: () => navigate('/post-offer')
+                            }}
+                        />
                     )}
                 </div>
             </div>

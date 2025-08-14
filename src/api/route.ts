@@ -90,8 +90,8 @@ export const getMyOffers = async () => {
   return await api.get(`/offers/my_offers/`);
 };
 
-export const getAllRequests = async () => {
-  return await api.get(`/flight-requests/list-requests/`);
+export const getReceivedRequests = async () => {
+  return await api.get(`/flight-requests/received/`);
 };
 
 export const getSentRequests = async () => {

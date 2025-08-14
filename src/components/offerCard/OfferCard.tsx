@@ -17,6 +17,7 @@ interface IOfferCard {
     size?: 'small' | 'medium' | 'large';
     onPrimaryClick?: () => void;
     onSecondaryClick?: () => void;
+    isOwnOffer?: boolean;
 }
 
 const formatDate = (date: Date) => {
@@ -27,7 +28,7 @@ const formatTime = (date: Date) => {
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
 }
 
-export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick, withOfferStatus = true, withRate = true}) => {
+export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryButtonText, size = 'large', onPrimaryClick, onSecondaryClick, withOfferStatus = true, withRate = true, isOwnOffer = false}) => {
   const navigate = useNavigate();
   const handleClick = () => {
     if (data?.id) {
@@ -37,6 +38,11 @@ export const OfferCard: FC<IOfferCard> = ({data, primaryButtonText, secondaryBut
     return (
         <div  className={classNames(`offerCard border border-[#AEE6E6] offerCard-${size}`)}>
             <div className="offerCard__image" onClick={handleClick}  style={{ cursor: "pointer" }}>
+                {isOwnOffer && (
+                    <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs z-10">
+                        Your Offer
+                    </div>
+                )}
                 {data?.verified &&
                     <div className="offerCard__imageFlag">
                         <span>

@@ -1,13 +1,17 @@
 import {OfferCard} from "../../components/offerCard/OfferCard";
 import {Button} from "../../components/button/Button";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useState, useEffect} from "react";
 import {getMyOffers} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
 import {getSearchedData} from "../../components/search/SearchService";
+import {EmptyState} from "../../components/emptyState/EmptyState";
+import {useNotification} from "../../components/notification/NotificationProvider";
 
 export const Offers = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { showSuccess, showError } = useNotification();
     const [notificationMessage, setNotificationMessage] = useState(
         location.state?.notification || ""
     );
@@ -15,9 +19,14 @@ export const Offers = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const getMyFlights = async () => {
-        const {data} = await getMyOffers();
-        setOffers(data)
-        setIsLoading(false);
+        try {
+            const {data} = await getMyOffers();
+            setOffers(data);
+        } catch (error) {
+            showError('Failed to load your offers. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -28,38 +37,47 @@ export const Offers = () => {
 
     useEffect(() => {
         if (notificationMessage) {
-            const timer = setTimeout(() => {
-                setNotificationMessage("");
-            }, 2000);
-            return () => clearTimeout(timer);
+            showSuccess(notificationMessage);
+            setNotificationMessage("");
         }
-    }, [notificationMessage]);
+    }, [notificationMessage, showSuccess]);
 
     return (
         <>
-            {notificationMessage && (
-                <div
-                    className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg text-center animate-fade-out">
-                    <p>{notificationMessage}</p>
-                </div>
-            )}
             <div className="flex flex-col gap-[6rem] w-full">
                 <h3 className="text-[2rem] font-medium">My offers</h3>
-                <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                    {isLoading ? (
-                            <div className="flex justify-center items-center min-h-[20rem] w-full">
-                                <Loading/>
-                            </div>
-                        ) :
-                        offers.length > 0 && offers.map((offer: any) => (
+                
+                {isLoading ? (
+                    <div className="flex justify-center items-center min-h-[20rem] w-full">
+                        <Loading/>
+                    </div>
+                ) : offers.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
+                        {offers.map((offer: any) => (
                             <OfferCard
+                                key={offer.id}
                                 withRate={false}
-                                primaryButtonText={"Accept"}
-                                secondaryButtonText={"Decline"}
                                 data={offer}
+                                isOwnOffer={true}
+                                // No buttons for user's own offers
                             />
                         ))}
-                </div>
+                    </div>
+                ) : (
+                    <EmptyState
+                        illustration="no-offers"
+                        title="No offers yet"
+                        description="You haven't created any flight offers. Start by posting your travel route to help others ship their items."
+                        primaryAction={{
+                            label: "Create your first offer",
+                            onClick: () => navigate('/post-offer')
+                        }}
+                        secondaryAction={{
+                            label: "Learn how it works",
+                            onClick: () => navigate('/features')
+                        }}
+                    />
+                )}
                 {/*<div className="flex justify-end gap-[4rem]">*/}
                 {/*    <Button*/}
                 {/*        title={"How it works"}*/}

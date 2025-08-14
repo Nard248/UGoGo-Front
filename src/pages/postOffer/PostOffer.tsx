@@ -3,14 +3,16 @@ import Step1FlightDetails from "./steps/Step1FlightDetails";
 import Step2ItemCategory from "./steps/Step2ItemCategory";
 import Step4ItemDetails from "./steps/Step4PriceDetails";
 import { Button } from "../../components/button/Button";
-import { Snackbar } from "@mui/material";
 import { IOfferCreateForm } from "../../types/global";
 import { getAirports, creatOffer } from "../../api/route"; 
 import { useNavigate } from "react-router-dom"; 
 import { AxiosError } from "axios"; 
 import Step3ItemDetailsSectionProps from "./steps/Step3ItemDetailsSectionProps";
+import { StepInfo } from "./components/StepInfo";
+import { useNotification } from "../../components/notification/NotificationProvider";
 
 import "./PostOffer.scss";
+
 const PostOffer: React.FC = () => {
   const [airports, setAirports] = useState<any[]>([]);
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -18,12 +20,17 @@ const PostOffer: React.FC = () => {
     {} as IOfferCreateForm
   );
   const [errors, setErrors] = useState<Record<string, boolean>>({});
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate(); 
+  const { showSuccess, showError, showWarning } = useNotification();
 
   const getAirportsData = async () => {
-    const data = await getAirports();
-    setAirports(data.data.results);
+    try {
+      const data = await getAirports();
+      setAirports(data.data.results);
+    } catch (error) {
+      showError('Failed to load airports. Please refresh the page.');
+    }
   };
 
   useEffect(() => {
@@ -33,8 +40,9 @@ const PostOffer: React.FC = () => {
   const handleNext = () => {
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => prev + 1);
+      showSuccess(`Step ${currentStep} completed!`);
     } else {
-      setOpenSnackbar(true);
+      showWarning('Please fill in all required fields before continuing.');
     }
   };
 
@@ -62,9 +70,9 @@ const PostOffer: React.FC = () => {
         const isDimensionsFilled = [height, width, length].every(
           (dim) => dim !== null && dim !== undefined && dim !== ""
         );
-        const name = offerFormData.name?.value
+        const name = offerFormData.name?.value;
 
-        return  !!weight && isDimensionsFilled && !!name;
+        return !!weight && isDimensionsFilled && !!name;
 
       case 4:
         return !!offerFormData.price?.value;
@@ -78,6 +86,13 @@ const PostOffer: React.FC = () => {
   };
 
   const handleCreateOffer = async () => {
+    if (!validateStep(4)) {
+      showWarning('Please complete all required information.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
     const sendingData = {
       flight_number: offerFormData.flight_number?.value,
       from_airport_id: offerFormData.from_airport_id?.value,
@@ -89,118 +104,153 @@ const PostOffer: React.FC = () => {
         new Date(offerFormData.arrival_datetime?.value)
       ),
       category_ids: offerFormData.category_ids?.value,
-      available_dimensions: `${offerFormData.available_dimensions?.value?.height}x${offerFormData.available_dimensions?.value?.length}x${offerFormData.available_dimensions?.value?.width}`, // Fix here: Join dimensions as a string
+      available_dimensions: `${offerFormData.available_dimensions?.value?.height}x${offerFormData.available_dimensions?.value?.length}x${offerFormData.available_dimensions?.value?.width}`,
       available_space: 1,
       available_weight: offerFormData.available_weight?.value,
       price: offerFormData.price?.value,
       is_fragile: offerFormData.is_fragile,
     };
 
-
     try {
       const data = await creatOffer(sendingData);
       if (data) {
-        navigate("/offers", {
-          state: { notification: "Offer has been created successfully" },
-        });
+        showSuccess('🎉 Offer created successfully! Redirecting to your offers...');
+        setTimeout(() => {
+          navigate("/offers", {
+            state: { notification: "Your offer has been posted successfully!" },
+          });
+        }, 1500);
       }
     } catch (error) {
       const axiosError = error as AxiosError; 
       console.error(
         "Error creating offer:",
         axiosError.response?.data || axiosError
-      ); 
+      );
+      showError('Failed to create offer. Please check your information and try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const getStepTitle = () => {
+    const titles = {
+      1: "Flight Details",
+      2: "Item Categories", 
+      3: "Space & Weight",
+      4: "Pricing"
+    };
+    return titles[currentStep as keyof typeof titles];
+  };
+
   return (
-    <div className="postOffer">
-      <div className="flex justify-between items-center mb-[2.1rem]">
-        <h1 className="font-medium text-[2rem]">Create a new flight</h1>
-      </div>
+    <div className="post-offer">
+      <div className="post-offer__container">
+        {/* Left Sidebar - Step Information */}
+        <div className="post-offer__sidebar">
+          <StepInfo currentStep={currentStep} totalSteps={4} />
+        </div>
 
-      <div className="postOffer__content">
-        {currentStep === 1 && (
-          <Step1FlightDetails
-            airports={airports}
-            values={{
-              flightNumber: offerFormData.flight_number?.value || "",
-              departureAirport: offerFormData.from_airport_id?.value || "",
-              arrivalAirport: offerFormData.to_airport_id?.value || "",
-              departureDate: offerFormData.departure_datetime?.value || "",
-              arrivalDate: offerFormData.arrival_datetime?.value || "",
-            }}
-            handleChange={(field, value) => {
-              const fieldMap: Record<string, keyof IOfferCreateForm> = {
-                flightNumber: "flight_number",
-                departureAirport: "from_airport_id",
-                arrivalAirport: "to_airport_id",
-                departureDate: "departure_datetime",
-                arrivalDate: "arrival_datetime",
-              };
+        {/* Right Content - Forms */}
+        <div className="post-offer__content">
+          <div className="post-offer__header">
+            <h1 className="post-offer__title">Create Your Offer</h1>
+            <p className="post-offer__subtitle">
+              {getStepTitle()} - Complete the information below
+            </p>
+          </div>
 
-              const key = fieldMap[field];
-              setOfferFormData((prev) => ({
-                ...prev,
-                [key]: { value },
-              }));
-            }}
-            onNext={handleNext}
-          />
-        )}
+          <div className="post-offer__form-container">
+            <div className="post-offer__form" key={currentStep}>
+              {currentStep === 1 && (
+                <Step1FlightDetails
+                  airports={airports}
+                  values={{
+                    flightNumber: offerFormData.flight_number?.value || "",
+                    departureAirport: offerFormData.from_airport_id?.value || "",
+                    arrivalAirport: offerFormData.to_airport_id?.value || "",
+                    departureDate: offerFormData.departure_datetime?.value || "",
+                    arrivalDate: offerFormData.arrival_datetime?.value || "",
+                  }}
+                  handleChange={(field, value) => {
+                    const fieldMap: Record<string, keyof IOfferCreateForm> = {
+                      flightNumber: "flight_number",
+                      departureAirport: "from_airport_id",
+                      arrivalAirport: "to_airport_id",
+                      departureDate: "departure_datetime",
+                      arrivalDate: "arrival_datetime",
+                    };
 
-        {currentStep === 2 && (
-          <Step2ItemCategory
-            offerFormData={offerFormData}
-            setOfferFormData={setOfferFormData}
-            errors={errors}
-            setErrors={setErrors}
-          />
-        )}
-        {currentStep === 3 && (
-          <Step3ItemDetailsSectionProps
-            offerFormData={offerFormData}
-            setOfferFormData={setOfferFormData}
-            errors={errors}
-            // setErrors={setErrors}
-          />
-        )}
-        {currentStep === 4 && (
-          <Step4ItemDetails
-            offerFormData={offerFormData}
-            setOfferFormData={setOfferFormData}
-            errors={errors}
-            setErrors={setErrors}
-          />
-        )}
+                    const key = fieldMap[field];
+                    setOfferFormData((prev) => ({
+                      ...prev,
+                      [key]: { value },
+                    }));
+                  }}
+                  onNext={handleNext}
+                />
+              )}
 
+              {currentStep === 2 && (
+                <Step2ItemCategory
+                  offerFormData={offerFormData}
+                  setOfferFormData={setOfferFormData}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
+              )}
 
-        <div className="postOffer__actions mt-4">
-          {currentStep > 1 && (
-            <Button
-              title="Back"
-              type="secondary"
-              handleClick={handlePrevious}
-            />
-          )}
-          {currentStep < 4 ? (
-            <Button title="Next" type="primary" handleClick={handleNext} />
-          ) : (
-            <Button
-              title="Create Offer"
-              type="primary"
-              handleClick={handleCreateOffer} 
-            />
-          )}
+              {currentStep === 3 && (
+                <Step3ItemDetailsSectionProps
+                  offerFormData={offerFormData}
+                  setOfferFormData={setOfferFormData}
+                  errors={errors}
+                />
+              )}
+
+              {currentStep === 4 && (
+                <Step4ItemDetails
+                  offerFormData={offerFormData}
+                  setOfferFormData={setOfferFormData}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
+              )}
+            </div>
+
+            <div className="post-offer__actions">
+              {currentStep > 1 && (
+                <Button
+                  title="Previous"
+                  type="secondary"
+                  handleClick={handlePrevious}
+                  icon="arrow-left"
+                  disabled={isSubmitting}
+                />
+              )}
+              
+              <div className="post-offer__actions-spacer"></div>
+              
+              {currentStep < 4 ? (
+                <Button 
+                  title="Continue" 
+                  type="primary" 
+                  handleClick={handleNext}
+                  icon="arrow-right"
+                />
+              ) : (
+                <Button
+                  title={isSubmitting ? "Creating..." : "Create Offer"}
+                  type="primary"
+                  handleClick={handleCreateOffer}
+                  disabled={isSubmitting}
+                  icon="check"
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
-
-      <Snackbar
-        open={openSnackbar}
-        onClose={() => setOpenSnackbar(false)}
-        autoHideDuration={4000}
-        message="Please fill all required fields."
-      />
     </div>
   );
 };

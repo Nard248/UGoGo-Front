@@ -58,8 +58,8 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
           {/*    //selectedLink:*/}
           {/*})} href="#">Price</a>*/}
           <a className={classNames({
-              //selectedLink:
-          })} href="#">Contact Us</a>
+              selectedLink: pathname === '/contact-us'
+          })} href="/contact-us">Contact Us</a>
         </nav>
       )}
       {isLoggedIn ?

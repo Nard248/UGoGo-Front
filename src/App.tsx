@@ -1,5 +1,6 @@
 import React from "react";
 import { Header } from "./layouts/Header";
+import { NotificationProvider } from "./components/notification/NotificationProvider";
 import { SingleProductPage } from "./pages/singleProductPage/SingleProductPage";
 // import { PostOffer } from "./pages/postOffer/PostOffer";
 import  PostOffer  from "./pages/postOffer/PostOffer";
@@ -68,7 +69,6 @@ const Protected = () => {
     "/payment",
     "/payment-history",
     "/payment-success",
-    "/search-result",
     "/add-profile-info",
     "/profile-verification",
     "/requests",
@@ -77,8 +77,25 @@ const Protected = () => {
     "/items",
     "/transaction",
     "/payout",
+    "/features",
+    "/pricing",
+    "/send-item",
+    "/truck-item",
+    "/manage-offer",
+    "/about",
+    "/contact-us",
+    "/careers",
+    "/culture",
+    "/blog",
+    "/getting-started",
+    "/help-center",
+    "/chat-support",
+    "/terms",
+    "/privacy-policy",
+    "/balance",
+    "/offer/",
     "/",
-  ].includes(location.pathname);
+  ].includes(location.pathname) || location.pathname.startsWith("/offer/");
 
   return accessToken ? (
     <>
@@ -118,11 +135,12 @@ const Public = () => {
 function App() {
   return (
     <div className="App">
-      <main className={classNames("mainContent", {
-        'p-0': window.location.pathname === '/'
-      })}>
-        <BrowserRouter>
-          <Routes>
+      <NotificationProvider>
+        <main className={classNames("mainContent", {
+          'p-0': window.location.pathname === '/'
+        })}>
+          <BrowserRouter>
+            <Routes>
             <Route element={<Protected />}>
               <Route path="offer/:id" element={<SingleProductPage />} />
               <Route path="post-offer" element={<PostOffer />} />
@@ -179,10 +197,11 @@ function App() {
                 element={<TwoFactorConfirmation />}
               />
             </Route>
-          </Routes>
-        </BrowserRouter>
-      </main>
-      {/* <Footer /> */}
+            </Routes>
+          </BrowserRouter>
+        </main>
+        {/* <Footer /> */}
+      </NotificationProvider>
     </div>
   );
 }

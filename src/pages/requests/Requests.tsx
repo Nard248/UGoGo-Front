@@ -1,14 +1,18 @@
 import {OfferCard} from "../../components/offerCard/OfferCard";
 import {Button} from "../../components/button/Button";
-import {getAllRequests, requestsAction} from "../../api/route";
+import {getReceivedRequests, requestsAction} from "../../api/route";
 import {SyntheticEvent, useEffect, useMemo, useState} from "react";
-import {Tab, Tabs, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material";
+import {Tab, Tabs, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material";
 import {Loading} from "../../components/loading/Loading";
+import {EmptyState} from "../../components/emptyState/EmptyState";
+import {useNotification} from "../../components/notification/NotificationProvider";
+import {useNavigate} from "react-router-dom";
 
 export const Requests = () => {
+    const navigate = useNavigate();
+    const { showSuccess, showError, showInfo } = useNotification();
     const [isLoading, setIsLoading] = useState(false);
     const [tabValue, setTabValue] = useState('all');
-    const [snackbar, setSnackbar] = useState<{open: boolean, message: string, severity: 'success' | 'error' | 'info' | 'warning'}>({open: false, message: '', severity: 'info'});
     const [confirmDialog, setConfirmDialog] = useState<{open: boolean, requestId: string | number | null, action: 'accept' | 'reject' | null}>({open: false, requestId: null, action: null});
 
     const handleChange = (event: SyntheticEvent, newValue: string) => {
@@ -19,24 +23,25 @@ export const Requests = () => {
     const getRequests = async () => {
         setIsLoading(true)
         try {
-            const data = await getAllRequests();
+            const data = await getReceivedRequests();
             setRequests(data.data.results);
         } catch (error) {
             console.error('Failed to fetch requests:', error);
-            setSnackbar({open: true, message: 'Failed to load requests. Please try again.', severity: 'error'});
+            showError('Failed to load requests. Please try again.');
         } finally {
             setIsLoading(false)
         }
     }
 
     const requestsWithFilters = useMemo(() => {
-        return {
+        const filters = {
             all: requests,
             completed: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'completed'),
             pending: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'pending'),
             in_process: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'in_process'),
             rejected: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'rejected'),
-        }
+        };
+        return filters;
     }, [requests])
 
     useEffect(() => {
@@ -48,16 +53,17 @@ export const Requests = () => {
         try {
             const data = await requestsAction({request_id: id, action: type});
             if (!data.data.error) {
-                const actionText = type === 'accept' ? 'accepted' : 'declined';
-                setSnackbar({open: true, message: `Request ${actionText} successfully!`, severity: 'success'});
+                const message = type === 'accept' 
+                    ? '✅ Request accepted successfully! The sender has been notified.'
+                    : '❌ Request declined. The sender has been notified.';
+                showSuccess(message);
                 await getRequests();
             } else {
-                setSnackbar({open: true, message: data.data.error || `Failed to ${type} request`, severity: 'error'});
+                showError('Failed to process request. Please try again.');
             }
         } catch (error: any) {
             console.error('Request action error:', error);
-            const errorMessage = error.response?.data?.detail || error.response?.data?.error || `Failed to ${type} request. Please try again.`;
-            setSnackbar({open: true, message: errorMessage, severity: 'error'});
+            showError('Something went wrong. Please try again later.');
         } finally {
             setIsLoading(false)
         }
@@ -74,35 +80,72 @@ export const Requests = () => {
         setConfirmDialog({open: false, requestId: null, action: null});
     }
 
-    const handleSnackbarClose = () => {
-        setSnackbar({...snackbar, open: false});
-    }
+    const getEmptyStateForTab = () => {
+        const emptyStates: Record<string, { title: string; description: string }> = {
+            all: {
+                title: "No requests received yet",
+                description: "When senders request to use your offers, they'll appear here."
+            },
+            pending: {
+                title: "No pending requests",
+                description: "All your requests have been processed."
+            },
+            completed: {
+                title: "No completed requests",
+                description: "Completed delivery requests will appear here."
+            },
+            rejected: {
+                title: "No rejected requests",
+                description: "You haven't declined any requests."
+            },
+            in_process: {
+                title: "No requests in process",
+                description: "Active deliveries will appear here."
+            }
+        };
+        return emptyStates[tabValue] || emptyStates.all;
+    };
 
     return (
-        <>{isLoading ?
-            <Loading/>
-            :
-            !!requests.length ?
+        <>
+            {isLoading ? (
+                <Loading/>
+            ) : (
                 <div className="flex flex-col gap-3 w-full">
-                    <Tabs value={tabValue} onChange={handleChange} centered>
-                        <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
-                        <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
-                        <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
-                        <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
-                        <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
-                    </Tabs>
+                    {requests.length > 0 && (
+                        <Tabs value={tabValue} onChange={handleChange} centered>
+                            <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                        </Tabs>
+                    )}
+                    
                     <div className="flex flex-col gap-[6rem] w-full">
                         <h3 className="text-[2rem] font-medium">
-                            My requests
+                            Received Requests
                         </h3>
-                        {/*@ts-ignore*/}
-                        {!requestsWithFilters[tabValue].length ?
-                            <h1 className="text-center text-[2rem]">You don't have requests with
-                                status <b>{tabValue.split('_').join(' ').toUpperCase()}</b></h1>
-                            :
-                        <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                            {// @ts-ignore
-                                requestsWithFilters[tabValue].map(request => {
+                        
+                        {requests.length === 0 ? (
+                            <EmptyState
+                                illustration="no-requests"
+                                title="No requests yet"
+                                description="When senders request your delivery services, they'll appear here."
+                                primaryAction={{
+                                    label: "Browse available items",
+                                    onClick: () => navigate('/search-result')
+                                }}
+                            />
+                        ) : (requestsWithFilters as any)[tabValue].length === 0 ? (
+                            <EmptyState
+                                illustration="no-results"
+                                {...getEmptyStateForTab()}
+                            />
+                        ) : (
+                            <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
+                                {/* @ts-ignore */}
+                                {(requestsWithFilters as any)[tabValue].map((request: any) => {
                                     const isDisabled = request.status?.toLowerCase().trim() === 'completed' || request.status?.toLowerCase().trim() === 'rejected';
                                     return (
                                         <OfferCard key={request.id}
@@ -115,29 +158,11 @@ export const Requests = () => {
                                         />
                                     );
                                 })}
-                        </div>
-                        }
-                        {/*<div className="flex justify-end gap-[4rem]">*/}
-                        {/*    <Button title={'How it works'} type={'secondary'} handleClick={() => {*/}
-                        {/*    }}/>*/}
-                        {/*    <Button title={'Find offers'} type={'primary'} handleClick={() => {*/}
-                        {/*    }}/>*/}
-                        {/*</div>*/}
+                            </div>
+                        )}
                     </div>
                 </div>
-                :
-                <h1>No Requests found</h1>
-        }
-        <Snackbar 
-            open={snackbar.open} 
-            autoHideDuration={6000} 
-            onClose={handleSnackbarClose}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-            <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
-                {snackbar.message}
-            </Alert>
-        </Snackbar>
+            )}
         <Dialog
             open={confirmDialog.open}
             onClose={() => handleConfirmDialogClose(false)}

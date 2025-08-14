@@ -5,11 +5,14 @@ import {SyntheticEvent, useEffect, useMemo, useState} from "react";
 import {Tab, Tabs} from "@mui/material";
 import {Loading} from "../../components/loading/Loading";
 import { useNavigate } from "react-router-dom";
+import {EmptyState} from "../../components/emptyState/EmptyState";
+import {useNotification} from "../../components/notification/NotificationProvider";
 
 export const SentRequests = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [tabValue, setTabValue] = useState('all');
     const navigate = useNavigate();
+    const { showError } = useNotification();
 
     const handleChange = (event: SyntheticEvent, newValue: string) => {
         setTabValue(newValue);
@@ -23,6 +26,7 @@ export const SentRequests = () => {
             setRequests(data.data.results);
         } catch (error) {
             console.error("Failed to fetch sent requests", error);
+            showError('Failed to load sent requests. Please try again.');
             setRequests([]);
         } finally {
             setIsLoading(false)
@@ -30,13 +34,14 @@ export const SentRequests = () => {
     }
 
     const requestsWithFilters = useMemo(() => {
-        return {
+        const filters = {
             all: requests,
             completed: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'completed'),
             pending: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'pending'),
             in_process: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'in_process'),
             rejected: requests.filter((request: any) => request.status?.toLowerCase().trim() === 'rejected'),
-        }
+        };
+        return filters;
     }, [requests])
 
     useEffect(() => {
@@ -44,48 +49,70 @@ export const SentRequests = () => {
     }, [])
 
     return (
-        <>{isLoading ?
-            <Loading/>
-            :
-            !!requests.length ?
+        <>
+            {isLoading ? (
+                <Loading/>
+            ) : (
                 <div className="flex flex-col gap-3 w-full">
-                    <Tabs value={tabValue} onChange={handleChange} centered>
-                        <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                        <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                    </Tabs>
+                    {requests.length > 0 && (
+                        <Tabs value={tabValue} onChange={handleChange} centered>
+                            <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                            <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                            <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                            <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                            <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                        </Tabs>
+                    )}
+                    
                     <div className="flex flex-col gap-[6rem] w-full">
                         <h3 className="text-[2rem] font-medium">
                             Sent requests
                         </h3>
-                        <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
-                            {/*@ts-ignore*/}
-                            {!requestsWithFilters[tabValue].length ?
-                                <h1>You don't have sent requests with
-                                    status <b>{tabValue.split('_').join(' ').toUpperCase()}</b></h1>
-                                :
-                                // @ts-ignore
-                                requestsWithFilters[tabValue].map(request => (
-                                    <OfferCard key={request.id}
-                                               withRate={false}
-                                               data={request.offer}
-                                    />
-                                ))}
-                        </div>
-                        <div className="flex justify-end gap-[4rem]">
-                            <Button title={'How it works'} type={'secondary'} handleClick={() => {
-                            }}/>
-                            <Button title={'Browse items'} type={'primary'} handleClick={() => {
-                                navigate('/');
-                            }}/>
-                        </div>
+                        
+                        {requests.length === 0 ? (
+                            <EmptyState
+                                illustration="no-requests"
+                                title="You haven't sent any requests"
+                                description="Find available couriers and send requests to ship your items safely."
+                                primaryAction={{
+                                    label: "Find couriers",
+                                    onClick: () => navigate('/')
+                                }}
+                                secondaryAction={{
+                                    label: "Post an item",
+                                    onClick: () => navigate('/add-item')
+                                }}
+                            />
+                        ) : (requestsWithFilters as any)[tabValue].length === 0 ? (
+                            <EmptyState
+                                illustration="no-results"
+                                title={`No ${tabValue.replace('_', ' ')} requests`}
+                                description={`You don't have any requests with ${tabValue.replace('_', ' ')} status.`}
+                            />
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
+                                    {/* @ts-ignore */}
+                                    {(requestsWithFilters as any)[tabValue].map((request: any) => (
+                                        <OfferCard key={request.id}
+                                                   withRate={false}
+                                                   data={request.offer}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="flex justify-end gap-[4rem]">
+                                    <Button title={'How it works'} type={'secondary'} handleClick={() => {
+                                        navigate('/features');
+                                    }}/>
+                                    <Button title={'Browse items'} type={'primary'} handleClick={() => {
+                                        navigate('/');
+                                    }}/>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
-                :
-                <h1>No sent requests found</h1>
-        }
+            )}
         </>
     )
 }
