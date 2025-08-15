@@ -77,6 +77,7 @@ const Protected = () => {
     "/items",
     "/transaction",
     "/payout",
+    "/messages",
     "/",
   ].includes(location.pathname);
 
@@ -158,8 +159,7 @@ function App() {
               <Route path="chat-support" element={<ChatSupport />} />
               <Route path="terms" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
-                            <Route path="messages" element={<Messages />} /> {/* Updated this route to use the ChatApp component */}
-
+              <Route path="messages" element={<Messages />} />
               <Route path="/" element={<Home />} />
             </Route>
             <Route element={<Public />}>

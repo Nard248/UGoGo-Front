@@ -17,13 +17,6 @@ export const ChatSidebar: React.FC<Props> = ({ users }) => {
           <h4>All Messages</h4>
           <img src={inboxIcon} alt="inbox" className="header-icon" />
         </div>
-        <div className="menu-dot" aria-hidden>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="5" r="2" fill="#333" />
-            <circle cx="12" cy="12" r="2" fill="#333" />
-            <circle cx="12" cy="19" r="2" fill="#333" />
-          </svg>
-        </div>
       </div>
 
       <div className="search">
