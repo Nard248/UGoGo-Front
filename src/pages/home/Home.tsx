@@ -1,4 +1,4 @@
-import {FC, useEffect} from "react";
+import { FC, useEffect } from "react";
 import { Search } from "../../components/search/Search";
 import airplaneIcon from "../../assets/icons/airplaneIcon.svg";
 import briefcaseIcon from "../../assets/icons/briefcaseIcon.svg";
@@ -14,11 +14,11 @@ import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
 import { useNavigate } from "react-router-dom";
-import {getUserDetails, searchOffer} from "../../api/route";
-import "./Home.scss";
-import {setSearchedResult} from "../../components/search/SearchService";
-const checkmark = <img src={checkedIcon} alt="Checked" />;
+import { getUserDetails, searchOffer } from "../../api/route";
+import { setSearchedResult } from "../../components/search/SearchService";
+import "./home.scss";
 
+const checkmark = <img src={checkedIcon} alt="Checked" />;
 
 const homeData: any = [];
 
@@ -27,7 +27,7 @@ const homeData: any = [];
 //     id: 1,
 //     user: {
 //       full_name: "Ed Sheeren",
-//       email: "ed@example.com", 
+//       email: "ed@example.com",
 //     },
 //     rating: 5,
 //     reviews: 435,
@@ -72,12 +72,11 @@ const homeData: any = [];
 // ];
 
 export const Home: FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleClick = () => {
     navigate("/search-result"); // or "/search-result" whatever your route is
   };
-
 
   const fetchUser = async () => {
     const userDetails = localStorage.getItem("userDetails");
@@ -89,7 +88,11 @@ export const Home: FC = () => {
     try {
       const userData = await getUserDetails();
       if (userData) {
-        const userObject = { name: userData.full_name, email: userData.email, balance: userData.balance };
+        const userObject = {
+          name: userData.full_name,
+          email: userData.email,
+          balance: userData.balance,
+        };
         localStorage.setItem("userDetails", JSON.stringify(userObject));
       }
     } catch (error) {
@@ -98,8 +101,8 @@ export const Home: FC = () => {
   };
 
   useEffect(() => {
-    fetchUser()
-  })
+    fetchUser();
+  });
 
   const onOfferSearch = async (searchParams: {
     origin_airport: string;
@@ -113,7 +116,7 @@ export const Home: FC = () => {
     } catch (error) {
       console.error("Search Error:", error);
     }
-  }
+  };
 
   return (
     <div className="home">
@@ -129,7 +132,11 @@ export const Home: FC = () => {
           </p>
           <div className="hero-buttons">
             {/* <Button title="Find items" type="primary" /> */}
-            <Button title="Find flights" type="secondary" handleClick={handleClick}/>
+            <Button
+              title="Find flights"
+              type="secondary"
+              handleClick={handleClick}
+            />
           </div>
         </div>
         <div className="hero-divider"></div>
@@ -150,38 +157,38 @@ export const Home: FC = () => {
         </div>
       </div>
 
-      {!!homeData.length &&
-          <div className="cards-section">
-            <div className="blue-background"></div>
+      {!!homeData.length && (
+        <div className="cards-section">
+          <div className="blue-background"></div>
 
-            <div className="cards-wrapper">
-              {/*@ts-ignore*/}
-              {homeData.map((item) => {
-                const customTitles: Record<string, string> = {
-                  Electronics: "Post your item and find trusted travelers",
-                  Flight: "Make money by carrying packages along your route",
-                };
+          <div className="cards-wrapper">
+            {/*@ts-ignore*/}
+            {homeData.map((item) => {
+              const customTitles: Record<string, string> = {
+                Electronics: "Post your item and find trusted travelers",
+                Flight: "Make money by carrying packages along your route",
+              };
 
-                const cardTitle = customTitles[item.category] ?? "Exclusive Offer";
+              const cardTitle =
+                customTitles[item.category] ?? "Exclusive Offer";
 
-
-                return (
-                    <div key={item.id} className="card-container">
-                      <h2 className="card-title">{cardTitle}</h2>
-                      <OfferCard
-                          withRate={false}
-                          data={item}
-                          secondaryButtonText="Reject"
-                          primaryButtonText="Approve"
-                      />
-                    </div>
-                );
-              })}
-            </div>
+              return (
+                <div key={item.id} className="card-container">
+                  <h2 className="card-title">{cardTitle}</h2>
+                  <OfferCard
+                    withRate={false}
+                    data={item}
+                    secondaryButtonText="Reject"
+                    primaryButtonText="Approve"
+                  />
+                </div>
+              );
+            })}
           </div>
-      }
+        </div>
+      )}
 
-            {/* return (
+      {/* return (
               <div key={item.id} className="card-container">
                 <h2 className="card-title">{cardTitle}</h2>
                 <OfferCard
@@ -198,9 +205,9 @@ export const Home: FC = () => {
       <div className="solutions-section">
         <h2>Multiple solutions to meet your delivery challenges</h2>
         <Divider
-            appearance="neutral"
-            size="normal"
-            className="divider-solutions"
+          appearance="neutral"
+          size="normal"
+          className="divider-solutions"
         />
 
         <div className="solutions-grid">
@@ -208,7 +215,7 @@ export const Home: FC = () => {
           <div className="horizontal-divider"></div>
 
           <div className="solution">
-            <img src={addlocationIcon} alt="Travel Route" className="icon"/>
+            <img src={addlocationIcon} alt="Travel Route" className="icon" />
             <div className="solution-text">
               <h3>Post your travel route and earn extra cash</h3>
               <p>

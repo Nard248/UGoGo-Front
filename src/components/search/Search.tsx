@@ -40,9 +40,8 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
         const fetchAirports = async () => {
             try {
                 const data = await getAirports();
-                const results = data.data.results;
-                setAirports(results);
-
+                const results = data.data.results;           
+                setAirports(results);           
                 if (results.length) {
                     setOfferFormData((prevState) => ({
                         ...prevState,
