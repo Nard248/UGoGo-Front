@@ -16,7 +16,7 @@ import checkedIcon from "../../assets/icons/checked.svg";
 import { useNavigate } from "react-router-dom";
 import {getUserDetails, searchOffer} from "../../api/route";
 import {setSearchedResult} from "../../components/search/SearchService";
-import "./home.scss"
+import "./Home.scss"
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
