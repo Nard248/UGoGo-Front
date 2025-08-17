@@ -14,9 +14,9 @@ import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
 import { useNavigate } from "react-router-dom";
-import { getUserDetails, searchOffer } from "../../api/route";
-import { setSearchedResult } from "../../components/search/SearchService";
-import "./home.scss";
+import {getUserDetails, searchOffer} from "../../api/route";
+import {setSearchedResult} from "../../components/search/SearchService";
+import "./Home.scss"
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 

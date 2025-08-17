@@ -15,18 +15,36 @@ const Step3ItemDetailsSection: React.FC<Step3ItemDetailsSectionProps> = ({
   setOfferFormData,
   errors,
 }) => {
-  const handleWeightChange = (
+  // const handleWeightChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  // ) => {
+  //   const weight = e.target.value;
+  //   setOfferFormData((prevData) => ({
+  //     ...prevData,
+  //     available_weight: {
+  //       value: weight,
+  //       errorMessage: prevData.available_weight?.errorMessage || "",
+  //     },
+  //   }));
+  // };
+    const handleWeightChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const weight = e.target.value;
-    setOfferFormData((prevData) => ({
-      ...prevData,
-      available_weight: {
-        value: weight,
-        errorMessage: prevData.available_weight?.errorMessage || "",
-      },
-    }));
+    // Regex to allow numbers, a single decimal point, and an empty string
+    const validNumberRegex = /^\d*\.?\d*$/;
+
+    if (weight === "" || validNumberRegex.test(weight)) {
+      setOfferFormData((prevData) => ({
+        ...prevData,
+        available_weight: {
+          value: weight,
+          errorMessage: prevData.available_weight?.errorMessage || "",
+        },
+      }));
+    }
   };
+
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const name = e.target.value;
