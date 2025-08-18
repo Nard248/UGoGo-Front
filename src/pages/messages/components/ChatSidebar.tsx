@@ -1,15 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { IUser } from "../ChatPage";
+import { User } from "../../../types/chat.types";
+import { UserSelectorModal } from "./UserSelectorModal";
 import "./../ChatPage.scss";
 
 import inboxIcon from "../../../assets/icons/inbox.svg";
 import searchIcon from "../../../assets/icons/chat-search.svg";
+import plusIcon from "../../../assets/icons/plus.svg";
 
 interface Props {
   users: IUser[];
+  onSelectUser?: (userId: string) => void;
+  activeUserId?: string;
+  onStartNewChat?: (user: User) => void;
 }
 
-export const ChatSidebar: React.FC<Props> = ({ users }) => {
+export const ChatSidebar: React.FC<Props> = ({ users, onSelectUser, activeUserId, onStartNewChat }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleStartNewChat = (user: User) => {
+    onStartNewChat?.(user);
+  };
   return (
     <aside className="chat-sidebar">
       <div className="sidebar-header">
@@ -17,6 +28,13 @@ export const ChatSidebar: React.FC<Props> = ({ users }) => {
           <h4>All Messages</h4>
           <img src={inboxIcon} alt="inbox" className="header-icon" />
         </div>
+        <button 
+          className="start-new-chat-btn"
+          onClick={() => setIsModalOpen(true)}
+          title="Start new chat"
+        >
+          <img src={plusIcon} alt="start new chat" />
+        </button>
       </div>
 
       <div className="search">
@@ -25,11 +43,13 @@ export const ChatSidebar: React.FC<Props> = ({ users }) => {
       </div>
 
       <div className="users" role="list">
-        {users.map((u, idx) => (
+        {users.map((u) => (
           <div
             key={u.id}
-            className={`user-item ${idx === 0 ? "active" : ""}`}
+            className={`user-item ${u.id === activeUserId ? "active" : ""}`}
             role="listitem"
+            onClick={() => onSelectUser?.(u.id)}
+            style={{ cursor: 'pointer' }}
           >
             <div className="avatar" />
             <div className="user-info">
@@ -70,6 +90,12 @@ export const ChatSidebar: React.FC<Props> = ({ users }) => {
           </div>
         ))}
       </div>
+      
+      <UserSelectorModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectUser={handleStartNewChat}
+      />
     </aside>
   );
 };

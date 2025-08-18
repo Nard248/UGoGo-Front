@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Header } from "./layouts/Header";
 import { NotificationProvider } from "./components/notification/NotificationProvider";
+import { ChatProvider } from "./stores/ChatContext";
+import { storeUserDetails, isAuthenticated } from "./utils/auth";
+import "./utils/debug"; // Import debug utilities
+import "./utils/debug-api"; // Import API debug utilities
+import "./utils/test-websocket"; // Import WebSocket test utilities
+import "./utils/websocket-diagnostics"; // Import WebSocket diagnostics
+import "./utils/postman-test"; // Import Postman matching tests
 import { SingleProductPage } from "./pages/singleProductPage/SingleProductPage";
 // import { PostOffer } from "./pages/postOffer/PostOffer";
 import  PostOffer  from "./pages/postOffer/PostOffer";
@@ -136,9 +143,28 @@ const Public = () => {
 };
 
 function App() {
+  useEffect(() => {
+    // Initialize user details if user is authenticated
+    const initializeUser = async () => {
+      if (isAuthenticated()) {
+        const userId = localStorage.getItem('user_id');
+        if (!userId || userId === '0') {
+          try {
+            await storeUserDetails();
+          } catch (error) {
+            console.error('Failed to initialize user details:', error);
+          }
+        }
+      }
+    };
+
+    initializeUser();
+  }, []);
+
   return (
     <div className="App">
       <NotificationProvider>
+        <ChatProvider>
         <main className={classNames("mainContent", {
           'p-0': window.location.pathname === '/'
         })}>
@@ -205,6 +231,7 @@ function App() {
           </BrowserRouter>
         </main>
         {/* <Footer /> */}
+        </ChatProvider>
       </NotificationProvider>
     </div>
   );

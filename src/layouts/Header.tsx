@@ -6,8 +6,9 @@ import logo from "./../assets/images/logo.svg";
 import { ProfilePopover } from "../components/profilePopover/profilePopover";
 import { Button } from "../components/button/Button";
 import classNames from "classnames";
-import {useLocation} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import message from './../assets/icons/message.svg'
+import { useChat } from "../stores/ChatContext";
 import "./Header.scss";
 
 interface IHeader {
@@ -17,7 +18,16 @@ interface IHeader {
 export const Header: FC<IHeader> = ({ withNavItems = true }) => {
   const [isPopoverOpened, setIsPopoverOpened] = useState(false);
   const isLoggedIn = !!localStorage.getItem("access");
-  const {pathname} = useLocation()
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  
+  // Get chat state - will be available due to ChatProvider wrapping the entire app
+  const { state } = useChat();
+  
+  // Calculate total unread messages with safety check
+  const totalUnread = state && state.unreadCounts 
+    ? Object.values(state.unreadCounts).reduce((sum, count) => sum + count, 0)
+    : 0;
 
 // <<<<<<< HEAD
 //     return (
@@ -64,9 +74,33 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
       )}
       {isLoggedIn ?
                 <div className="flex items-center gap-5">
-                    {/*<Badge className={'cursor-pointer'}>*/}
-                    {/*    <img  src={message} alt="Message"/>*/}
-                    {/*</Badge>*/}
+                    <Badge 
+                        badgeContent={totalUnread} 
+                        color="error"
+                        className={'cursor-pointer message-icon'}
+                        onClick={() => navigate('/messages')}
+                        sx={{
+                            '& .MuiBadge-badge': {
+                                backgroundColor: '#f7b05b',
+                                color: 'white',
+                                fontWeight: 'bold',
+                                fontSize: '11px',
+                                minWidth: '18px',
+                                height: '18px'
+                            }
+                        }}
+                    >
+                        <img 
+                            src={message} 
+                            alt="Messages"
+                            style={{ 
+                                width: '24px', 
+                                height: '24px',
+                                cursor: 'pointer'
+                            }}
+                            title="Messages"
+                        />
+                    </Badge>
                     <div>
                         <Avatar alt="Avatar image" src={avatar} className="cursor-pointer" onClick={() => setIsPopoverOpened(!isPopoverOpened)}/>
                         {isPopoverOpened &&

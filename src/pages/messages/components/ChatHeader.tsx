@@ -1,20 +1,31 @@
 import React from "react";
 import { IUser } from "../ChatPage";
+import { ConnectionStatus } from "../../../services/websocket.service";
 
 interface Props {
   user: IUser;
+  connectionStatus?: ConnectionStatus;
+  isTyping?: boolean;
 }
 
-export const ChatHeader: React.FC<Props> = ({ user }) => {
+export const ChatHeader: React.FC<Props> = ({ user, connectionStatus, isTyping }) => {
   return (
     <header className="chat-header">
       <div className="chat-profile">
         <div className="avatar" />
         <div className="info">
           <h4>{user.name}</h4>
-          {/* <div className="sub">
-            <span>⭐ 5 (435)</span>
-          </div> */}
+          <div className="sub">
+            {isTyping ? (
+              <span style={{ color: '#7fbfc0' }}>typing...</span>
+            ) : connectionStatus === 'connected' ? (
+              <span style={{ color: '#4caf50' }}>online</span>
+            ) : connectionStatus === 'connecting' ? (
+              <span style={{ color: '#ff9800' }}>connecting...</span>
+            ) : (
+              <span style={{ color: '#9e9e9e' }}>offline</span>
+            )}
+          </div>
         </div>
       </div>
 

@@ -8,12 +8,12 @@ export const login = async (data: ILogin) => {
 export const logout = async (token: string) => {
   try {
     await api.post("/users/token/logout/", { refresh: token });
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
   } catch (error) {
     console.error("Logout failed:", error);
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
+  } finally {
+    // Always clear user data regardless of API call result
+    const { clearUserData } = await import("../utils/auth");
+    clearUserData();
   }
 };
 

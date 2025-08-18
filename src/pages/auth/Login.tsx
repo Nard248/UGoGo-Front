@@ -8,6 +8,7 @@ import { Button } from '../../components/button/Button';
 import {ILogin, ILoginForm, User} from "../../types/global";
 import {login} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
+import {storeUserDetails} from "../../utils/auth";
 
 export const Login: FC = () => {
     const navigate = useNavigate();
@@ -87,6 +88,14 @@ export const Login: FC = () => {
         if(data.refresh) {
             localStorage.setItem('refresh', data.refresh);
             localStorage.setItem('access', data.access);
+            
+            // Store user details after successful login
+            try {
+                await storeUserDetails();
+            } catch (error) {
+                console.error('Failed to store user details:', error);
+            }
+            
             setIsLoading(false);
             navigate('/')
         }
