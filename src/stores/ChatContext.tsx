@@ -10,6 +10,7 @@ type ChatAction =
   | { type: 'ADD_OR_UPDATE_THREAD'; payload: DirectThread }
   | { type: 'SET_ACTIVE_THREAD'; payload: DirectThread | null }
   | { type: 'SET_MESSAGES'; payload: { threadId: string; messages: DirectMessage[] } }
+  | { type: 'PREPEND_MESSAGES'; payload: { threadId: string; messages: DirectMessage[] } }
   | { type: 'ADD_MESSAGE'; payload: { threadId: string; message: DirectMessage } }
   | { type: 'UPDATE_MESSAGE'; payload: { threadId: string; messageId: string; updates: Partial<DirectMessage> } }
   | { type: 'SET_CONNECTION_STATUS'; payload: { userId: string; status: ConnectionStatus } }
@@ -19,12 +20,15 @@ type ChatAction =
   | { type: 'SET_LOADING_MESSAGES'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'UPDATE_THREAD_LAST_MESSAGE'; payload: { threadId: string; message: DirectMessage } }
-  | { type: 'INCREMENT_UNREAD'; payload: { threadId: string } };
+  | { type: 'INCREMENT_UNREAD'; payload: { threadId: string } }
+  | { type: 'SET_PAGINATION'; payload: { threadId: string; hasMore: boolean; offset: number } }
+  | { type: 'SET_LOADING_MORE'; payload: { threadId: string; isLoading: boolean } };
 
 const initialState: ChatState = {
   threads: [],
   activeThread: null,
   messages: {},
+  messagesPagination: {},
   connectionStatus: {},
   typingUsers: {},
   unreadCounts: {},
@@ -70,7 +74,36 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
           ...state.messages,
           [action.payload.threadId]: messagesPayload
         },
+        messagesPagination: {
+          ...state.messagesPagination,
+          [action.payload.threadId]: {
+            hasMore: messagesPayload.length >= 20, // Default limit
+            offset: messagesPayload.length,
+            isLoadingMore: false
+          }
+        },
         isLoadingMessages: false
+      };
+    
+    case 'PREPEND_MESSAGES':
+      // Add older messages to the beginning of the array
+      const existingMessages = state.messages[action.payload.threadId] || [];
+      const newMessages = Array.isArray(action.payload.messages) ? action.payload.messages : [];
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          [action.payload.threadId]: [...newMessages, ...existingMessages]
+        },
+        messagesPagination: {
+          ...state.messagesPagination,
+          [action.payload.threadId]: {
+            ...state.messagesPagination[action.payload.threadId],
+            hasMore: newMessages.length >= 20, // If we got a full page, there might be more
+            offset: (state.messagesPagination[action.payload.threadId]?.offset || 0) + newMessages.length,
+            isLoadingMore: false
+          }
+        }
       };
     
     case 'ADD_MESSAGE':
@@ -168,6 +201,31 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case 'SET_ERROR':
       return { ...state, error: action.payload };
     
+    case 'SET_PAGINATION':
+      return {
+        ...state,
+        messagesPagination: {
+          ...state.messagesPagination,
+          [action.payload.threadId]: {
+            hasMore: action.payload.hasMore,
+            offset: action.payload.offset,
+            isLoadingMore: false
+          }
+        }
+      };
+    
+    case 'SET_LOADING_MORE':
+      return {
+        ...state,
+        messagesPagination: {
+          ...state.messagesPagination,
+          [action.payload.threadId]: {
+            ...state.messagesPagination[action.payload.threadId],
+            isLoadingMore: action.payload.isLoading
+          }
+        }
+      };
+    
     default:
       return state;
   }
@@ -181,6 +239,7 @@ interface ChatContextType {
   markAsRead: (threadId: string) => Promise<void>;
   setTyping: (isTyping: boolean) => void;
   ensureThread: (otherUserId: number) => Promise<DirectThread>;
+  loadMoreMessages: (threadId: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -228,8 +287,21 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       const responseData = response.data as any;
       const threads = Array.isArray(responseData.results) ? responseData.results : 
                      Array.isArray(response.data) ? response.data : [];
-      console.log('📋 Processed threads count:', threads.length);
-      console.log('📋 Processed threads:', threads);
+      
+      console.log('================== THREADS LOADED ==================');
+      console.log('📋 Total threads:', threads.length);
+      threads.forEach((thread: any, index: number) => {
+        console.log(`Thread ${index + 1}:`, {
+          id: thread.id,
+          user1: thread.user1,
+          user2: thread.user2,
+          created_at: thread.created_at,
+          last_message_at: thread.last_message_at,
+          last_message: thread.last_message?.content?.substring(0, 30) + '...' || 'No messages',
+          participant: thread.participant
+        });
+      });
+      console.log('===================================================');
       
       if (threads.length === 0) {
         console.warn('⚠️ No threads found - user may not have any conversations yet');
@@ -254,6 +326,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_LOADING_MESSAGES', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
+    // Get currentUserId at the beginning of the function
+    const currentUserId = getCurrentUserId();
+    const currentUserEmail = localStorage.getItem('email') || localStorage.getItem('user_email');
+
     try {
       console.log('📨 Fetching messages for thread:', thread.id);
       const response = await chatAPI.getThreadMessages(thread.id);
@@ -262,30 +338,106 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       
       // Handle paginated response for messages too
       const messagesData = response.data as any;
-      const messages = Array.isArray(messagesData.results) ? messagesData.results : 
+      let messages = Array.isArray(messagesData.results) ? messagesData.results : 
                       Array.isArray(response.data) ? response.data : [];
       console.log('📨 Messages count:', messages.length);
+      
+      // Log the raw chat history for debugging
+      console.log('================== CHAT HISTORY START ==================');
+      console.log('Thread ID:', thread.id);
+      console.log('Current User ID:', currentUserId);
+      console.log('Current User Email:', currentUserEmail);
+      console.log('Other User ID:', thread.user1 === currentUserId ? thread.user2 : thread.user1);
+      console.log('Total Messages:', messages.length);
+      console.log('-----------------------------------------------------------');
+      
+      // Log each message in detail
+      messages.forEach((msg: any, index: number) => {
+        console.log(`Message ${index + 1}:`, {
+          id: msg.id,
+          sender: msg.sender,
+          sender_id: msg.sender_id,
+          content: msg.content,
+          created_at: msg.created_at,
+          is_read: msg.is_read,
+          thread: msg.thread
+        });
+      });
+      
+      console.log('-----------------------------------------------------------');
+      console.log('Raw messages array:', JSON.stringify(messages, null, 2));
+      console.log('================== CHAT HISTORY END ==================');
+      
+      // Enrich messages with sender_id if missing
+      messages = messages.map((msg: DirectMessage) => {
+        if (!msg.sender_id && msg.sender) {
+          // Determine sender_id based on email
+          const senderId = msg.sender === currentUserEmail ? currentUserId : 
+                          (thread.user1 === currentUserId ? thread.user2 : thread.user1);
+          return { ...msg, sender_id: senderId };
+        }
+        return msg;
+      });
+      
+      // Reverse messages so newest are at the bottom (like WhatsApp/Telegram)
+      messages = messages.reverse();
       
       dispatch({ type: 'SET_MESSAGES', payload: { threadId: thread.id, messages: messages } });
       
       dispatch({ type: 'SET_UNREAD_COUNT', payload: { threadId: thread.id, count: 0 } });
       
       // Calculate the other user ID from the thread
-      const currentUserId = getCurrentUserId();
       const otherUserId = (thread.user1 === currentUserId ? thread.user2 : thread.user1).toString();
       
       // Try to connect to WebSocket, but don't fail if it's not available
       try {
-        WebSocketService.connect(otherUserId);
+        await WebSocketService.connect(otherUserId);
+        console.log('✅ WebSocket connection established for thread:', thread.id);
       } catch (error) {
-        console.warn('WebSocket connection failed, continuing without real-time features:', error);
+        console.warn('⚠️ WebSocket connection failed, continuing without real-time features:', error);
+        // Continue without WebSocket - messages will still work via API
       }
       
       WebSocketService.addMessageListener(otherUserId, (message: DirectMessage) => {
-        dispatch({ type: 'ADD_MESSAGE', payload: { threadId: thread.id, message } });
-        dispatch({ type: 'UPDATE_THREAD_LAST_MESSAGE', payload: { threadId: thread.id, message } });
+        console.log('================== WEBSOCKET MESSAGE ==================');
+        console.log('📨 Received WebSocket message:', {
+          id: message.id,
+          sender: message.sender,
+          sender_id: message.sender_id,
+          content: message.content,
+          created_at: message.created_at,
+          thread: message.thread
+        });
+        console.log('======================================================');
         
-        if (message.sender_id !== getCurrentUserId()) {
+        // Determine sender_id from sender email if not provided
+        let senderId = message.sender_id;
+        
+        if (!senderId && message.sender) {
+          // If sender email matches current user's email, it's from us
+          senderId = message.sender === currentUserEmail ? currentUserId : parseInt(otherUserId);
+        }
+        
+        // Enrich message with sender_id
+        const enrichedMessage: DirectMessage = {
+          ...message,
+          sender_id: senderId,
+          is_read: message.is_read !== undefined ? message.is_read : false
+        };
+        
+        console.log('📨 Enriched message:', enrichedMessage);
+        
+        // Check if message already exists to prevent duplicates
+        const existingMessages = state.messages[thread.id] || [];
+        const messageExists = existingMessages.some(m => m.id === message.id);
+        
+        if (!messageExists) {
+          dispatch({ type: 'ADD_MESSAGE', payload: { threadId: thread.id, message: enrichedMessage } });
+          dispatch({ type: 'UPDATE_THREAD_LAST_MESSAGE', payload: { threadId: thread.id, message: enrichedMessage } });
+        }
+        
+        // Handle unread count for messages from other users
+        if (senderId !== currentUserId) {
           if (state.activeThread?.id !== thread.id) {
             dispatch({ type: 'INCREMENT_UNREAD', payload: { threadId: thread.id } });
           }
@@ -300,90 +452,108 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         dispatch({ type: 'SET_TYPING', payload: { userId, isTyping } });
       });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Failed to load messages';
+      console.error('Error in selectThread:', error);
+      console.error('Error response:', error.response);
+      
+      // More specific error messages
+      let errorMessage = 'Failed to load messages';
+      if (error.response?.status === 404) {
+        errorMessage = 'Thread not found';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'Access denied to this conversation';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      }
+      
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       showError(errorMessage);
+      
+      // Still show the thread even if messages fail to load
+      // WebSocket might still work
     } finally {
       dispatch({ type: 'SET_LOADING_MESSAGES', payload: false });
     }
   }, [state.activeThread, showError]);
 
   const sendMessage = useCallback(async (content: string) => {
-    console.log('🚀 ChatContext.sendMessage called with:', { content, activeThread: state.activeThread?.id });
+    console.log('🚀 sendMessage called:', { content, threadId: state.activeThread?.id });
     
     if (!state.activeThread || !content.trim()) {
-      console.warn('❌ Cannot send message: no active thread or empty content', {
-        hasActiveThread: !!state.activeThread,
-        contentLength: content.length,
-        trimmedLength: content.trim().length
-      });
       return;
     }
 
     const currentUserId = getCurrentUserId();
-    const currentUserName = localStorage.getItem('username') || 'current_user';
+    const otherUserId = (state.activeThread.user1 === currentUserId ? 
+                        state.activeThread.user2 : state.activeThread.user1).toString();
     
-    console.log('💬 Sending message with details:', {
-      content: content.trim(),
-      threadId: state.activeThread.id,
-      currentUserId,
-      currentUserName,
-      activeThread: state.activeThread
-    });
-    
-    const tempMessage: DirectMessage = {
-      id: `temp-${Date.now()}`,
-      thread: state.activeThread.id,
-      sender: currentUserName,
-      sender_id: currentUserId,
-      content: content.trim(),
-      created_at: new Date().toISOString(),
-      is_read: false
-    };
-
-    console.log('💬 Created temp message:', tempMessage);
-    dispatch({ type: 'ADD_MESSAGE', payload: { threadId: state.activeThread.id, message: tempMessage } });
-    dispatch({ type: 'UPDATE_THREAD_LAST_MESSAGE', payload: { threadId: state.activeThread.id, message: tempMessage } });
-
     try {
-      // Calculate the other user ID from the active thread
-      const otherUserId = (state.activeThread.user1 === currentUserId ? state.activeThread.user2 : state.activeThread.user1).toString();
-      console.log('🔌 Calculated other user ID:', otherUserId, 'from thread users:', {
-        user1: state.activeThread.user1,
-        user2: state.activeThread.user2,
-        currentUserId
-      });
+      console.log('📤 Sending message to user:', otherUserId);
       
-      console.log('🔌 About to call WebSocketService.sendMessage...');
-      WebSocketService.sendMessage(otherUserId, content.trim());
-      console.log('🔌 WebSocketService.sendMessage call completed');
-      
-      // Only reload threads if this is a new thread not in the current list
-      const activeThread = state.activeThread;
-      if (activeThread) {
-        const threadExists = state.threads.some(t => t.id === activeThread.id);
-        console.log('🔄 Thread exists check:', { threadExists, threadId: activeThread.id, totalThreads: state.threads.length });
-        if (!threadExists) {
-          console.log('🔄 New thread detected, reloading threads...');
-          setTimeout(() => loadThreads(), 500);
-        }
+      // Make sure connection is established before sending
+      try {
+        await WebSocketService.connect(otherUserId);
+      } catch (connectError) {
+        console.error('Failed to establish WebSocket connection:', connectError);
+        // Continue anyway - the message might still be sent if connection exists
       }
-    } catch (error: any) {
-      console.error('❌ Error in sendMessage:', error);
-      dispatch({
-        type: 'UPDATE_MESSAGE',
-        payload: {
-          threadId: state.activeThread.id,
-          messageId: tempMessage.id,
-          updates: { deleted: true }
-        }
-      });
       
-      const errorMessage = error.message || 'Failed to send message';
-      console.error('❌ Showing error to user:', errorMessage);
-      showError(errorMessage);
+      // Now send the message
+      await WebSocketService.sendMessage(otherUserId, content.trim());
+      
+      console.log('✅ Message sent successfully');
+      
+      // Refresh messages after successful send to ensure we see our sent message
+      setTimeout(async () => {
+        try {
+          console.log('🔄 Refreshing messages after send...');
+          const response = await chatAPI.getThreadMessages(state.activeThread!.id);
+          const messagesData = response.data as any;
+          let messages = Array.isArray(messagesData.results) ? messagesData.results : 
+                          Array.isArray(response.data) ? response.data : [];
+          
+          console.log('================== REFRESHED MESSAGES ==================');
+          console.log('Messages after send:', messages.length);
+          messages.forEach((msg: any, index: number) => {
+            console.log(`Message ${index + 1}:`, {
+              id: msg.id,
+              sender: msg.sender,
+              content: msg.content.substring(0, 50) + (msg.content.length > 50 ? '...' : ''),
+              created_at: msg.created_at
+            });
+          });
+          console.log('========================================================');
+          
+          // Enrich messages with sender_id if missing
+          const currentUserEmail = localStorage.getItem('email') || localStorage.getItem('user_email');
+          const currentUserId = getCurrentUserId();
+          const thread = state.activeThread!;
+          
+          messages = messages.map((msg: DirectMessage) => {
+            if (!msg.sender_id && msg.sender) {
+              // Determine sender_id based on email
+              const senderId = msg.sender === currentUserEmail ? currentUserId : 
+                              (thread.user1 === currentUserId ? thread.user2 : thread.user1);
+              return { ...msg, sender_id: senderId };
+            }
+            return msg;
+          });
+          
+          // Reverse messages so newest are at the bottom
+          messages = messages.reverse();
+          
+          dispatch({ type: 'SET_MESSAGES', payload: { threadId: state.activeThread!.id, messages: messages } });
+        } catch (refreshError) {
+          console.error('❌ Failed to refresh messages:', refreshError);
+        }
+      }, 500); // Small delay to ensure backend has processed the message
+      
+    } catch (error: any) {
+      console.error('❌ Failed to send message:', error);
+      showError('Failed to send message. Please try again.');
     }
-  }, [state.activeThread, showError, state.threads, loadThreads]);
+  }, [state.activeThread, showError]);
 
   const markAsRead = useCallback(async (threadId: string) => {
     try {
@@ -450,6 +620,60 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     }
   }, [showError, loadThreads]);
 
+  const loadMoreMessages = useCallback(async (threadId: string) => {
+    const pagination = state.messagesPagination[threadId];
+    
+    // Don't load if already loading or no more messages
+    if (!pagination || pagination.isLoadingMore || !pagination.hasMore) {
+      return;
+    }
+    
+    dispatch({ type: 'SET_LOADING_MORE', payload: { threadId, isLoading: true } });
+    
+    try {
+      console.log('🔄 Loading more messages for thread:', threadId, 'offset:', pagination.offset);
+      
+      const response = await chatAPI.getThreadMessages(threadId, 20, pagination.offset);
+      const messagesData = response.data as any;
+      let olderMessages = Array.isArray(messagesData.results) ? messagesData.results : 
+                         Array.isArray(response.data) ? response.data : [];
+      
+      console.log('📨 Loaded', olderMessages.length, 'older messages');
+      
+      if (olderMessages.length > 0) {
+        // Enrich messages with sender_id if missing
+        const currentUserEmail = localStorage.getItem('email') || localStorage.getItem('user_email');
+        const currentUserId = getCurrentUserId();
+        const thread = state.threads.find(t => t.id === threadId);
+        
+        if (thread) {
+          olderMessages = olderMessages.map((msg: DirectMessage) => {
+            if (!msg.sender_id && msg.sender) {
+              const senderId = msg.sender === currentUserEmail ? currentUserId : 
+                              (thread.user1 === currentUserId ? thread.user2 : thread.user1);
+              return { ...msg, sender_id: senderId };
+            }
+            return msg;
+          });
+          
+          // Reverse older messages to maintain chronological order when prepending
+          olderMessages = olderMessages.reverse();
+        }
+        
+        dispatch({ type: 'PREPEND_MESSAGES', payload: { threadId, messages: olderMessages } });
+      } else {
+        // No more messages to load
+        dispatch({ type: 'SET_PAGINATION', payload: { threadId, hasMore: false, offset: pagination.offset } });
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Failed to load more messages:', error);
+      // Don't show error notification for pagination failures
+    } finally {
+      dispatch({ type: 'SET_LOADING_MORE', payload: { threadId, isLoading: false } });
+    }
+  }, [state.messagesPagination, state.threads]);
+
   const clearError = useCallback(() => {
     dispatch({ type: 'SET_ERROR', payload: null });
   }, []);
@@ -471,6 +695,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     markAsRead,
     setTyping,
     ensureThread,
+    loadMoreMessages,
     clearError
   };
 

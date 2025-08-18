@@ -29,12 +29,14 @@ export interface IUser {
 
 
 const ChatPage: React.FC = () => {
-  const { state, loadThreads, selectThread, sendMessage, markAsRead, ensureThread } = useChat();
+  const { state, loadThreads, selectThread, sendMessage, markAsRead, ensureThread, loadMoreMessages, clearError } = useChat();
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
   const currentUserId = getCurrentUserId();
+  const previousScrollHeight = useRef<number>(0);
 
   // Calculate other user ID for WebSocket connection
   const getOtherUserId = () => {
@@ -63,7 +65,71 @@ const ChatPage: React.FC = () => {
     console.log('🚀 Current user ID:', currentUserId);
     console.log('🚀 Is authenticated:', !!localStorage.getItem('access'));
     loadThreads();
-  }, [loadThreads]);
+  }, []); // Remove loadThreads dependency to prevent re-renders
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const handleScroll = useCallback(async () => {
+    if (!chatBodyRef.current || !state.activeThread) return;
+    
+    const { scrollTop, scrollHeight } = chatBodyRef.current;
+    
+    // If user scrolled to top (with some threshold) and we have more messages to load
+    const isAtTop = scrollTop < 100;
+    const pagination = state.messagesPagination[state.activeThread.id];
+    
+    if (isAtTop && pagination?.hasMore && !pagination.isLoadingMore && !isLoadingOlderMessages) {
+      setIsLoadingOlderMessages(true);
+      previousScrollHeight.current = scrollHeight;
+      
+      try {
+        await loadMoreMessages(state.activeThread.id);
+      } finally {
+        setIsLoadingOlderMessages(false);
+      }
+    }
+  }, [state.activeThread, state.messagesPagination, isLoadingOlderMessages, loadMoreMessages]);
+
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const convertToIMessage = (msg: DirectMessage): IMessage => {
+    // First check if we have sender_id (preferred)
+    let isFromMe = false;
+    
+    if (msg.sender_id !== undefined && msg.sender_id !== null) {
+      // Use sender_id if available (this is the most reliable)
+      isFromMe = msg.sender_id === currentUserId;
+    } else if (msg.sender) {
+      // Fallback: use sender email to determine if it's from current user
+      const currentUserEmail = localStorage.getItem('email') || localStorage.getItem('user_email');
+      isFromMe = msg.sender === currentUserEmail;
+    }
+    
+    // Only log if there's an issue with sender identification
+    if (msg.sender_id === undefined && !msg.sender) {
+      console.warn('⚠️ Message missing sender info:', msg.id);
+    }
+    
+    return {
+      id: msg.id,
+      fromMe: isFromMe,
+      text: msg.content,
+      time: formatMessageTime(msg.created_at),
+      type: 'text'
+    };
+  };
+
+  // Convert messages to display format
+  const messages = state.activeThread 
+    ? (Array.isArray(state.messages[state.activeThread.id]) ? state.messages[state.activeThread.id] : []).map(convertToIMessage)
+    : [];
 
   useEffect(() => {
     if (state.activeThread) {
@@ -73,14 +139,47 @@ const ChatPage: React.FC = () => {
   }, [state.activeThread, markAsRead]);
 
   useEffect(() => {
-    scrollToBottom();
+    // Only auto-scroll to bottom when switching threads or if user is near bottom
+    if (!chatBodyRef.current) {
+      scrollToBottom();
+      return;
+    }
+    
+    const chatBody = chatBodyRef.current;
+    const { scrollTop, scrollHeight, clientHeight } = chatBody;
+    const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+    
+    // Always scroll to bottom when switching threads or if user is near bottom
+    if (isNearBottom) {
+      scrollToBottom();
+    }
   }, [state.messages, state.activeThread?.id]);
 
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  };
+  // Add scroll event listener
+  useEffect(() => {
+    const chatBody = chatBodyRef.current;
+    if (!chatBody) return;
+
+    chatBody.addEventListener('scroll', handleScroll);
+    return () => {
+      chatBody.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
+
+  // Maintain scroll position when older messages are loaded
+  useEffect(() => {
+    if (!chatBodyRef.current) return;
+    
+    const chatBody = chatBodyRef.current;
+    const currentScrollHeight = chatBody.scrollHeight;
+    
+    // If we just finished loading older messages, maintain scroll position
+    if (previousScrollHeight.current > 0 && currentScrollHeight > previousScrollHeight.current) {
+      const heightDifference = currentScrollHeight - previousScrollHeight.current;
+      chatBody.scrollTop += heightDifference;
+      previousScrollHeight.current = 0; // Reset after adjusting
+    }
+  }, [messages]);
 
   const handleSend = (text: string) => {
     if (!text.trim() || !state.activeThread) return;
@@ -115,35 +214,9 @@ const ChatPage: React.FC = () => {
     }
   }, [ensureThread, selectThread]);
 
-  const formatMessageTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const convertToIMessage = (msg: DirectMessage): IMessage => {
-    // Convert sender username to sender_id if needed
-    if (!msg.sender_id && msg.sender) {
-      // For now, we'll need to determine if this message is from current user
-      // This is a temporary solution until we have proper user mapping
-      const currentUserName = localStorage.getItem('username'); // Assuming we store username
-      msg.sender_id = msg.sender === currentUserName ? currentUserId : 0; // Fallback
-    }
-    
-    return {
-      id: msg.id,
-      fromMe: msg.sender_id === currentUserId,
-      text: msg.content,
-      time: formatMessageTime(msg.created_at),
-      type: 'text'
-    };
-  };
-
   const convertToIUser = (thread: DirectThread): IUser => {
-    console.log('🔄 Converting thread to IUser:', thread);
-    
     // Get the other user ID (not the current user)
     const otherUserId = thread.user1 === currentUserId ? thread.user2 : thread.user1;
-    console.log('🔄 Other user ID:', otherUserId, 'Current user ID:', currentUserId);
     
     // Create display name - try different sources
     let displayName = '';
@@ -166,14 +239,9 @@ const ChatPage: React.FC = () => {
       displayName = `User ${otherUserId}`;
     }
     
-    console.log('🔄 Display name:', displayName);
-    
     // Get last message info
     const lastMessage = thread.last_message?.content || 'Start a conversation';
     const lastMessageTime = thread.last_message_at || thread.created_at;
-    
-    console.log('🔄 Last message:', lastMessage);
-    console.log('🔄 Last message time:', lastMessageTime);
     
     const iUser = {
       id: thread.id,
@@ -184,13 +252,8 @@ const ChatPage: React.FC = () => {
       starred: false
     };
     
-    console.log('✅ Converted IUser:', iUser);
     return iUser;
   };
-
-  const messages = state.activeThread 
-    ? (Array.isArray(state.messages[state.activeThread.id]) ? state.messages[state.activeThread.id] : []).map(convertToIMessage)
-    : [];
 
   // Convert threads to users with error handling
   const users = Array.isArray(state.threads) ? state.threads.map((thread) => {
@@ -209,11 +272,8 @@ const ChatPage: React.FC = () => {
     }
   }) : [];
 
-  // Debug logging
-  console.log('🎨 ChatPage render - threads count:', state.threads?.length, 'active thread:', state.activeThread?.id);
-  console.log('🎨 ChatPage render - users for sidebar:', users.length);
-  console.log('🎨 ChatPage render - state.threads:', state.threads);
-  console.log('🎨 ChatPage render - converted users:', users);
+  // Debug logging (only log on significant changes)
+  // Removed to prevent console spam
 
   // Add error boundary for debugging
   if (!state) {
@@ -221,12 +281,17 @@ const ChatPage: React.FC = () => {
     return <div className="ugogo-chat-page">Loading chat...</div>;
   }
 
-  if (state.error) {
+  // Don't block entire chat for message loading errors
+  // Only show error if threads failed to load
+  if (state.error && state.threads.length === 0) {
     return (
       <div className="ugogo-chat-page">
         <div className="chat-error">
           <p>Error loading chat: {state.error}</p>
-          <button onClick={() => loadThreads()}>Retry</button>
+          <button onClick={() => {
+            clearError();
+            loadThreads();
+          }}>Retry</button>
         </div>
       </div>
     );
@@ -234,6 +299,13 @@ const ChatPage: React.FC = () => {
 
   return (
     <div className="ugogo-chat-page">
+      {/* Show error banner if there's an error but threads are loaded */}
+      {state.error && state.threads.length > 0 && (
+        <div className="error-banner">
+          <span>{state.error}</span>
+          <button onClick={clearError} className="close-error">×</button>
+        </div>
+      )}
       <div className="ugogo-chat-inner">
         <ChatSidebar 
           users={users}
@@ -256,9 +328,28 @@ const ChatPage: React.FC = () => {
               />
               <div className="chat-body" id="chat-body" ref={chatBodyRef}>
                 <div className="chat-body-inner">
+                  {/* Loading indicator for older messages */}
+                  {isLoadingOlderMessages && (
+                    <div className="loading-older-messages">
+                      <span>Loading older messages...</span>
+                    </div>
+                  )}
+                  
                   {state.isLoadingMessages ? (
                     <div className="loading-messages">
                       <span>Loading messages...</span>
+                    </div>
+                  ) : state.error && messages.length === 0 ? (
+                    <div className="no-messages">
+                      <p>Failed to load messages</p>
+                      <button onClick={() => {
+                        clearError();
+                        if (state.activeThread) {
+                          selectThread(state.activeThread);
+                        }
+                      }} className="retry-btn">
+                        Retry
+                      </button>
                     </div>
                   ) : messages.length === 0 ? (
                     <div className="no-messages">

@@ -3,7 +3,7 @@ import { DirectThread, DirectMessage } from '../types/chat.types';
 
 // Create a separate axios instance for chat endpoints (local development)
 const chatApi = axios.create({
-  baseURL: 'http://localhost:8000', // Match WebSocket URL for consistency
+  baseURL: `https://ugogo-auhdbad8drdma7f6.canadacentral-01.azurewebsites.net`,
 });
 
 // Add the same interceptors as the main api for consistency

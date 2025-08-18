@@ -19,6 +19,13 @@ export const MessageBubble: React.FC<Props> = ({ message }) => {
 
   return (
     <div className={`message-wrapper ${message.fromMe ? "align-right" : "align-left"}`}>
+      {/* Show sender label for received messages */}
+      {!message.fromMe && (
+        <div className="message-sender">
+          Other User
+        </div>
+      )}
+      
       <div className={cls}>
         {message.type === "text" && (
           <div className={`message-text ${emojiOnly ? "emoji-only" : ""}`}>
@@ -38,7 +45,13 @@ export const MessageBubble: React.FC<Props> = ({ message }) => {
           </div>
         )}
       </div>
-      <span className="message-time">{message.time}</span>
+      
+      <div className="message-footer">
+        <span className="message-time">{message.time}</span>
+        {message.fromMe && (
+          <span className="message-status">✓</span>
+        )}
+      </div>
     </div>
   );
 };

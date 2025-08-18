@@ -4,6 +4,7 @@ import { getCurrentUserId, getJWTToken } from '../utils/auth';
 interface WebSocketConnection {
   ws: WebSocket | null;
   userId: string;
+  thread_id?: string; // Add this line
   reconnectAttempts: number;
   messageQueue: WebSocketMessage[];
   listeners: Set<(message: DirectMessage) => void>;
@@ -16,13 +17,27 @@ export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'er
 class WebSocketService {
   private static instance: WebSocketService;
   private connections: Map<string, WebSocketConnection> = new Map();
+  private connectionPromises: Map<string, Promise<void>> = new Map();
+  private isConnecting: Map<string, boolean> = new Map();
   private reconnectDelay = 1000;
   private maxReconnectDelay = 30000;
   private maxReconnectAttempts = 10;
   private heartbeatInterval = 30000;
   private heartbeatTimers: Map<string, NodeJS.Timeout> = new Map();
 
-  private constructor() {}
+  private constructor() {
+    // Add global error handler for unhandled WebSocket errors
+    if (typeof window !== 'undefined') {
+      window.addEventListener('unhandledrejection', (event) => {
+        // Check if it's a WebSocket-related error
+        if (event.reason && (event.reason.target instanceof WebSocket || 
+            event.reason.message?.includes('WebSocket'))) {
+          console.warn('Handled WebSocket rejection:', event.reason);
+          event.preventDefault(); // Prevent the error from bubbling up
+        }
+      });
+    }
+  }
 
   public static getInstance(): WebSocketService {
     if (!WebSocketService.instance) {
@@ -32,10 +47,10 @@ class WebSocketService {
   }
 
   private getWebSocketUrl(otherUserId: string, token?: string): string {
-    // Use clean WebSocket URL format matching backend requirements
-    const baseUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:8000';
+    // Use Azure backend with secure WebSocket (wss://)
+    const baseUrl = process.env.REACT_APP_WS_URL || 'wss://ugogo-auhdbad8drdma7f6.canadacentral-01.azurewebsites.net';
     
-    // Backend expects: ws://localhost:8000/ws/chat/dm/user/<other_user_id>/?token=<jwt_token>
+    // Backend expects: wss://domain/ws/chat/dm/user/<other_user_id>/?token=<jwt_token>
     // Use query parameter authentication method as recommended by backend
     let url = `${baseUrl}/ws/chat/dm/user/${otherUserId}/`;
     
@@ -46,143 +61,172 @@ class WebSocketService {
     return url;
   }
 
-  public connect(otherUserId: string): void {
-    const existingConnection = this.connections.get(otherUserId);
-    
-    if (existingConnection?.ws?.readyState === WebSocket.OPEN) {
+  public async connect(otherUserId: string): Promise<void> {
+    // Prevent multiple simultaneous connections
+    if (this.isConnecting.get(otherUserId)) {
+      console.log('🔄 Connection already in progress for user:', otherUserId);
+      const existingPromise = this.connectionPromises.get(otherUserId);
+      if (existingPromise) {
+        await existingPromise;
+      }
       return;
     }
 
-    const connection: WebSocketConnection = existingConnection || {
-      ws: null,
-      userId: otherUserId,
-      reconnectAttempts: 0,
-      messageQueue: [],
-      listeners: new Set(),
-      statusListeners: new Set(),
-      typingListeners: new Set()
-    };
-
-    try {
-      const token = getJWTToken();
-      const currentUserId = getCurrentUserId();
-      
-      console.log('🔐 WebSocket authentication details:', {
-        hasToken: !!token,
-        tokenLength: token?.length || 0,
-        currentUserId,
-        otherUserId,
-        tokenStorageKey: localStorage.getItem('jwt_token') ? 'jwt_token' : 'access'
-      });
-      
-      if (!token) {
-        throw new Error('Authentication token not found');
-      }
-
-      // Use query parameter authentication method as recommended by backend
-      const wsUrl = this.getWebSocketUrl(otherUserId, token);
-      console.log('🔗 WebSocket URL:', wsUrl.replace(/token=[^&]+/, 'token=***')); // Hide token in logs
-      
-      console.log('🔐 Using query parameter authentication...');
-      const ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        console.log(`WebSocket connected to user ${otherUserId}`);
-        connection.reconnectAttempts = 0;
-        this.notifyStatusListeners(connection, 'connected');
-        
-        this.flushMessageQueue(connection);
-        this.setupHeartbeat(otherUserId);
-        
-        // No need to send auth message - authentication is handled via URL query parameter
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          let payload = event.data;
-          try {
-            payload = JSON.parse(event.data);
-          } catch {}
-
-          // Handle typing indicators
-          if (payload.type === 'typing') {
-            this.notifyTypingListeners(connection, payload.sender_id, payload.is_typing);
-            return;
-          }
-
-          // Handle regular messages
-          const content = typeof payload === 'string' ? payload : payload?.content ?? '';
-          const sender_id = payload?.sender_id;
-
-          if (content) {
-            const message: DirectMessage = {
-              id: payload.id || `ws-${Date.now()}`,
-              thread: payload.thread || `thread-${otherUserId}`,
-              sender: payload.sender || sender_id?.toString() || 'unknown',
-              sender_id: sender_id,
-              content: content,
-              created_at: payload.created_at || new Date().toISOString(),
-              is_read: payload.is_read || false,
-              edited: payload.edited || false,
-              deleted: payload.deleted || false
-            };
-            
-            console.log('WebSocket received message:', message);
-            this.notifyListeners(connection, message);
-          }
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
-        }
-      };
-
-      ws.onerror = (error) => {
-        console.error(`❌ WebSocket error for user ${otherUserId}:`, error);
-        console.error('🔍 WebSocket error details:', {
-          url: ws.url,
-          readyState: ws.readyState,
-          protocol: ws.protocol
-        });
-        this.notifyStatusListeners(connection, 'error');
-      };
-
-      ws.onclose = (event) => {
-        console.log(`🔌 WebSocket closed for user ${otherUserId}`, {
-          code: event.code,
-          reason: event.reason,
-          wasClean: event.wasClean,
-          url: ws.url
-        });
-        
-        // Common WebSocket close codes:
-        // 1000 = Normal closure
-        // 1001 = Going away
-        // 1006 = Abnormal closure (often "Insufficient resources")
-        // 4401 = Unauthorized
-        // 4403 = Forbidden
-        
-        if (event.code === 1006) {
-          console.error('💡 WebSocket 1006 error suggests:');
-          console.error('   - Backend WebSocket server not running');
-          console.error('   - Wrong WebSocket URL');
-          console.error('   - Network connectivity issues');
-          console.error('   - CORS/authentication issues');
-        }
-        
-        this.clearHeartbeat(otherUserId);
-        this.notifyStatusListeners(connection, 'disconnected');
-        
-        if (event.code !== 1000 && event.code !== 1001) {
-          this.scheduleReconnect(otherUserId);
-        }
-      };
-
-      connection.ws = ws;
-      this.connections.set(otherUserId, connection);
-
-    } catch (error) {
-      console.error('Error creating WebSocket connection:', error);
-      this.notifyStatusListeners(connection, 'error');
+    const existingConnection = this.connections.get(otherUserId);
+    
+    if (existingConnection?.ws?.readyState === WebSocket.OPEN) {
+      console.log('✅ Already connected to user:', otherUserId);
+      return;
     }
+
+    // Close any existing connection that's not open
+    if (existingConnection?.ws) {
+      console.log('🔄 Closing existing non-open connection');
+      existingConnection.ws.close();
+      existingConnection.ws = null;
+    }
+
+    this.isConnecting.set(otherUserId, true);
+    
+    const connectionPromise = new Promise<void>((resolve, reject) => {
+      const connection: WebSocketConnection = existingConnection || {
+        ws: null,
+        userId: otherUserId,
+        thread_id: '',
+        reconnectAttempts: 0,
+        messageQueue: [],
+        listeners: new Set(),
+        statusListeners: new Set(),
+        typingListeners: new Set()
+      };
+
+      try {
+        const token = getJWTToken();
+        
+        if (!token) {
+          console.error('❌ No JWT token found');
+          this.notifyStatusListeners(connection, 'error');
+          this.isConnecting.set(otherUserId, false);
+          reject(new Error('No JWT token'));
+          return;
+        }
+        
+        const wsUrl = this.getWebSocketUrl(otherUserId, token);
+        console.log('🔌 Creating WebSocket connection');
+        console.log('   Backend:', wsUrl.replace(/token=[^&]+/, 'token=***'));
+        console.log('   User ID:', otherUserId);
+        console.log('   Protocol:', wsUrl.startsWith('wss://') ? 'Secure (WSS)' : 'Insecure (WS)');
+        
+        let ws: WebSocket;
+        try {
+          ws = new WebSocket(wsUrl);
+        } catch (wsError) {
+          console.error('Failed to create WebSocket instance:', wsError);
+          this.isConnecting.set(otherUserId, false);
+          resolve(); // Resolve to prevent unhandled rejection
+          return;
+        }
+        
+        connection.ws = ws;
+        
+        // Store connection immediately
+        this.connections.set(otherUserId, connection);
+
+        ws.onopen = () => {
+          console.log(`✅ WebSocket connected successfully!`);
+          console.log(`   Connected to user: ${otherUserId}`);
+          console.log(`   Backend: Azure (${wsUrl.split('/ws/')[0]})`);
+          this.notifyStatusListeners(connection, 'connected');
+          
+          // Process any queued messages
+          while (connection.messageQueue.length > 0) {
+            const queuedMsg = connection.messageQueue.shift();
+            if (queuedMsg) {
+              const msg = { content: queuedMsg.content };
+              console.log('📤 Sending queued message:', msg);
+              ws.send(JSON.stringify(msg));
+            }
+          }
+          
+          connection.reconnectAttempts = 0;
+          this.isConnecting.set(otherUserId, false);
+          resolve();
+        };
+
+        ws.onerror = (error) => {
+          console.error(`❌ WebSocket error for user ${otherUserId}:`, error);
+          this.notifyStatusListeners(connection, 'error');
+          this.isConnecting.set(otherUserId, false);
+          // Don't reject here - let onclose handle it
+          // This prevents unhandled promise rejections
+        };
+
+        ws.onclose = (event) => {
+          console.log(`🔌 WebSocket closed for user ${otherUserId}:`, event.code, event.reason);
+          this.notifyStatusListeners(connection, 'disconnected');
+          this.isConnecting.set(otherUserId, false);
+          
+          // Check if connection was ever established
+          const wasConnected = connection.ws?.readyState === WebSocket.OPEN;
+          
+          // Only reconnect if it wasn't a normal closure
+          if (event.code !== 1000 && event.code !== 1001) {
+            if (connection.reconnectAttempts < this.maxReconnectAttempts) {
+              const delay = Math.min(this.reconnectDelay * Math.pow(2, connection.reconnectAttempts), this.maxReconnectDelay);
+              console.log(`🔄 Reconnecting in ${delay}ms...`);
+              setTimeout(() => {
+                connection.reconnectAttempts++;
+                this.connect(otherUserId).catch(err => {
+                  console.error('Reconnection failed:', err);
+                });
+              }, delay);
+            } else {
+              // Max reconnection attempts reached
+              console.error('Max reconnection attempts reached');
+              resolve(); // Resolve instead of reject to prevent unhandled errors
+            }
+          } else {
+            // Normal closure
+            resolve();
+          }
+        };
+
+        ws.onmessage = (event) => {
+          console.log('📨 WebSocket message received:', event.data);
+          try {
+            const payload = JSON.parse(event.data);
+            
+            // Handle regular message
+            if (payload.content) {
+              const message: DirectMessage = {
+                id: payload.id || `ws-${Date.now()}`,
+                thread: payload.thread || '',
+                sender: '',
+                sender_id: payload.sender_id,
+                content: payload.content,
+                created_at: payload.created_at || new Date().toISOString(),
+                is_read: false,
+                edited: false,
+                deleted: false
+              };
+              
+              this.notifyListeners(connection, message);
+            }
+          } catch (error) {
+            console.error('Error parsing message:', error);
+          }
+        };
+
+      } catch (error) {
+        console.error('Failed to create WebSocket:', error);
+        this.isConnecting.set(otherUserId, false);
+        // Resolve instead of reject to prevent unhandled promise rejection
+        resolve();
+      }
+    });
+
+    this.connectionPromises.set(otherUserId, connectionPromise);
+    await connectionPromise;
   }
 
   private setupHeartbeat(userId: string): void {
@@ -241,70 +285,38 @@ class WebSocketService {
     }
   }
 
-  public sendMessage(otherUserId: string, content: string): void {
+  public async sendMessage(otherUserId: string, content: string): Promise<void> {
+    console.log('📤 sendMessage called:', { otherUserId, content });
+    
+    // Ensure connection exists and is stable
+    await this.connect(otherUserId);
+    
     const connection = this.connections.get(otherUserId);
     
-    console.log('🚀 sendMessage called:', {
-      otherUserId,
-      content: content.trim(),
-      connectionExists: !!connection,
-      wsReadyState: connection?.ws?.readyState,
-      WebSocketStates: {
-        CONNECTING: WebSocket.CONNECTING,
-        OPEN: WebSocket.OPEN,
-        CLOSING: WebSocket.CLOSING,
-        CLOSED: WebSocket.CLOSED
-      }
-    });
-    
     if (!connection) {
-      console.log('❌ No connection found, creating one and retrying...');
-      this.connect(otherUserId);
-      setTimeout(() => this.sendMessage(otherUserId, content), 1000);
-      return;
+      throw new Error('Failed to establish connection');
     }
 
-    // Simple message format matching Next.js example
-    const message = {
-      content: content.trim()
-    };
-
-    console.log('📤 Preparing to send WebSocket message:', message);
-    console.log('🔌 WebSocket connection status:', {
-      readyState: connection.ws?.readyState,
-      url: connection.ws?.url,
-      isOpen: connection.ws?.readyState === WebSocket.OPEN
-    });
-
+    const message = { content: content.trim() };
+    
     if (connection.ws?.readyState === WebSocket.OPEN) {
       try {
-        const messageStr = JSON.stringify(message);
-        console.log('✅ Sending message via WebSocket:', messageStr);
-        connection.ws.send(messageStr);
-        console.log('✅ Message sent successfully via WebSocket');
+        console.log('✅ Sending message immediately:', message);
+        connection.ws.send(JSON.stringify(message));
       } catch (error) {
-        console.error('❌ Failed to send message via WebSocket:', error);
-        const queueMessage: WebSocketMessage = {
-          content,
-          timestamp: new Date().toISOString(),
-          type: 'message'
-        };
-        connection.messageQueue.push(queueMessage);
-        console.log('📥 Message queued due to send error');
+        console.error('❌ Send failed:', error);
+        throw error;
       }
     } else {
-      console.log('⏳ WebSocket not ready, queuing message. State:', connection.ws?.readyState);
-      const queueMessage: WebSocketMessage = {
-        content,
+      console.log('⏳ Connection not ready, queuing message');
+      connection.messageQueue.push({
+        content: content.trim(),
         timestamp: new Date().toISOString(),
         type: 'message'
-      };
-      connection.messageQueue.push(queueMessage);
-      console.log('📥 Message added to queue');
-      if (connection.ws?.readyState !== WebSocket.CONNECTING) {
-        console.log('🔄 WebSocket not connecting, attempting to connect...');
-        this.connect(otherUserId);
-      }
+      });
+      
+      // Try to reconnect
+      await this.connect(otherUserId);
     }
   }
 
@@ -347,6 +359,7 @@ class WebSocketService {
       connection = {
         ws: null,
         userId,
+        thread_id: '',
         reconnectAttempts: 0,
         messageQueue: [],
         listeners: new Set(),
@@ -370,6 +383,7 @@ class WebSocketService {
       connection = {
         ws: null,
         userId,
+        thread_id: '',
         reconnectAttempts: 0,
         messageQueue: [],
         listeners: new Set(),
@@ -393,6 +407,7 @@ class WebSocketService {
       connection = {
         ws: null,
         userId,
+        thread_id: '',
         reconnectAttempts: 0,
         messageQueue: [],
         listeners: new Set(),

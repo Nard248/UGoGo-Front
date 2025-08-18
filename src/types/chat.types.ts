@@ -54,6 +54,11 @@ export interface ChatState {
   threads: DirectThread[];
   activeThread: DirectThread | null;
   messages: Record<string, DirectMessage[]>;
+  messagesPagination: Record<string, {
+    hasMore: boolean;
+    offset: number;
+    isLoadingMore: boolean;
+  }>;
   connectionStatus: Record<string, 'connecting' | 'connected' | 'disconnected' | 'error'>;
   typingUsers: Record<string, boolean>;
   unreadCounts: Record<string, number>;
