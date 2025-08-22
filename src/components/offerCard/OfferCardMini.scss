@@ -78,3 +78,81 @@
     gap: 8px;
   }
 }
+
+/* --- Responsive Breakpoints --- */
+
+@media (max-width: 1024px) {
+  .offerCardMini {
+    width: 300px;
+    height: auto;
+    padding: 14px;
+  }
+
+  .offerCardMini__direction,
+  .offerCardMini__date {
+    font-size: 14px;
+    gap: 30px;
+  }
+
+  .offerCardMini__username {
+    font-size: 13px;
+  }
+}
+
+/* Small tablets & large phones (≤768px) */
+@media (max-width: 768px) {
+  .offerCardMini {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 12px;
+  }
+
+  .offerCardMini__header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .offerCardMini__rating {
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .offerCardMini__direction,
+  .offerCardMini__date {
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .offerCardMini__button {
+    margin-top: 12px;
+  }
+}
+
+/* Mobile (≤480px) */
+@media (max-width: 480px) {
+  .offerCardMini {
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .offerCardMini__username {
+    font-size: 12px;
+  }
+
+  .offerCardMini__direction,
+  .offerCardMini__date {
+    font-size: 13px;
+    gap: 4px;
+  }
+
+  .offerCardMini__button {
+    width: 85px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
