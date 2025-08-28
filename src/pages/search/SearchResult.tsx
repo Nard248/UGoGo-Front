@@ -95,13 +95,14 @@ export const SearchResult: FC = () => {
 
     return (
         <>
-            <div className="flex flex-col w-full gap-[7.8rem]">
+                  <div className="flex flex-col w-full gap-16 md:gap-24 lg:gap-32 px-4 md:px-8 lg:px-16">
+
                 <div className="flex justify-center w-full">
                     <Search onSearchResults={handleSearchResults} />
                 </div>
 
                 <div className="flex justify-center w-full">
-                    <h1 className="text-[4rem]">
+                              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
                         {isSearching ? "Search Results" : "Available Offers"}
                     </h1>
                 </div>
@@ -122,7 +123,8 @@ export const SearchResult: FC = () => {
                             <Loading />
                         </div>
                     ) : searchResults.length > 0 ? (
-                        <div className="grid grid-cols-3 gap-[5.7rem] w-full">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 md:gap-16 w-full">
+
                             {searchResults.map((item, index) => (
                                 <OfferCard
                                     key={index}
