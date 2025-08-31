@@ -955,3 +955,318 @@ gap: 16px;
     }
   }
 }
+
+/* ================================
+   Responsive Additions (Only Adds)
+   ================================ */
+
+$bp-xxl: 1440px;
+$bp-xl: 1280px;
+$bp-lg: 1024px;
+$bp-md: 868px;
+$bp-sm: 640px;
+$bp-xs: 420px;
+
+/* --- Large screens: tighten a bit --- */
+@media (max-width: $bp-xxl) {
+  .ugogo-chat-page {
+    .chat-sidebar {
+      max-width: 380px;
+    }
+    .chat-main .chat-body .chat-body-inner {
+      max-width: 900px;
+    }
+  }
+}
+
+/* --- ≤1280px: narrower sidebar, slightly larger message width --- */
+@media (max-width: $bp-xl) {
+  .ugogo-chat-page {
+    .ugogo-chat-inner {
+      gap: 0;
+    }
+
+    .chat-sidebar {
+      max-width: 340px;
+      padding: 14px;
+
+      .users .user-item {
+        width: 100%;   /* override fixed width */
+        height: auto;  /* allow auto height */
+        padding: 12px;
+      }
+
+      .users .user-item .user-info {
+        width: 100%;
+        height: auto;
+      }
+
+      .search input {
+        height: 38px;
+      }
+    }
+
+    .chat-main {
+      .chat-header {
+        padding: 14px 18px;
+        .chat-profile .info h4 { font-size: 13px; }
+        .chat-profile .info .sub { font-size: 12px; }
+      }
+
+      .chat-body {
+        padding: 16px 18px;
+        .chat-body-inner { max-width: 820px; }
+      }
+    }
+
+    .message-wrapper { max-width: 74%; }
+    .message-bubble { padding: 11px 16px; }
+  }
+}
+
+/* --- ≤1024px: compact list, tighter paddings --- */
+@media (max-width: $bp-lg) {
+  .ugogo-chat-page {
+    .chat-sidebar {
+      max-width: 300px;
+
+      .sidebar-header .title-with-icon h4 { font-size: 13px; }
+      .sidebar-header .menu-dot { width: 30px; height: 30px; }
+
+      .users .user-item {
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .users .user-item .avatar {
+        width: 32px; height: 32px; border-radius: 8px;
+      }
+
+      .users .user-item .user-info {
+        h5 { font-size: 14px; }
+        p  { font-size: 12px; width: 100%; }
+        .meta { font-size: 12px; gap: 6px; }
+      }
+    }
+
+    .chat-main {
+      .chat-header {
+        height: 64px;
+        .chat-profile .avatar { width: 42px; height: 42px; }
+        .header-actions { gap: 12px; }
+      }
+
+      .chat-body {
+        padding: 14px 16px;
+        .chat-body-inner { max-width: 760px; gap: 6px; }
+      }
+    }
+
+    .message-wrapper { max-width: 78%; }
+    .message-bubble { font-size: 13.5px; }
+    .message-footer .message-time { font-size: 10.5px; }
+  }
+}
+
+/* --- ≤868px: stack layout (sidebar on top), mobile-friendly lists --- */
+@media (max-width: $bp-md) {
+  .ugogo-chat-page {
+    height: 100vh; /* use full height on mobile/tablet */
+
+    .ugogo-chat-inner {
+      flex-direction: column;
+    }
+
+    .chat-sidebar {
+      order: 1;
+      max-width: none;
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid $border;
+      padding: 12px;
+      max-height: 42vh; /* allow scrolling list area */
+      overflow: hidden;
+
+      .users {
+        max-height: calc(42vh - 110px); /* header + search */
+        overflow-y: auto;
+      }
+
+      .users .user-item {
+        padding: 10px 12px;
+        margin-bottom: 6px;
+      }
+
+      .users .user-item .user-info p {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;   /* clamp preview lines */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    }
+
+    .chat-main {
+      order: 2;
+      height: 58vh; /* remaining space */
+      display: flex;
+      flex-direction: column;
+
+      .chat-header {
+        padding: 12px 14px;
+        height: 58px;
+
+        .chat-profile {
+          gap: 10px;
+          .avatar { width: 38px; height: 38px; }
+          .info h4 { font-size: 13px; }
+          .info .sub { font-size: 11px; }
+        }
+
+        .header-actions {
+          gap: 10px;
+        }
+      }
+
+      .chat-body {
+        padding: 10px 12px;
+        .chat-body-inner { max-width: 100%; padding-bottom: 6px; }
+      }
+
+      .chat-footer {
+        padding: 8px 10px;
+      }
+    }
+
+    .message-wrapper { max-width: 82%; }
+    .message-bubble {
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+
+    .chat-input-form {
+      gap: 10px;
+      padding: 8px 12px;
+
+      .circle-btn { width: 38px; height: 38px; }
+
+      .input-wrapper {
+        height: 42px;
+        padding-right: 44px;
+
+        input { font-size: 14px; }
+        .send-btn { width: 34px; height: 34px; right: 5px; }
+      }
+    }
+
+    .typing-indicator {
+      font-size: 12px;
+      margin-left: 12px;
+    }
+  }
+}
+
+/* --- ≤640px: very compact; simplify list and header actions --- */
+@media (max-width: $bp-sm) {
+  .ugogo-chat-page {
+    .chat-sidebar {
+      .sidebar-header .menu-dot { width: 28px; height: 28px; }
+      .search { margin-bottom: 10px; }
+      .search .search-icon { width: 20px; height: 20px; left: 10px; }
+      .search input { height: 36px; padding-left: 34px; }
+
+      .users .user-item {
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .users .user-item .user-info {
+        h5 { font-size: 13px; }
+        .meta { display: none; } /* hide time/meta to save space */
+      }
+    }
+
+    .chat-main {
+      .chat-header {
+        .header-actions { display: none; } /* free space on small screens */
+      }
+
+      .chat-body {
+        padding: 8px 10px;
+      }
+    }
+
+    .message-wrapper { max-width: 88%; }
+    .message-bubble {
+      font-size: 12.5px;
+      padding: 9px 12px;
+
+      .audio .duration { font-size: 11px; }
+    }
+
+    .message-footer .message-time { font-size: 10px; }
+  }
+}
+
+/* --- ≤420px: single-hand use tweaks --- */
+@media (max-width: $bp-xs) {
+  .ugogo-chat-page {
+    .chat-sidebar {
+      padding: 10px;
+      .sidebar-header .title-with-icon h4 { font-size: 12px; }
+    }
+
+    .chat-main {
+      .chat-header {
+        padding: 10px 12px;
+        height: 54px;
+
+        .chat-profile .avatar { width: 34px; height: 34px; }
+        .chat-profile .info h4 { font-size: 12px; }
+        .chat-profile .info .sub { font-size: 10.5px; }
+      }
+
+      .chat-body .chat-body-inner { gap: 5px; }
+    }
+
+    .chat-input-form {
+      padding: 6px 8px;
+      gap: 8px;
+
+      .circle-btn { width: 34px; height: 34px; }
+
+      .input-wrapper {
+        height: 40px;
+        padding-left: 10px;
+        padding-right: 40px;
+
+        input { font-size: 13px; }
+        .send-btn { width: 32px; height: 32px; right: 4px; }
+      }
+    }
+
+    .typing-indicator {
+      padding: 8px 12px;
+      font-size: 11.5px;
+      margin-left: 8px;
+    }
+  }
+}
+
+/* --- High-density screens: crisper text --- */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .ugogo-chat-page {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* --- Landscape phones: keep the header slim --- */
+@media (max-height: 520px) and (max-width: 812px) {
+  .ugogo-chat-page {
+    .chat-main {
+      .chat-header { height: 50px; }
+      .chat-body { padding: 6px 8px; }
+    }
+    .message-wrapper { max-width: 90%; }
+  }
+}

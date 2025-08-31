@@ -90,32 +90,46 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
         <Grid item xs={12}>
           <TextField
             fullWidth
-            type="date"
-            label="Departure Date"
+            type="datetime-local" 
+            label="Departure Date and Time"
             InputLabelProps={{ shrink: true }}
             value={values.departureDate}
             onChange={(e) => handleChange("departureDate", e.target.value)}
-            inputProps={{ min: today }}
+            inputProps={{ min: dayjs().format("YYYY-MM-DDTHH:mm") }} 
           />
         </Grid>
-
         <Grid item xs={12}>
           <TextField
             fullWidth
-            type="date"
-            label="Arrival Date"
+            type="datetime-local"
+            label="Arrival Date and Time"
             InputLabelProps={{ shrink: true }}
             value={values.arrivalDate}
-            onChange={(e) => handleChange("arrivalDate", e.target.value)}
+            onChange={(e) => {
+              const selectedArrival = dayjs(e.target.value);
+              const minArrival = values.departureDate
+                ? dayjs(values.departureDate).add(1, "hour")
+                : dayjs().add(1, "hour");
+
+              if (selectedArrival.isBefore(minArrival)) {
+                handleChange(
+                  "arrivalDate",
+                  minArrival.format("YYYY-MM-DDTHH:mm")
+                );
+              } else {
+                handleChange("arrivalDate", e.target.value);
+              }
+            }}
             inputProps={{
               min: values.departureDate
-                ? dayjs(values.departureDate).add(1, "day").format("YYYY-MM-DD")
-                : today,
+                ? dayjs(values.departureDate)
+                    .add(1, "hour")
+                    .format("YYYY-MM-DDTHH:mm")
+                : dayjs().add(1, "hour").format("YYYY-MM-DDTHH:mm"),
             }}
           />
         </Grid>
       </Grid>
-
     </Box>
   );
 };
