@@ -7,6 +7,7 @@ import "./../ChatPage.scss";
 import inboxIcon from "../../../assets/icons/inbox.svg";
 import searchIcon from "../../../assets/icons/chat-search.svg";
 import plusIcon from "../../../assets/icons/plus.svg";
+import { log } from "node:console";
 
 interface Props {
   users: IUser[];
@@ -15,10 +16,14 @@ interface Props {
   onStartNewChat?: (user: User) => void;
 }
 
-export const ChatSidebar: React.FC<Props> = ({ users, onSelectUser, activeUserId, onStartNewChat }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleStartNewChat = (user: User) => {
+export const ChatSidebar: React.FC<Props> = ({
+  users,
+  onSelectUser,
+  activeUserId,
+  onStartNewChat,
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const handleStartNewChat = (user: User) => {        
     onStartNewChat?.(user);
   };
   return (
@@ -28,7 +33,7 @@ export const ChatSidebar: React.FC<Props> = ({ users, onSelectUser, activeUserId
           <h4>All Messages</h4>
           <img src={inboxIcon} alt="inbox" className="header-icon" />
         </div>
-        <button 
+        <button
           className="start-new-chat-btn"
           onClick={() => setIsModalOpen(true)}
           title="Start new chat"
@@ -49,28 +54,28 @@ export const ChatSidebar: React.FC<Props> = ({ users, onSelectUser, activeUserId
             className={`user-item ${u.id === activeUserId ? "active" : ""}`}
             role="listitem"
             onClick={() => onSelectUser?.(u.id)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             <div className="avatar" />
             <div className="user-info">
               <h5>{u.name}</h5>
               <p>{u.lastMessage}</p>
               <div className="meta">
-                  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#9aa0a6"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="clock-icon"
-  >
-    <circle cx="12" cy="12" r="10"></circle>
-    <polyline points="12 6 12 12 16 14"></polyline>
-  </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#9aa0a6"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="clock-icon"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
                 <span>Today</span>
                 <span> | </span>
                 <span>{u.time}</span>
@@ -90,7 +95,7 @@ export const ChatSidebar: React.FC<Props> = ({ users, onSelectUser, activeUserId
           </div>
         ))}
       </div>
-      
+
       <UserSelectorModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
