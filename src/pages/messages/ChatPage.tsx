@@ -39,7 +39,7 @@ const ChatPage: React.FC = () => {
   const previousScrollHeight = useRef<number>(0);
 
   // Calculate other user ID for WebSocket connection
-  const getOtherUserId = () => {
+  const getOtherUserId = () => {    
     if (!state.activeThread) return '';
     const otherUserId = state.activeThread.user1 === currentUserId ? state.activeThread.user2 : state.activeThread.user1;
     return otherUserId.toString();
@@ -61,9 +61,9 @@ const ChatPage: React.FC = () => {
 
   useEffect(() => {
     // Load threads when component mounts
-    console.log('🚀 ChatPage mounted - Loading threads...'); // Debug log
-    console.log('🚀 Current user ID:', currentUserId);
-    console.log('🚀 Is authenticated:', !!localStorage.getItem('access'));
+    // console.log('🚀 ChatPage mounted - Loading threads...'); // Debug log
+    // console.log('🚀 Current user ID:', currentUserId);
+    // console.log('🚀 Is authenticated:', !!localStorage.getItem('access'));
     loadThreads();
   }, []); // Remove loadThreads dependency to prevent re-renders
 
@@ -201,10 +201,9 @@ const ChatPage: React.FC = () => {
 
   const handleStartNewChat = useCallback(async (user: User) => {
     try {
-      console.log('Starting new chat with user:', user);
+      // console.log('Starting new chat with user:', user);
       const thread = await ensureThread(user.id);
-      console.log('Created/found thread:', thread);
-      
+      // console.log('Created/found thread:', thread);      
       // Wait a moment for the thread to be properly added to state
       setTimeout(() => {
         selectThread(thread);
@@ -217,10 +216,10 @@ const ChatPage: React.FC = () => {
   const convertToIUser = (thread: DirectThread): IUser => {
     // Get the other user ID (not the current user)
     const otherUserId = thread.user1 === currentUserId ? thread.user2 : thread.user1;
-    
+  
     // Create display name - try different sources
     let displayName = '';
-    
+    // console.log("thteaddd. ", thread);
     // First try participant info from backend
     if (thread.participant?.full_name) {
       displayName = thread.participant.full_name;
@@ -256,7 +255,7 @@ const ChatPage: React.FC = () => {
   };
 
   // Convert threads to users with error handling
-  const users = Array.isArray(state.threads) ? state.threads.map((thread) => {
+  const users = Array.isArray(state.threads) ? state.threads.map((thread) => {            
     try {
       return convertToIUser(thread);
     } catch (error) {
@@ -310,11 +309,11 @@ const ChatPage: React.FC = () => {
         <ChatSidebar 
           users={users}
           onSelectUser={(userId) => {
-            const thread = state.threads.find(t => t.id === userId);
+            const thread = state.threads.find(t => t.id === userId);            
             if (thread) {
               selectThread(thread);
             }
-          }}
+          }}          
           activeUserId={state.activeThread?.id}
           onStartNewChat={handleStartNewChat}
         />
