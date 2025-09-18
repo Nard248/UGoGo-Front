@@ -138,14 +138,14 @@ const heightRef = useRef<HTMLInputElement>(null);
           </Label>
         </div>
 
-        <div className="step-footer">
+        {/* <div className="step-footer">
           <Button
             type="primary"
             title="Next"
             handleClick={nextStep}
             disabled={!isValid}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

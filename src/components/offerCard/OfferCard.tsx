@@ -86,7 +86,7 @@ export const OfferCard: FC<IOfferCard> = ({
           <div className="flex items-center gap-3">
             <Avatar alt="Avatar" src={avatar} />
             <span className="text-[#808080]">
-              {data?.user_flight?.user?.full_name || "Unknown User"}
+              {data?.user_flight?.user?.full_name || data?.user?.full_name || "Unknown User"}
             </span>
           </div>
           {withRate && (

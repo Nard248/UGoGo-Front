@@ -136,7 +136,7 @@ const onImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         </div>
       </div>
 
-      <div className="button-group">
+      {/* <div className="button-group">
         <button onClick={prevStep} className="button button-secondary">
           Back
         </button>
@@ -147,7 +147,7 @@ const onImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         >
           Next
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

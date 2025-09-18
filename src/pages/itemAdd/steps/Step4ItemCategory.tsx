@@ -74,7 +74,7 @@ const Step4ItemCategory = ({
           ))}
         </div>
       </div>
-      <div className="button-group">
+      {/* <div className="button-group">
         <button onClick={prevStep} className="button button-secondary">
           Back
         </button>
@@ -85,7 +85,7 @@ const Step4ItemCategory = ({
         >
           Next
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

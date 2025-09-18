@@ -82,10 +82,10 @@ const Step2PickUpPersonDetails = ({
         </Label>
       </div>
 
-      <div className="button-group">
+      {/* <div className="button-group">
         <Button title="Back" handleClick={prevStep} type="secondary" />
         <Button title="Next" handleClick={nextStep} type="primary" disabled={!isValid} />
-      </div>
+      </div> */}
     </div>
   );
 };

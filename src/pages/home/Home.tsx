@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Search } from "../../components/search/Search";
 import airplaneIcon from "../../assets/icons/airplaneIcon.svg";
 import briefcaseIcon from "../../assets/icons/briefcaseIcon.svg";
@@ -14,9 +14,10 @@ import { Button } from "../../components/button/Button";
 import { Divider } from "../../components/divider/Divider";
 import checkedIcon from "../../assets/icons/checked.svg";
 import { useNavigate } from "react-router-dom";
-import {getUserDetails, searchOffer} from "../../api/route";
-import {setSearchedResult} from "../../components/search/SearchService";
-import "./home.scss"
+import { getUserDetails, searchOffer } from "../../api/route";
+import { setSearchedResult } from "../../components/search/SearchService";
+import { getAllOffers } from "../../api/route";
+import "./home.scss";
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
@@ -72,6 +73,20 @@ const homeData: any = [];
 // ];
 
 export const Home: FC = () => {
+  const [offers, setOffers] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const response = await getAllOffers();
+        setOffers(response.data.slice(0, 3));
+      } catch (error) {
+        console.error("Failed to fetch offers:", error);
+      }
+    };
+
+    fetchOffers();
+  }, []);
+
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -281,9 +296,12 @@ export const Home: FC = () => {
       <div className="popular-routes">
         <h2>Popular Routes</h2>
         <div className="routes-container">
+          {offers.map((offer) => (
+            <OfferCardMini key={offer.id} data={offer} />
+          ))}
+          {/* <OfferCardMini />
           <OfferCardMini />
-          <OfferCardMini />
-          <OfferCardMini />
+          <OfferCardMini /> */}
         </div>
       </div>
 

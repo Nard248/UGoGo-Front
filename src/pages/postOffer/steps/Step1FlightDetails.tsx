@@ -34,9 +34,10 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
 
   return (
     <Box className="step-container">
-      <Typography variant="h5" className="step-title">
+      {/* <Typography variant="h5" className="step-title">
         Flight Details
-      </Typography>
+      </Typography> */}
+      <div className="offer-step-category__header">Flight Details</div>
 
       <Grid container spacing={3} className="step-form-flight">
         <Grid item xs={12}>
@@ -90,12 +91,12 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
         <Grid item xs={12}>
           <TextField
             fullWidth
-            type="datetime-local" 
+            type="datetime-local"
             label="Departure Date and Time"
             InputLabelProps={{ shrink: true }}
             value={values.departureDate}
             onChange={(e) => handleChange("departureDate", e.target.value)}
-            inputProps={{ min: dayjs().format("YYYY-MM-DDTHH:mm") }} 
+            inputProps={{ min: dayjs().format("YYYY-MM-DDTHH:mm") }}
           />
         </Grid>
         <Grid item xs={12}>
