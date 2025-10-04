@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, Suspense, useState} from 'react';
+import React, {ChangeEvent, FC, Suspense, useState, useEffect} from 'react';
 import loginLogo from './../../assets/images/logo.png'
 import './Login.scss';
 import {Input} from "../../components/input/Input";
@@ -13,6 +13,7 @@ import {storeUserDetails} from "../../utils/auth";
 export const Login: FC = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [loginError, setLoginError] = useState<string | null>(null);
     const [loginForm, setLoginForm] = useState<ILoginForm>({
         email: {
             value: undefined,
@@ -25,25 +26,73 @@ export const Login: FC = () => {
         rememberMe: false
     })
     const [user, setUser] = useState<User>({ name: "NULL", email: "NULL" });
+    const [emailDebounce, setEmailDebounce] = useState<string>('');
+    const [passwordDebounce, setPasswordDebounce] = useState<string>('');
+
+    // Debounced email validation
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (emailDebounce) {
+                const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                if (!emailDebounce.match(validRegex)) {
+                    setLoginForm(prevState => ({
+                        ...prevState,
+                        email: {
+                            ...prevState.email,
+                            errorMessage: 'Invalid email format'
+                        }
+                    }))
+                } else {
+                    setLoginForm(prevState => ({
+                        ...prevState,
+                        email: {
+                            value: emailDebounce,
+                            errorMessage: null
+                        }
+                    }))
+                }
+            }
+        }, 800);
+
+        return () => clearTimeout(timer);
+    }, [emailDebounce]);
+
+    // Debounced password validation
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (passwordDebounce) {
+                if (passwordDebounce.length < 6) {
+                    setLoginForm(prevState => ({
+                        ...prevState,
+                        password: {
+                            ...prevState.password,
+                            errorMessage: 'Password must be at least 6 characters long'
+                        }
+                    }))
+                } else {
+                    setLoginForm(prevState => ({
+                        ...prevState,
+                        password: {
+                            value: passwordDebounce,
+                            errorMessage: null
+                        }
+                    }))
+                }
+            }
+        }, 800);
+
+        return () => clearTimeout(timer);
+    }, [passwordDebounce]);
 
     const handleEmailChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> ) => {
         const {value} = event.target;
-        const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-        if (!value.match(validRegex)) {
-            setLoginForm(prevState => ({
-                ...prevState,
-                email: {
-                    ...prevState.email,
-                    errorMessage: 'Invalid email format'
-                }
-            }))
-            return
-        }
+        setEmailDebounce(value);
+        setLoginError(null);
+        // Clear error while typing
         setLoginForm(prevState => ({
             ...prevState,
             email: {
                 ...prevState.email,
-                value,
                 errorMessage: null
             }
         }))
@@ -51,53 +100,63 @@ export const Login: FC = () => {
 
     const handlePasswordChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> ) => {
         const {value} = event.target;
-        if (value.length < 6) {
-            setLoginForm(prevState => ({
-                ...prevState,
-                password: {
-                    ...prevState.password,
-                    errorMessage: 'Password must be at least 6 characters long'
-                }
-            }))
-            return
-        }
+        setPasswordDebounce(value);
+        setLoginError(null);
+        // Clear error while typing
         setLoginForm(prevState => ({
             ...prevState,
             password: {
-                value,
+                ...prevState.password,
                 errorMessage: null
             }
         }))
     }
 
-    const onLogin = async () => {
+    const onLogin = async (e?: React.MouseEvent) => {
+        if (e) {
+            e.preventDefault();
+        }
+
         if (!loginForm.email.value || !loginForm.password.value) {
             return
         }
-        setIsLoading(true);
-        const formData: ILogin = {
-            email: loginForm.email.value,
-            password: loginForm.password.value
-        }
-        const {data} = await login(formData);
-        if (!data?.isEmailVerified) {
-            localStorage.setItem('email', loginForm.email.value);
-            navigate('/email-verification');
-        }
 
-        if(data.refresh) {
-            localStorage.setItem('refresh', data.refresh);
-            localStorage.setItem('access', data.access);
-            
-            // Store user details after successful login
-            try {
-                await storeUserDetails();
-            } catch (error) {
-                console.error('Failed to store user details:', error);
+        setLoginError(null);
+
+        try {
+            const formData: ILogin = {
+                email: loginForm.email.value,
+                password: loginForm.password.value
             }
-            
-            setIsLoading(false);
-            navigate('/')
+            const {data} = await login(formData);
+
+            // Check if login was successful (has refresh token)
+            if(data?.refresh && data?.access) {
+                localStorage.setItem('refresh', data.refresh);
+                localStorage.setItem('access', data.access);
+
+                // Check email verification status only after successful login
+                if (!data?.isEmailVerified) {
+                    localStorage.setItem('email', loginForm.email.value);
+                    setIsLoading(true);
+                    navigate('/email-verification');
+                    return;
+                }
+
+                // Store user details after successful login
+                setIsLoading(true);
+                try {
+                    await storeUserDetails();
+                } catch (error) {
+                    console.error('Failed to store user details:', error);
+                }
+
+                navigate('/')
+            } else {
+                setLoginError('Invalid email or password. Please try again.');
+            }
+        } catch (error: any) {
+            setLoginError(error?.response?.data?.message || 'Invalid email or password. Please try again.');
         }
     }
 
@@ -122,7 +181,12 @@ export const Login: FC = () => {
                                 <NavLink to="/registration" className="signupLink text-[#F9A34B]">Sign up</NavLink>
                             </div>
                         </div>
-                        <form className="flex flex-col gap-[22px]">
+                        {loginError && (
+                            <div className="loginError">
+                                {loginError}
+                            </div>
+                        )}
+                        <form className="flex flex-col gap-[22px]" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
                             <div className={`inputHolder ${loginForm.email.errorMessage ? 'error' : ''}`}>
                                 <Label title={'Email address'} htmlFor={'email'}
                                        classnames={'label'}>

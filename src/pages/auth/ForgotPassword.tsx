@@ -2,8 +2,11 @@ import React from "react";
 import {Input} from "../../components/input/Input";
 import {Button} from "../../components/button/Button";
 import loginLogo from "../../assets/images/logo.png";
+import {useNavigate} from "react-router-dom";
 
 export const ForgotPassword = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="container">
             <div className="leftSection">
@@ -35,7 +38,7 @@ export const ForgotPassword = () => {
                             handleClick={() => {}}/>
                     <Button title={'Back to Login'} type={'primary'} outline={true}
                             classNames={'text-[1.4rem]'}
-                            handleClick={() => {}}/>
+                            handleClick={() => navigate('/login')}/>
                 </div>
             </div>
         </div>

@@ -52,8 +52,8 @@
 // };
 import { FC } from "react";
 import classNames from "classnames";
-import { Avatar } from "@mui/material";
-import offerCardImage from "./../../assets/images/offer.svg"; 
+import { Avatar } from "../avatar/Avatar";
+import offerCardImage from "./../../assets/images/offer.svg";
 import "./OfferCardMini.scss";
 import { Button } from "../button/Button";
 import { useNavigate } from "react-router";
@@ -89,7 +89,10 @@ export const OfferCardMini: FC<IOfferCardMini> = ({ data }) => {
 
       <div className="offerCardMini__details">
         <div className="offerCardMini__header">
-          <Avatar alt={user_flight?.user?.full_name || "User"} src="" />
+          <Avatar
+            firstName={user_flight?.user?.full_name || "User"}
+            size="small"
+          />
           <span className="offerCardMini__username">{user_flight?.user?.full_name || "Unknown"}</span>
         </div>
 

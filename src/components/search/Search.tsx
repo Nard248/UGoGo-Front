@@ -246,27 +246,35 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
                                     slotProps={{
                                         textField: {
                                             placeholder: "Add date and time",
-                                            variant: "standard",
-                                            InputProps: {
-                                                disableUnderline: true,
-                                            },
+                                            variant: "outlined",
                                             sx: {
                                                 width: "100%",
-                                                backgroundColor: "transparent",
-                                                border: "none",
-                                                textAlign: "center",
+                                                backgroundColor: "#f9f9f9",
+                                                borderRadius: "8px",
                                                 '& input': {
-                                                    textAlign: 'center',
-                                                    padding: '8px 0',
+                                                    textAlign: 'left',
+                                                    padding: '8px 12px',
                                                     color: '#333',
+                                                    fontSize: '14px',
                                                 },
-                                                '& .MuiInputBase-root': {
-                                                    backgroundColor: 'transparent',
+                                                '& .MuiOutlinedInput-root': {
+                                                    backgroundColor: '#f9f9f9',
+                                                    '& fieldset': {
+                                                        borderColor: '#d5d7da',
+                                                    },
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#999',
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#F9A34B',
+                                                    },
                                                 },
                                             },
                                         },
                                         openPickerButton: {
-                                            disableRipple: true,
+                                            sx: {
+                                                color: '#F9A34B',
+                                            },
                                         },
                                     }}
                                     disableOpenPicker={false}

@@ -1,8 +1,8 @@
 import { FC } from "react";
 import classNames from "classnames";
-import { Avatar, Box, Rating } from "@mui/material";
+import { Box, Rating } from "@mui/material";
+import { Avatar } from "../avatar/Avatar";
 import offerCardImage from "./../../assets/images/offer.svg";
-import avatar from "./../../assets/images/avatar.svg";
 import airplaneDark from "./../../assets/icons/airplaneDark.svg";
 import { Button } from "../button/Button";
 import "./OfferCard.scss";
@@ -84,7 +84,10 @@ export const OfferCard: FC<IOfferCard> = ({
       <div className="offerCard__details flex flex-col gap-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Avatar alt="Avatar" src={avatar} />
+            <Avatar
+              firstName={data?.user_flight?.user?.full_name || data?.user?.full_name || "User"}
+              size="small"
+            />
             <span className="text-[#808080]">
               {data?.user_flight?.user?.full_name || data?.user?.full_name || "Unknown User"}
             </span>

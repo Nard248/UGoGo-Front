@@ -20,9 +20,10 @@ type Props = {
     // handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     errorMessage?: string | null;
     value?: string | number; // ✅ ADD THIS
+    disabled?: boolean;
 }
 
-export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames, value, handleChange, errorMessage}) => {
+export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames, value, handleChange, errorMessage, disabled}) => {
     return (
         <div className={classNames("flex flex-col gap-[0.5rem]")}>
             {type === 'textarea' ?
@@ -32,6 +33,7 @@ export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames,
                     onChange={(event) => handleChange(event)}
                     className={`textarea ${classnames ? classnames : ''}`}
                     placeholder={placeholder}
+                    disabled={disabled}
                 />
                 :
                 icon ?
@@ -47,6 +49,7 @@ export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames,
                             className={`input !border-none !pr-0 !pl-[1rem]`}
                             value={value}
                             onChange={(event) => handleChange(event)}
+                            disabled={disabled}
                         />
                     </div>
                     :
@@ -61,6 +64,7 @@ export const Input: FC<Props> = ({id, name, type, icon, placeholder, classnames,
                         })}
                         value={value}
                         onChange={(event) => handleChange(event)}
+                        disabled={disabled}
                     />
             }
             {errorMessage &&

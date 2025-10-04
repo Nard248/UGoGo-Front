@@ -203,8 +203,6 @@ const Step4PriceDetails: React.FC<Props> = ({
 
   return (
     <div className="step-price-details">
-      <div className="step-title">Item details</div>
-
       <div className="step-body">
         <Label title="Price ($)" htmlFor="price">
           <div> {/* Added a div to wrap the children */}
@@ -224,11 +222,11 @@ const Step4PriceDetails: React.FC<Props> = ({
           </div>
         </Label>
 
-        <Label title="Item Description" htmlFor="description">
+        <Label title="Notes" htmlFor="description">
           <Input
             id="description"
             type="textarea"
-            placeholder="Describe the item..."
+            placeholder="Add notes..."
             value={offerFormData.description?.value || ""}
             handleChange={handleDescriptionChange}
             classnames={errors.description ? "error" : ""}

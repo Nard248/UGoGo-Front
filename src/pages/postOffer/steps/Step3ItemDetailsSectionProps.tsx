@@ -45,15 +45,6 @@ const Step3ItemDetailsSection: React.FC<Step3ItemDetailsSectionProps> = ({
     }
   };
 
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const name = e.target.value;
-    setOfferFormData((prevData) => ({
-      ...prevData,
-      name: { value: name },
-    }));
-  };
-      
   const handleDimensionsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setOfferFormData((prevData) => {
@@ -89,11 +80,6 @@ const Step3ItemDetailsSection: React.FC<Step3ItemDetailsSectionProps> = ({
   return (
     <div className="postOffer__detailedForm__itemDetails">
       <div className="postOffer__detailedForm__itemDetails__form postOffer__form">
-        <div className="postOffer__detailedForm__itemDetails__form__header postOffer__header">
-          <h3 className="postOffer__detailedForm__itemDetails__form__header__title postOffer__title">
-            Item details
-          </h3>
-        </div>
         <div className="postOffer__detailedForm__itemDetails__form__content">
           <div className="postOffer__detailedForm__itemDetails__form__content__item">
             <Label
@@ -130,22 +116,6 @@ const Step3ItemDetailsSection: React.FC<Step3ItemDetailsSectionProps> = ({
                     <span className="postOffer__unit">cm</span>
                   </div>
                 ))}
-              </div>
-            </Label>
-          </div>
-
-          {/* Name */}
-          <div className="postOffer__detailedForm__itemDetails__form__content__item">
-            <Label title="Name" htmlFor="name" classnames="postOffer__label">
-              <div className="postOffer__inputWrapper">
-                <Input
-                  type="text"
-                  id="name"
-                  placeholder="Item name"
-                  value={offerFormData.name?.value || ""}
-                  handleChange={handleNameChange}
-                  classnames="postOffer__input"
-                />
               </div>
             </Label>
           </div>
@@ -189,7 +159,7 @@ const Step3ItemDetailsSection: React.FC<Step3ItemDetailsSectionProps> = ({
                 }
                 className="mr-2"
               />
-              Fragile
+              Allow Fragile
             </label>
           </div>
         </div>

@@ -34,11 +34,6 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
 
   return (
     <Box className="step-container">
-      {/* <Typography variant="h5" className="step-title">
-        Flight Details
-      </Typography> */}
-      <div className="offer-step-category__header">Flight Details</div>
-
       <Grid container spacing={3} className="step-form-flight">
         <Grid item xs={12}>
           <TextField

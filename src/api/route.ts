@@ -133,3 +133,14 @@ export const payout = async (data: IPayout) => {
 export const verifyPayout = async () => {
   return (await api.post(`/users/send-verification-code/`));
 };
+
+export const updateProfile = async (data: {
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  email: string;
+  birthdate: string;
+  gender: string;
+}) => {
+  return await api.put(`/api/profile/edit/`, data);
+};

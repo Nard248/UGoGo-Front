@@ -122,9 +122,9 @@
 //     </header>
 //   );
 // };
-import { FC, useState } from "react";
-import { Avatar, Badge } from "@mui/material";
-import avatar from "./../assets/images/avatar.svg";
+import { FC, useState, useEffect } from "react";
+import { Badge } from "@mui/material";
+import { Avatar } from "../components/avatar/Avatar";
 import logo from "./../assets/images/logo.svg";
 import { ProfilePopover } from "../components/profilePopover/profilePopover";
 import { Button } from "../components/button/Button";
@@ -132,6 +132,7 @@ import classNames from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
 import message from './../assets/icons/message.svg'
 import { useChat } from "../stores/ChatContext";
+import { User } from "../types/global";
 import "./Header.scss";
 
 interface IHeader {
@@ -141,14 +142,22 @@ interface IHeader {
 export const Header: FC<IHeader> = ({ withNavItems = true }) => {
   const [isPopoverOpened, setIsPopoverOpened] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 🍔 Burger
+  const [user, setUser] = useState<User>({ name: "User", email: "", balance: 0 });
   const isLoggedIn = !!localStorage.getItem("access");
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const { state } = useChat();
-  const totalUnread = state && state.unreadCounts 
+  const totalUnread = state && state.unreadCounts
     ? Object.values(state.unreadCounts).reduce((sum, count) => sum + count, 0)
     : 0;
+
+  useEffect(() => {
+    const cachedUser = localStorage.getItem("userDetails");
+    if (cachedUser) {
+      setUser(JSON.parse(cachedUser));
+    }
+  }, []);
 
   return (
     <header className="header w-full relative">
@@ -179,8 +188,11 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
             <img src={message} alt="Messages" style={{ width: '24px', height: '24px' }} />
           </Badge>
 
-          <div>
-            <Avatar alt="Avatar image" src={avatar} className="cursor-pointer" onClick={() => setIsPopoverOpened(!isPopoverOpened)} />
+          <div className="cursor-pointer" onClick={() => setIsPopoverOpened(!isPopoverOpened)}>
+            <Avatar
+              firstName={user.name || "User"}
+              size="small"
+            />
             {isPopoverOpened && <ProfilePopover />}
           </div>
 
@@ -213,11 +225,24 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
 
       {/* Drawer Menu */}
       <div className={classNames("mobile-menu", { open: isMenuOpen })}>
+        <div className="mobile-menu__header">
+          <h2 className="mobile-menu__header__title">UGOGO</h2>
+          <p className="mobile-menu__header__subtitle">Your Journey, Our Delivery</p>
+        </div>
+
         <nav className="mobile-nav">
-          <a href="/" onClick={() => setIsMenuOpen(false)}>Home</a>
-          <a href="/post-offer" onClick={() => setIsMenuOpen(false)}>Post an offer</a>
-          <a href="/search-result" onClick={() => setIsMenuOpen(false)}>Find an offer</a>
-          <a href="/contact-us" onClick={() => setIsMenuOpen(false)}>Contact Us</a>
+          <a className={classNames({ selectedLink: pathname === '/' })} href="/" onClick={() => setIsMenuOpen(false)}>
+            Home
+          </a>
+          <a className={classNames({ selectedLink: pathname === '/post-offer' })} href="/post-offer" onClick={() => setIsMenuOpen(false)}>
+            Post an offer
+          </a>
+          <a className={classNames({ selectedLink: pathname === '/search-result' })} href="/search-result" onClick={() => setIsMenuOpen(false)}>
+            Find an offer
+          </a>
+          <a className={classNames({ selectedLink: pathname === '/contact-us' })} href="/contact-us" onClick={() => setIsMenuOpen(false)}>
+            Contact Us
+          </a>
         </nav>
 
         {!isLoggedIn && (

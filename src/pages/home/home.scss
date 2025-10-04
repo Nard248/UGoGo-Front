@@ -528,6 +528,7 @@
 @media (max-width: 768px) {
   .home {
     gap: 40px;
+    padding: 0 20px;
 
     .hero {
       .hero-divider {
@@ -548,6 +549,7 @@
     .trusted-section {
       h2 {
         font-size: 26px;
+        padding: 0 10px;
       }
       .trusted-icons {
         flex-direction: row;
@@ -560,6 +562,7 @@
     }
 
     .solutions-section {
+      padding: 0 10px;
       h2 {
         font-size: 24px;
       }
@@ -589,6 +592,7 @@
     }
 
     .account-selection {
+      padding: 0 10px;
       h2 {
         font-size: 24px;
       }
@@ -606,6 +610,7 @@
     }
 
     .popular-routes {
+      padding: 0 10px;
       h2 {
         font-size: 24px;
       }
@@ -620,6 +625,7 @@
 @media (max-width: 480px) {
   .home {
     gap: 30px;
+    padding: 0 15px;
 
     .hero {
       padding: 10px;
@@ -650,6 +656,7 @@
     }
 
     .trusted-section {
+      padding: 0 10px;
       .trusted-icons {
         flex-direction: row;
         gap: 20px;
@@ -660,12 +667,22 @@
       }
     }
 
-    .solutions-section .solution .solution-text p {
-      font-size: 13px;
+    .solutions-section {
+      padding: 0 10px;
+      .solution .solution-text p {
+        font-size: 13px;
+      }
     }
 
-    .account-selection .account-card {
-      padding: 10px;
+    .account-selection {
+      padding: 0 10px;
+      .account-card {
+        padding: 10px;
+      }
+    }
+
+    .popular-routes {
+      padding: 0 10px;
     }
   }
 }

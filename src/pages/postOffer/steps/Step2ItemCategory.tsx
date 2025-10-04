@@ -61,21 +61,18 @@ const Step2ItemCategory: React.FC<Step2ItemCategoryProps> = ({
   
   return (
     <div className="offer-step-category">
-      <div className="offer-step-category__section">
-        <div className="offer-step-category__header">Item preferred category</div>
-        <div className="offer-step-category__content">
-          {categories.map(({ id, name, icon_path }) => (
-            <Card
-              key={id}
-              id={id}
-              title={name}
-              iconSrc={icon_path}
-              iconName={name}
-              selected={isSelected(id)}
-              handleCardClick={() => handleCategoryClick(id)}
-            />
-          ))}
-        </div>
+      <div className="offer-step-category__content">
+        {categories.map(({ id, name, icon_path }) => (
+          <Card
+            key={id}
+            id={id}
+            title={name}
+            iconSrc={icon_path}
+            iconName={name}
+            selected={isSelected(id)}
+            handleCardClick={() => handleCategoryClick(id)}
+          />
+        ))}
       </div>
     </div>
   );

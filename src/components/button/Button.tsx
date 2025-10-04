@@ -15,7 +15,7 @@ type Props = {
 
 export const Button: FC<Props> = ({type, title, outline, disabled, icon, alt, classNames, handleClick}) => {
     return (
-        <button className={`button button-${type} ${classNames ? classNames : ''} ${disabled ? 'disabled pointer-events-none' : ''} ${outline ? 'outline' : ''}`} onClick={handleClick} disabled={disabled}>
+        <button type="button" className={`button button-${type} ${classNames ? classNames : ''} ${disabled ? 'disabled pointer-events-none' : ''} ${outline ? 'outline' : ''}`} onClick={handleClick} disabled={disabled}>
             {icon &&
                 <img src={filterIcon} alt={alt}/>
             }

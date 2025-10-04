@@ -224,19 +224,17 @@ const PostOffer: React.FC = () => {
                   title="Previous"
                   type="secondary"
                   handleClick={handlePrevious}
-                  icon="arrow-left"
                   disabled={isSubmitting}
                 />
               )}
-              
+
               <div className="post-offer__actions-spacer"></div>
-              
+
               {currentStep < 4 ? (
-                <Button 
-                  title="Continue" 
-                  type="primary" 
+                <Button
+                  title="Continue"
+                  type="primary"
                   handleClick={handleNext}
-                  icon="arrow-right"
                 />
               ) : (
                 <Button
@@ -244,7 +242,6 @@ const PostOffer: React.FC = () => {
                   type="primary"
                   handleClick={handleCreateOffer}
                   disabled={isSubmitting}
-                  icon="check"
                 />
               )}
             </div>

@@ -1,7 +1,7 @@
 import {useState, useEffect, useRef, FC} from "react";
 import { useNavigate } from "react-router-dom";
 import { Divider } from "../divider/Divider";
-import avatar from "../../assets/images/avatar.svg";
+import { Avatar } from "../avatar/Avatar";
 import flightsIcon from "../../assets/icons/flights.svg";
 import flightsHoverIcon from "../../assets/icons/flightsHover.svg";
 import requestsIcon from "../../assets/icons/requests.svg";
@@ -93,12 +93,12 @@ export const ProfilePopover: FC = () => {
   return (
     <>
       {isPopoverOpen && (
-        <div ref={popoverRef}  className="flex flex-col border border-solid border-[#D5D7DA] rounded-[1rem] absolute top-[70%] left-[90%] min-w-[300px] translate-x-[-50%] bg-[#fff] z-10">
+        <div ref={popoverRef}  className="flex flex-col border border-solid border-[#D5D7DA] rounded-[1rem] absolute top-[70%] right-[1rem] min-w-[300px] bg-[#fff] z-10">
           <div className="profile__avatar px-[2.1rem] py-[1.6rem]">
             <div className="profile__avatar__image">
-              <img
-                src={avatar}
-                alt="Avatar"
+              <Avatar
+                firstName={user.name || "User"}
+                size="medium"
                 className="profile__avatar__image"
               />
             </div>

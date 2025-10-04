@@ -52,6 +52,17 @@
     }
 }
 
+.loginError {
+    background-color: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: .8rem;
+    border: 1px solid #fcc;
+    font-size: 1.4rem;
+    text-align: center;
+    margin: 10px 0;
+}
+
 .label {
     color: #414651;
     font-size: 1.4rem;
@@ -132,4 +143,39 @@
     color: #414651;
     border-radius: .8rem;
     cursor: pointer;
+}
+
+// Responsive styles for mobile devices
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        gap: 30px;
+        padding: 20px;
+    }
+
+    .leftSection {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .logo {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .rightSection {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .title {
+        &-wrapper {
+            font-size: 3rem;
+        }
+        .subTitle {
+            font-size: 1.6rem;
+            text-align: center;
+        }
+    }
 }

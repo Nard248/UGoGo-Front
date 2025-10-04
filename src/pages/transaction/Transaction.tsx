@@ -1,4 +1,4 @@
-import avatar from "../../assets/images/avatar.svg";
+import { Avatar } from "../../components/avatar/Avatar";
 import pencil from "../../assets/icons/pencil.svg";
 import React from "react";
 import {Label} from "../../components/label/Label";
@@ -17,7 +17,12 @@ export const Transaction = () => {
             <div className="profile">
                 <div className="profile__avatar">
                     <div className="profile__avatar__image">
-                        <img src={avatar} alt="Avatar" className="profile__avatar__image"/>
+                        <Avatar
+                            firstName="John"
+                            lastName="Doe"
+                            size="medium"
+                            className="profile__avatar__image"
+                        />
                     </div>
                     <div className="profile__avatar__details">
                         <div className="profile__avatar__details__name">
