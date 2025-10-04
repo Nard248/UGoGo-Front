@@ -142,5 +142,5 @@ export const updateProfile = async (data: {
   birthdate: string;
   gender: string;
 }) => {
-  return await api.put(`/api/profile/edit/`, data);
+  return await api.put(`/api/users/profile/edit/`, data);
 };

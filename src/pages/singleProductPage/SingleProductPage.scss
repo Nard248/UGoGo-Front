@@ -5,7 +5,7 @@
   align-items: center;
   width: 100%;
   & > * {
-    max-width: 900px; 
+    max-width: 900px;
     width: 100%;
   }
   &__productInfo {
@@ -57,29 +57,9 @@
     }
   }
   &__notes {
-    &__title {
-      font-size: 14px;
-      font-weight: 500;
-      color: #414651;
-      margin-bottom: 6px;
-    }
     &__content {
       display: flex;
-      justify-content: space-between;
-      gap: 100px;
-      &__area {
-        width: 50%;
-        textarea {
-          width: 100%;
-          padding: 10px 14px;
-          border: 1px solid #d5d7da;
-          border-radius: 5px;
-          resize: none;
-          font-size: 16px;
-          font-weight: 400;
-          color: #717680;
-        }
-      }
+      justify-content: flex-end;
       &__button {
         font-size: 15px;
         font-weight: 600;
@@ -111,6 +91,85 @@
         font-weight: 500;
         &__title {
           color: #000;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .singleProductPage {
+    gap: 30px;
+
+    // Override Tailwind px-16 padding on mobile
+    .px-16 {
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    }
+
+    &__productInfo {
+      &__header {
+        padding: 16px 14px;
+        &__title {
+          font-size: 15px;
+        }
+      }
+
+      &__table {
+        padding: 20px 16px;
+        gap: 16px;
+
+        &__item {
+          grid-template-columns: 1fr;
+          gap: 8px;
+          padding-bottom: 12px;
+
+          &__title {
+            gap: 12px;
+            font-size: 14px;
+            line-height: 20px;
+
+            &__icon {
+              img {
+                width: 18px;
+                height: 18px;
+              }
+            }
+          }
+          &__info {
+            font-size: 14px;
+            line-height: 20px;
+            padding-left: 30px;
+          }
+        }
+      }
+    }
+
+    &__notes {
+      &__content {
+        flex-direction: column;
+        gap: 24px;
+
+        &__button {
+          font-size: 14px;
+          padding: 10px 24px;
+        }
+      }
+    }
+
+    &__flightItemsDetails {
+      width: 100%;
+
+      &__content {
+        padding: 20px 12px;
+        &__item {
+          font-size: 14px;
+          margin-top: 10px;
+        }
+        &__itemTotal {
+          margin-top: 24px;
+          padding-top: 24px;
+          font-size: 14px;
         }
       }
     }
