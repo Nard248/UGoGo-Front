@@ -43,7 +43,7 @@ export const SearchResult: FC = () => {
         fetchOffers();
     }, []);
 
-    const handleSearchResults = async (searchParams: { origin_airport: string; destination_airport: string; takeoff_date: string }) => {
+    const handleSearchResults = async (searchParams: { origin_airport?: string; destination_airport?: string; takeoff_date?: string }) => {
         setIsSearching(true);
         setIsLoading(true);
         setHasFiltersApplied(false);

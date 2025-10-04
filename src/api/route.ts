@@ -70,9 +70,9 @@ export const getUserDetails = async () => {
 };
 
 export const searchOffer = async (params: {
-  origin_airport: string;
-  destination_airport: string;
-  takeoff_date: string;
+  origin_airport?: string;
+  destination_airport?: string;
+  takeoff_date?: string;
 }) => {
   return await api.get(`/offers/search_offer/`, { params });
 };

@@ -70,9 +70,8 @@ const PostOffer: React.FC = () => {
         const isDimensionsFilled = [height, width, length].every(
           (dim) => dim !== null && dim !== undefined && dim !== ""
         );
-        const name = offerFormData.name?.value;
 
-        return !!weight && isDimensionsFilled && !!name;
+        return !!weight && isDimensionsFilled;
 
       case 4:
         return !!offerFormData.price?.value;

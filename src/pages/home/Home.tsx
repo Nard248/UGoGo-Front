@@ -120,9 +120,9 @@ export const Home: FC = () => {
   });
 
   const onOfferSearch = async (searchParams: {
-    origin_airport: string;
-    destination_airport: string;
-    takeoff_date: string;
+    origin_airport?: string;
+    destination_airport?: string;
+    takeoff_date?: string;
   }) => {
     try {
       const response = await searchOffer(searchParams);
