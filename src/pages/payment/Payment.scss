@@ -1,0 +1,475 @@
+.payment-page {
+  width: 100%;
+  padding: 4rem 6rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  &__title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #1B3A4B;
+    margin-bottom: 3.5rem;
+    letter-spacing: -0.5px;
+  }
+
+  &__content {
+    display: flex;
+    gap: 6rem;
+    width: 100%;
+  }
+
+  &__left-column {
+    flex: 1;
+    max-width: 55%;
+    display: flex;
+    flex-direction: column;
+    gap: 5.6rem;
+  }
+
+  &__right-column {
+    flex: 1;
+    max-width: 40%;
+    display: flex;
+    flex-direction: column;
+    gap: 7.3rem;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #D5D7DA;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+  }
+
+  &__card-header {
+    background: #FFF1E7;
+    padding: 2.1rem 2.4rem;
+    border-bottom: 1px solid #D5D7DA;
+
+    h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #1B3A4B;
+      margin: 0;
+    }
+  }
+
+  &__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 4.5rem 1.8rem;
+  }
+
+  &__price-row,
+  &__summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.6rem;
+    color: #5A6C7A;
+
+    span:first-child {
+      font-weight: 500;
+    }
+
+    span:last-child {
+      font-weight: 600;
+      color: #1B3A4B;
+    }
+
+    &--total {
+      font-weight: 600;
+      font-size: 1.8rem;
+
+      span {
+        font-weight: 700;
+        color: #1B3A4B;
+      }
+    }
+  }
+
+  &__book-info {
+    padding: 2.8rem 2.5rem;
+
+    h3 {
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1B3A4B;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th {
+        text-align: left;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #5A6C7A;
+        padding-bottom: 1.2rem;
+      }
+
+      td {
+        text-align: left;
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: #1B3A4B;
+        padding-top: 0.8rem;
+      }
+    }
+  }
+
+  &__cancellation {
+    display: flex;
+    padding: 3.2rem 2.8rem;
+    gap: 1.6rem;
+    align-items: flex-start;
+  }
+
+  &__cancellation-icon {
+    display: flex;
+    border-radius: 50%;
+    background: #FFE6D0;
+    padding: 1.6rem 1.4rem;
+    flex-shrink: 0;
+
+    img {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  &__cancellation-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+
+    > span:first-child {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #1B3A4B;
+    }
+
+    > span:last-of-type {
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: #5A6C7A;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: underline;
+      color: #559999;
+      font-size: 1.4rem;
+      font-weight: 500;
+
+      &:hover {
+        color: #73B2B2;
+      }
+    }
+  }
+
+  &__terms {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #D5D7DA;
+    border-radius: 12px;
+    padding: 3rem 4.2rem;
+    gap: 3.4rem;
+    background: white;
+  }
+
+  &__terms-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    span {
+      font-size: 1.6rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #5A6C7A;
+
+      a {
+        color: #D96A1D;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 1400px) {
+    padding: 4rem;
+
+    &__content {
+      gap: 4rem;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    padding: 3rem 2rem;
+
+    &__title {
+      font-size: 2.8rem;
+      margin-bottom: 3rem;
+    }
+
+    &__content {
+      gap: 3rem;
+    }
+
+    &__left-column,
+    &__right-column {
+      max-width: 100%;
+    }
+
+    &__left-column {
+      gap: 4rem;
+    }
+
+    &__right-column {
+      gap: 5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem 20px;
+
+    &__title {
+      font-size: 2.4rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
+    &__content {
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    &__left-column,
+    &__right-column {
+      max-width: 100%;
+      width: 100%;
+    }
+
+    &__left-column {
+      gap: 3rem;
+    }
+
+    &__right-column {
+      gap: 3rem;
+    }
+
+    &__card-header {
+      padding: 1.8rem 2rem;
+
+      h3 {
+        font-size: 1.6rem;
+      }
+    }
+
+    &__card-body {
+      padding: 3rem 1.5rem;
+      gap: 1rem;
+    }
+
+    &__price-row,
+    &__summary-row {
+      font-size: 1.4rem;
+
+      &--total {
+        font-size: 1.6rem;
+      }
+    }
+
+    &__book-info {
+      padding: 2rem 1.5rem;
+
+      h3 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+
+        th,
+        td {
+          font-size: 1.3rem;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    &__cancellation {
+      padding: 2.5rem 2rem;
+      gap: 1.2rem;
+    }
+
+    &__cancellation-icon {
+      padding: 1.2rem 1rem;
+
+      img {
+        width: 1.6rem;
+        height: 1.6rem;
+      }
+    }
+
+    &__cancellation-content {
+      gap: 1.2rem;
+
+      > span:first-child {
+        font-size: 1.4rem;
+      }
+
+      > span:last-of-type {
+        font-size: 1.3rem;
+      }
+
+      a {
+        font-size: 1.3rem;
+      }
+    }
+
+    &__terms {
+      padding: 2.5rem 2rem;
+      gap: 2.5rem;
+    }
+
+    &__terms-checkbox {
+      span {
+        font-size: 1.4rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 15px;
+
+    &__title {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    &__left-column,
+    &__right-column {
+      gap: 2rem;
+    }
+
+    &__card-header {
+      padding: 1.5rem;
+
+      h3 {
+        font-size: 1.5rem;
+      }
+    }
+
+    &__card-body {
+      padding: 2.5rem 1.2rem;
+    }
+
+    &__price-row,
+    &__summary-row {
+      font-size: 1.3rem;
+
+      &--total {
+        font-size: 1.5rem;
+      }
+    }
+
+    &__book-info {
+      padding: 1.5rem 1.2rem;
+
+      h3 {
+        font-size: 1.6rem;
+      }
+
+      table {
+        th,
+        td {
+          font-size: 1.2rem;
+        }
+      }
+    }
+
+    &__cancellation {
+      padding: 2rem 1.5rem;
+      gap: 1rem;
+    }
+
+    &__cancellation-content {
+      > span:first-child {
+        font-size: 1.3rem;
+      }
+
+      > span:last-of-type {
+        font-size: 1.2rem;
+      }
+
+      a {
+        font-size: 1.2rem;
+      }
+    }
+
+    &__terms {
+      padding: 2rem 1.5rem;
+      gap: 2rem;
+    }
+
+    &__terms-checkbox {
+      span {
+        font-size: 1.3rem;
+      }
+    }
+  }
+
+  @media (max-width: 430px) {
+    padding: 1rem 10px;
+
+    &__title {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    &__content {
+      gap: 2rem;
+    }
+
+    &__left-column,
+    &__right-column {
+      gap: 1.5rem;
+    }
+
+    &__card-header {
+      padding: 1.2rem;
+
+      h3 {
+        font-size: 1.4rem;
+      }
+    }
+
+    &__card-body {
+      padding: 2rem 1rem;
+      gap: 0.8rem;
+    }
+
+    &__cancellation {
+      padding: 1.5rem 1rem;
+    }
+
+    &__terms {
+      padding: 1.5rem 1rem;
+      gap: 1.5rem;
+    }
+  }
+}

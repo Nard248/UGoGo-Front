@@ -403,13 +403,13 @@
   }
 
   @media (max-width: 768px) {
-            .button {
-    img,
-    svg {
-      width: 1.2rem;
-      height: 1.2rem;
+    .button {
+      img,
+      svg {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
     }
-  }
 
     padding: 1rem 0;
 
@@ -435,11 +435,11 @@
 
     &__actions {
       flex-direction: column;
-      
+
       &-spacer {
         display: none;
       }
-      
+
       .button {
         width: 100%;
         min-width: auto;

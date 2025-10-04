@@ -186,19 +186,17 @@ Array.from(formData.entries()).forEach(([key, value]) => {
                   title="Previous"
                   type="secondary"
                   handleClick={handlePrevious}
-                  icon="arrow-left"
                   disabled={loading}
                 />
               )}
-              
+
               <div className="item-add__actions-spacer"></div>
-              
+
               {currentStep < 4 ? (
-                <Button 
-                  title="Continue" 
-                  type="primary" 
+                <Button
+                  title="Continue"
+                  type="primary"
                   handleClick={handleNext}
-                  icon="arrow-right"
                 />
               ) : (
                 <Button
@@ -206,7 +204,6 @@ Array.from(formData.entries()).forEach(([key, value]) => {
                   type="primary"
                   handleClick={handleSubmit}
                   disabled={loading}
-                  icon="check"
                 />
               )}
             </div>

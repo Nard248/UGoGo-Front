@@ -37,55 +37,46 @@ const Step2PickUpPersonDetails = ({
   };
   
   return (
-    <div className="step-pickup-person-details">
-      <div className="pickup-header">Pick-up person details</div>
+    <div className="step-form-content">
+      <Label title="Name" htmlFor="pickup_name">
+        <Input
+          type="text"
+          id="pickup_name"
+          value={itemFormData.pickup_name || ''}
+          handleChange={handleChange}
+          placeholder="John"
+        />
+      </Label>
 
-      <div className="form-content">
-        <Label title="Name" htmlFor="pickup_name">
-          <Input
-            type="text"
-            id="pickup_name"
-            value={itemFormData.pickup_name || ''}
-            handleChange={handleChange}
-            placeholder="John"
-          />
-        </Label>
+      <Label title="Surname" htmlFor="pickup_surname">
+        <Input
+          type="text"
+          id="pickup_surname"
+          value={itemFormData.pickup_surname || ''}
+          handleChange={handleChange}
+          placeholder="Doe"
+        />
+      </Label>
 
-        <Label title="Surname" htmlFor="pickup_surname">
-          <Input
-            type="text"
-            id="pickup_surname"
-            value={itemFormData.pickup_surname || ''}
-            handleChange={handleChange}
-            placeholder="Doe"
-          />
-        </Label>
+      <Label title="Phone" htmlFor="pickup_phone">
+        <Input
+          type="text"
+          id="pickup_phone"
+          value={itemFormData.pickup_phone || ''}
+          handleChange={handleChange}
+          placeholder="Phone number"
+        />
+      </Label>
 
-        <Label title="Phone" htmlFor="pickup_phone">
-          <Input
-            type="text"
-            id="pickup_phone"
-            value={itemFormData.pickup_phone || ''}
-            handleChange={handleChange}
-            placeholder="Phone number"
-          />
-        </Label>
-
-        <Label title="Email" htmlFor="pickup_email">
-          <Input
-            type="email"
-            id="pickup_email"
-            value={itemFormData.pickup_email || ''}
-            handleChange={handleChange}
-            placeholder="Email"
-          />
-        </Label>
-      </div>
-
-      {/* <div className="button-group">
-        <Button title="Back" handleClick={prevStep} type="secondary" />
-        <Button title="Next" handleClick={nextStep} type="primary" disabled={!isValid} />
-      </div> */}
+      <Label title="Email" htmlFor="pickup_email">
+        <Input
+          type="email"
+          id="pickup_email"
+          value={itemFormData.pickup_email || ''}
+          handleChange={handleChange}
+          placeholder="Email"
+        />
+      </Label>
     </div>
   );
 };

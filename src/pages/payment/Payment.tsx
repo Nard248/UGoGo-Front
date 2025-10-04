@@ -8,6 +8,7 @@ import { IPay } from "../../types/global";
 import { pay } from "../../api/route";
 import {ConfirmationPopup} from "../../components/confirmationPopup/ConfirmationPopup";
 import {useNavigate} from "react-router-dom";
+import "./Payment.scss";
 
 export const Payment = () => {
     const navigate = useNavigate();
@@ -52,43 +53,42 @@ export const Payment = () => {
 
     return (
         item ?
-        <div className="flex flex-col gap-[35px] w-full">
-            <h1 className="text-[2rem] font-medium">
+        <div className="payment-page">
+            <h1 className="payment-page__title">
                 Checkout
             </h1>
-            <div className="flex gap-16 w-full">
-                <div className="flex flex-col gap-14 w-[50%]">
+            <div className="payment-page__content">
+                <div className="payment-page__left-column">
                     {/*<AlertMessage*/}
                     {/*    type={'warning'}*/}
                     {/*    text={*/}
                     {/*        'Your booking is on hold until 01/01/25 12:00 AM. If your reserve change we will get back to you.'*/}
                     {/*    }*/}
                     {/*/>*/}
-                    <div className="flex flex-col border border-solid border-[#D5D7DA] rounded-xl">
-                        <div className="bg-[#FFF1E7] py-[2.1rem] px-[2.4rem] rounded-t-xl">
-                            <h3 className="">
+                    <div className="payment-page__card">
+                        <div className="payment-page__card-header">
+                            <h3>
                                 Price Details
                             </h3>
                         </div>
-                        <div
-                            className="flex flex-col gap-[1.2rem] py-[4.5rem] px-[1.8rem] border-t border-solid border-[#D5D7DA]">
-                            <div className="flex justify-between ">
-                                <span className="">Delivery fee</span>
-                                <span className="">$10</span>
+                        <div className="payment-page__card-body">
+                            <div className="payment-page__price-row">
+                                <span>Delivery fee</span>
+                                <span>$10</span>
                             </div>
-                            <div className="flex justify-between ">
-                                <span className="">Commission fee</span>
-                                <span className="">$1</span>
+                            <div className="payment-page__price-row">
+                                <span>Commission fee</span>
+                                <span>$1</span>
                             </div>
                             <Divider size={'small'} appearance={'neutral'}/>
-                            <div className="flex justify-between ">
-                                <span className=" ">Total</span>
-                                <span className="">$11</span>
+                            <div className="payment-page__price-row payment-page__price-row--total">
+                                <span>Total</span>
+                                <span>$11</span>
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col px-2.5 py-7 border border-solid border-[#D5D7DA] rounded-xl">
-                        <h3 className="mb-5 text-xl font-medium	">
+                    <div className="payment-page__card payment-page__book-info">
+                        <h3>
                             Book Information
                         </h3>
                         {/*<AlertMessage*/}
@@ -99,83 +99,77 @@ export const Payment = () => {
                         {/*    className={'mb-[39px]'}*/}
                         {/*/>*/}
                         <table>
-                            <tr className="text-left">
+                            <tr>
                                 <th>Full name</th>
                                 <th>Email</th>
                                 <th>Phone number</th>
                             </tr>
-                            <tr className="text-left">
+                            <tr>
                                 <td>John Doe</td>
                                 <td>john.do@gmail.com</td>
                                 <td>+1010101010</td>
                             </tr>
                         </table>
                     </div>
-                    <div className="flex py-8 px-7 border-solid border border-[#D5D7DA] rounded-xl">
-                        <div className="flex gap-4 items-start">
-                            <div className="flex rounded-full bg-[#FFE6D0] py-4 px-3.5">
-                                <img src={warning} alt=""/>
-                            </div>
-                            <div className="flex flex-col gap-4">
-                        <span>
-                            Cancellation Policy
-                        </span>
-                                <span>
-                            Cancellations before delivery. (We will alert for the next cancellation, penalty fee will be deducted of 20%)
-                        </span>
-                                <a href={'/'} className="underline text-[#559999]">
-                                    See more details
-                                </a>
-                            </div>
+                    <div className="payment-page__card payment-page__cancellation">
+                        <div className="payment-page__cancellation-icon">
+                            <img src={warning} alt=""/>
+                        </div>
+                        <div className="payment-page__cancellation-content">
+                            <span>
+                                Cancellation Policy
+                            </span>
+                            <span>
+                                Cancellations before delivery. (We will alert for the next cancellation, penalty fee will be deducted of 20%)
+                            </span>
+                            <a href={'/'}>
+                                See more details
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col gap-[73px] w-[40%]">
-                    <div className="flex flex-col border border-solid border-[#D5D7DA] rounded-xl">
-                        <div className="bg-[#FFF1E7] py-[2.1rem] px-[2.4rem] rounded-t-xl">
-                            <h3 className="">
+                <div className="payment-page__right-column">
+                    <div className="payment-page__card">
+                        <div className="payment-page__card-header">
+                            <h3>
                                 Summary
                             </h3>
                         </div>
-                        <div
-                            className="flex flex-col gap-[1.2rem] py-[4.5rem] px-[1.8rem] border-t border-solid border-[#D5D7DA]">
-                            <div className="flex justify-between ">
-                                <span className="">Total item</span>
-                                <span className="">1 Item</span>
+                        <div className="payment-page__card-body">
+                            <div className="payment-page__summary-row">
+                                <span>Total item</span>
+                                <span>1 Item</span>
                             </div>
-                            <div className="flex justify-between ">
-                                <span className="">Pickup location</span>
-                                <span className="">Yerevan, K. Ulnetsi 30, 22, 0037</span>
+                            <div className="payment-page__summary-row">
+                                <span>Pickup location</span>
+                                <span>Yerevan, K. Ulnetsi 30, 22, 0037</span>
                             </div>
-                            <div className="flex justify-between ">
-                                <span className=" ">Direction</span>
-                                <span className="">Moscow, Russia</span>
+                            <div className="payment-page__summary-row">
+                                <span>Direction</span>
+                                <span>Moscow, Russia</span>
                             </div>
-                            <div className="flex justify-between ">
-                                <span className=" ">Flight date</span>
-                                <span className="">Mon, 4 Feb 2024 - 10:00</span>
+                            <div className="payment-page__summary-row">
+                                <span>Flight date</span>
+                                <span>Mon, 4 Feb 2024 - 10:00</span>
                             </div>
                         </div>
                     </div>
-                    <div
-                        className="flex flex-col border border-solid border-[#D5D7DA] rounded-xl px-[4.2rem] py-[3rem] gap-[3.4rem]">
-                        <div className="flex">
-                            <div className="flex">
-                                <Checkbox defaultChecked
-                                          sx={{
+                    <div className="payment-page__terms">
+                        <div className="payment-page__terms-checkbox">
+                            <Checkbox defaultChecked
+                                      sx={{
+                                          color: '#F9A34B',
+                                          padding: '.5rem',
+                                          '&.Mui-checked': {
                                               color: '#F9A34B',
-                                              padding: '.5rem',
-                                              '&.Mui-checked': {
-                                                  color: '#F9A34B',
-                                              },
-                                          }}
-                                />
-                            </div>
-                            <span className="text-[1.6rem] font-normal leading-5">
-                        By clicking this, I agree to UGOGO
-                        <a href="/" className="text-[#D96A1D]"> Terms & Conditions </a>
-                        and <a href="/" className="text-[#D96A1D]">Privacy Policy</a>
-                    </span>
+                                          },
+                                      }}
+                            />
+                            <span>
+                                By clicking this, I agree to UGOGO
+                                <a href="/"> Terms & Conditions </a>
+                                and <a href="/">Privacy Policy</a>
+                            </span>
                         </div>
                         <Button title={'Pay for my booking'} type={'primary'} handleClick={onPay}/>
                     </div>

@@ -57,96 +57,80 @@ const heightRef = useRef<HTMLInputElement>(null);
   };
 
   return (
-    <div className="step-item-details-wrapper">
-      <div className="step-item-details">
-        <div className="step-header">Item details</div>
+    <div className="step-form-content">
+      <Label title="Name" htmlFor="name">
+        <Input
+          type="text"
+          id="name"
+          value={itemFormData.name || ""}
+          handleChange={handleChange}
+          placeholder="Item name"
+        />
+      </Label>
 
-        <div className="step-body">
-          <Label title="Name" htmlFor="name">
-            <Input
-              type="text"
-              id="name"
-              value={itemFormData.name || ""}
-              handleChange={handleChange}
-              placeholder="Item name"
-            />
-          </Label>
-
-          <Label title="Dimensions">
-  <div className="dimensions-group">
-    <div className="dimension-input">
-      <input
-        type="number"
-        id="length"
-        value={length}
-        onChange={(e) => setLength(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            widthRef.current?.focus();
-          }
-        }}
-        placeholder="Length"
-      />
-      <span className="unit">cm</span>
-    </div>
-    <div className="dimension-input">
-      <input
-        type="number"
-        id="width"
-        ref={widthRef}
-        value={width}
-        onChange={(e) => setWidth(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            heightRef.current?.focus();
-          }
-        }}
-        placeholder="Width"
-      />
-      <span className="unit">cm</span>
-    </div>
-    <div className="dimension-input">
-      <input
-        type="number"
-        id="height"
-        ref={heightRef}
-        value={height}
-        onChange={(e) => setHeight(e.target.value)}
-        placeholder="Height"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-          }
-        }}
-      />
-      <span className="unit">cm</span>
-    </div>
-  </div>
-</Label>
-
-
-          <Label title="Weight" htmlFor="weight">
-            <Input
+      <Label title="Dimensions">
+        <div className="dimensions-group">
+          <div className="dimension-input">
+            <input
               type="number"
-              id="weight"
-              value={itemFormData.weight || ""}
-              handleChange={handleChange}
-              placeholder="Item weight (kg)"
+              id="length"
+              value={length}
+              onChange={(e) => setLength(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  widthRef.current?.focus();
+                }
+              }}
+              placeholder="Length"
             />
-          </Label>
+            <span className="unit">cm</span>
+          </div>
+          <div className="dimension-input">
+            <input
+              type="number"
+              id="width"
+              ref={widthRef}
+              value={width}
+              onChange={(e) => setWidth(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  heightRef.current?.focus();
+                }
+              }}
+              placeholder="Width"
+            />
+            <span className="unit">cm</span>
+          </div>
+          <div className="dimension-input">
+            <input
+              type="number"
+              id="height"
+              ref={heightRef}
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+              placeholder="Height"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                }
+              }}
+            />
+            <span className="unit">cm</span>
+          </div>
         </div>
+      </Label>
 
-        {/* <div className="step-footer">
-          <Button
-            type="primary"
-            title="Next"
-            handleClick={nextStep}
-            disabled={!isValid}
-          />
-        </div> */}
-      </div>
+      <Label title="Weight" htmlFor="weight">
+        <Input
+          type="number"
+          id="weight"
+          value={itemFormData.weight || ""}
+          handleChange={handleChange}
+          placeholder="Item weight (kg)"
+        />
+      </Label>
     </div>
   );
 };

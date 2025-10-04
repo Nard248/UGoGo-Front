@@ -1,0 +1,273 @@
+.selectItemPopup {
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(208, 227, 235, 0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 2rem;
+  }
+
+  &__container {
+    background: #fff;
+    border-radius: 0.8rem;
+    border: 1px solid #d5d7da;
+    width: 100%;
+    max-width: 90rem;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 3rem;
+    border-bottom: 1px solid #d5d7da;
+
+    h3 {
+      font-size: 2rem;
+      font-weight: 500;
+      margin: 0;
+      color: #1b3a4b;
+    }
+  }
+
+  &__closeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    img {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+  }
+
+  &__content {
+    padding: 2rem 3rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__itemsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20.5rem, 1fr));
+    gap: 2rem;
+    justify-items: center;
+  }
+
+  &__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    border: 1px solid #d5d7da;
+    border-radius: 0.5rem;
+    width: 100%;
+    max-width: 20.5rem;
+    height: 20.5rem;
+    padding: 1.5rem;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      border-color: #73b2b2;
+      box-shadow: 0 2px 8px rgba(115, 178, 178, 0.2);
+    }
+
+    &--selected {
+      border-color: #73b2b2;
+      color: #73b2b2;
+      background: rgba(115, 178, 178, 0.05);
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    &--add {
+      border-style: dashed;
+
+      &:hover {
+        border-color: #f9a34b;
+        box-shadow: 0 2px 8px rgba(249, 163, 75, 0.2);
+      }
+    }
+  }
+
+  &__itemImage {
+    width: 100%;
+    height: 12rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__itemName {
+    font-size: 1.6rem;
+    font-weight: 500;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 2rem 3rem;
+    border-top: 1px solid #d5d7da;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .selectItemPopup {
+    &__overlay {
+      padding: 0;
+      align-items: flex-end;
+    }
+
+    &__container {
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 1.6rem 1.6rem 0 0;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    &__header {
+      padding: 1.5rem 2rem;
+
+      h3 {
+        font-size: 1.8rem;
+      }
+    }
+
+    &__closeBtn {
+      img {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    &__content {
+      padding: 1.5rem 2rem;
+      gap: 1.5rem;
+    }
+
+    &__itemsGrid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    &__item {
+      max-width: 100%;
+      height: auto;
+      min-height: 16rem;
+      flex-direction: row;
+      gap: 1.5rem;
+      padding: 1.2rem;
+
+      &--add {
+        flex-direction: column;
+        min-height: 12rem;
+      }
+    }
+
+    &__itemImage {
+      width: 10rem;
+      height: 10rem;
+      flex-shrink: 0;
+    }
+
+    &__itemName {
+      font-size: 1.5rem;
+      text-align: left;
+      flex: 1;
+    }
+
+    &__footer {
+      padding: 1.5rem 2rem;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .selectItemPopup {
+    &__header {
+      padding: 1.2rem 1.5rem;
+
+      h3 {
+        font-size: 1.6rem;
+      }
+    }
+
+    &__closeBtn {
+      img {
+        width: 1.8rem;
+        height: 1.8rem;
+      }
+    }
+
+    &__content {
+      padding: 1.2rem 1.5rem;
+    }
+
+    &__item {
+      min-height: 14rem;
+      padding: 1rem;
+    }
+
+    &__itemImage {
+      width: 8rem;
+      height: 8rem;
+    }
+
+    &__itemName {
+      font-size: 1.4rem;
+    }
+
+    &__footer {
+      padding: 1.2rem 1.5rem;
+    }
+  }
+}

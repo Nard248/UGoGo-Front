@@ -102,52 +102,29 @@ const onImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
   };
 
   return (
-    <div className="step-item-details">
-      <div className="section">
-        <div className="section-header">Item image</div>
-        <div className="section-content">
-          <ImageLabel upload={onImageUpload} />
-          <div className="uploaded-images">
-            {!!itemFormData.pictures?.length &&
-              itemFormData.pictures.map((picture, index) => (
-                <ImageComponent
-                  key={index}
-                  src={picture.image_path}
-                  alt="Item"
-                />
-              ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="section">
-        <div className="section-header">Item description</div>
-        <div className="section-content">
-          <Label title="Description" htmlFor="description">
-            <Input
-              type="textarea"
-              placeholder="Enter a description..."
-              id="description"
-              value={itemFormData.description || ""}
-              handleChange={handleDescriptionChange}
+    <div className="step-form-content">
+      <ImageLabel upload={onImageUpload} />
+      <div className="uploaded-images">
+        {!!itemFormData.pictures?.length &&
+          itemFormData.pictures.map((picture, index) => (
+            <ImageComponent
+              key={index}
+              src={picture.image_path}
+              alt="Item"
             />
-          </Label>
-          <span>Enter specific details about an item</span>
-        </div>
+          ))}
       </div>
 
-      {/* <div className="button-group">
-        <button onClick={prevStep} className="button button-secondary">
-          Back
-        </button>
-        <button
-          onClick={handleNext}
-          className={`button button-primary ${!canProceed() ? "disabled" : ""}`}
-          disabled={!canProceed()}
-        >
-          Next
-        </button>
-      </div> */}
+      <Label title="Description" htmlFor="description">
+        <Input
+          type="textarea"
+          placeholder="Enter a description..."
+          id="description"
+          value={itemFormData.description || ""}
+          handleChange={handleDescriptionChange}
+        />
+      </Label>
+      <span className="helper-text">Enter specific details about an item</span>
     </div>
   );
 };

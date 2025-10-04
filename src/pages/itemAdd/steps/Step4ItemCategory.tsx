@@ -57,35 +57,18 @@ const Step4ItemCategory = ({
   };
 
   return (
-    <div className="step-item-category">
-      <div className="section">
-        <div className="section-header">Item preferred category</div>
-        <div className="section-content">
-          {categories.map(({ id, name, icon_path }) => (
-            <Card
-              key={id}
-              id={id}
-              title={name}
-              iconSrc={icon_path}
-              iconName={name}
-              selected={isSelected(id)}
-              handleCardClick={() => handleCategoryClick(id)}
-            />
-          ))}
-        </div>
-      </div>
-      {/* <div className="button-group">
-        <button onClick={prevStep} className="button button-secondary">
-          Back
-        </button>
-        <button
-          onClick={handleNext}
-          className={`button button-primary ${!canProceed() ? "disabled" : ""}`}
-          disabled={!canProceed()}
-        >
-          Next
-        </button>
-      </div> */}
+    <div className="step-form-content category-grid-content">
+      {categories.map(({ id, name, icon_path }) => (
+        <Card
+          key={id}
+          id={id}
+          title={name}
+          iconSrc={icon_path}
+          iconName={name}
+          selected={isSelected(id)}
+          handleCardClick={() => handleCategoryClick(id)}
+        />
+      ))}
     </div>
   );
 };
