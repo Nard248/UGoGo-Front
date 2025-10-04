@@ -472,8 +472,8 @@ const {
               </div>
             </div>
 
-            <div className="flex justify-end pt-9">
-              <Button classNames="singleProductPage__notes__content__button" title={"Book flight"} type={"primary"} handleClick={onBook} />
+            <div className="flex justify-end pt-9 pb-16">
+              <Button classNames="singleProductPage__notes__content__button" title={"Send request"} type={"primary"} handleClick={onBook} />
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Header } from "./layouts/Header";
+import { Footer } from "./layouts/Footer";
 import { NotificationProvider } from "./components/notification/NotificationProvider";
 import { ChatProvider } from "./stores/ChatContext";
 import { storeUserDetails, isAuthenticated } from "./utils/auth";
@@ -228,9 +229,9 @@ function App() {
               />
             </Route>
             </Routes>
+            <Footer />
           </BrowserRouter>
         </main>
-        {/* <Footer /> */}
         </ChatProvider>
       </NotificationProvider>
     </div>
