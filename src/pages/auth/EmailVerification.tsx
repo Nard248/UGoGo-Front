@@ -71,35 +71,37 @@ export const EmailVerification = () => {
     }
 
     return (
-        <div className="flex flex-col gap-[3.3rem]">
+        <div className="flex flex-col gap-[3.3rem] px-[2rem] md:px-[4rem] lg:px-[6rem] py-[2rem] md:py-[4rem]">
             <div className="emailVerificationContainer flex flex-col">
-                <div className="flex flex-col gap-[1rem] text-center">
-                    <h1 className="text-[4rem] text-bold">
+                <div className="flex flex-col gap-[1rem] text-center px-[1rem]">
+                    <h1 className="text-[2.4rem] md:text-[3.2rem] lg:text-[4rem] font-bold">
                         Verify your Email
                     </h1>
-                    <span className="text-[1.6rem]">
+                    <span className="text-[1.4rem] md:text-[1.6rem]">
                     We have sent a verification email to {obfuscateEmail(email || '')}.
                 </span>
                 </div>
-                <div className="flex flex-col border border-solid border-[#D5D7DA] p-[3rem] gap-[6rem]">
-                    <div className="flex flex-col gap-[3rem]">
-                        <h2 className="text-[2rem] text-center">
+                <div className="flex flex-col border border-solid border-[#D5D7DA] rounded-xl p-[2rem] md:p-[3rem] gap-[4rem] md:gap-[6rem]">
+                    <div className="flex flex-col gap-[2rem] md:gap-[3rem]">
+                        <h2 className="text-[1.8rem] md:text-[2rem] text-center">
                             Enter 6-digit code
                         </h2>
-                        <div className="grid grid-cols-7 gap-[.8rem] max-w-[50rem] items-center">
+                        <div className="grid grid-cols-7 gap-[.5rem] md:gap-[.8rem] max-w-[50rem] mx-auto w-full items-center justify-center">
                             {code.map((digit: string, index: number) => (
                                 <>
                                     {index === 3 &&
-                                        <span className="text-[6rem] text-center text-[#D5D7DA]">-</span>
+                                        <span className="text-[3rem] md:text-[6rem] text-center text-[#D5D7DA]">-</span>
                                     }
                                     <input
                                         key={index}
                                         ref={(el: HTMLInputElement) => ((inputRefs.current[index]) = el)}
                                         type={'text'}
+                                        value={digit}
+                                        maxLength={1}
                                         placeholder={'0'}
                                         className={
                                         classNames(
-                                            'input text-center',
+                                            'emailVerificationInput',
                                                 error ? '!text-[#D32F2F] !border-[#D32F2F]' : null
                                             )}
                                         onChange={(e) => handleChange(index, e.target.value)}
@@ -112,20 +114,20 @@ export const EmailVerification = () => {
                             <span className="text-center text-[1.4rem] text-[#D32F2F]">Invalid verification code.</span>
                         }
                     </div>
-                    <div className="w-3/6 text-[#666666] font-normal text-[1.4rem]">
+                    <div className="w-full md:w-3/6 text-[#666666] font-normal text-[1.4rem]">
                         It may take a minute to receive your code.
                         Haven't receive it? <Link title={'Resend a new code'} href={''} type={'tertiary'}
                                                   outline={true}/>.
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-[8rem]">
+            <div className="flex flex-col gap-[4rem] md:gap-[8rem]">
                 <div className="flex justify-end">
-                    <Button title={'Submit'} type={'primary'} classNames={'text-[1.4rem]'} disabled={isDisabled || !email} handleClick={verify}/>
+                    <Button title={'Submit'} type={'primary'} classNames={'text-[1.4rem] w-full md:w-auto'} disabled={isDisabled || !email} handleClick={verify}/>
                 </div>
-                <div className="flex flex-col gap-[3rem]">
-                    <span className="text-[1.6rem] text-[#040308] font-normal">
-                        Didn’t receive the email? Check spam or promotion folder or
+                <div className="flex flex-col gap-[2rem] md:gap-[3rem]">
+                    <span className="text-[1.4rem] md:text-[1.6rem] text-[#040308] font-normal">
+                        Didn't receive the email? Check spam or promotion folder or
                     </span>
                     <Button title={'Resend email'} type={'primary'} classNames={"w-full text-[1.4rem]"}
                             handleClick={() => {
