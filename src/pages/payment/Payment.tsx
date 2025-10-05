@@ -87,30 +87,6 @@ export const Payment = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="payment-page__card payment-page__book-info">
-                        <h3>
-                            Book Information
-                        </h3>
-                        {/*<AlertMessage*/}
-                        {/*    type={'success'}*/}
-                        {/*    text={*/}
-                        {/*        'Congratulations! We have sent your book details to the traveler'*/}
-                        {/*    }*/}
-                        {/*    className={'mb-[39px]'}*/}
-                        {/*/>*/}
-                        <table>
-                            <tr>
-                                <th>Full name</th>
-                                <th>Email</th>
-                                <th>Phone number</th>
-                            </tr>
-                            <tr>
-                                <td>John Doe</td>
-                                <td>john.do@gmail.com</td>
-                                <td>+1010101010</td>
-                            </tr>
-                        </table>
-                    </div>
                     <div className="payment-page__card payment-page__cancellation">
                         <div className="payment-page__cancellation-icon">
                             <img src={warning} alt=""/>
@@ -129,31 +105,6 @@ export const Payment = () => {
                     </div>
                 </div>
                 <div className="payment-page__right-column">
-                    <div className="payment-page__card">
-                        <div className="payment-page__card-header">
-                            <h3>
-                                Summary
-                            </h3>
-                        </div>
-                        <div className="payment-page__card-body">
-                            <div className="payment-page__summary-row">
-                                <span>Total item</span>
-                                <span>1 Item</span>
-                            </div>
-                            <div className="payment-page__summary-row">
-                                <span>Pickup location</span>
-                                <span>Yerevan, K. Ulnetsi 30, 22, 0037</span>
-                            </div>
-                            <div className="payment-page__summary-row">
-                                <span>Direction</span>
-                                <span>Moscow, Russia</span>
-                            </div>
-                            <div className="payment-page__summary-row">
-                                <span>Flight date</span>
-                                <span>Mon, 4 Feb 2024 - 10:00</span>
-                            </div>
-                        </div>
-                    </div>
                     <div className="payment-page__terms">
                         <div className="payment-page__terms-checkbox">
                             <Checkbox defaultChecked

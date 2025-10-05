@@ -93,6 +93,14 @@ export const SearchResult: FC = () => {
         navigate(`/offer/${item.id}`, { state: { item } });
     };
 
+    const isOwnOffer = (offer: any): boolean => {
+        const userId = localStorage.getItem("user_id");
+        if (userId && offer.courier_id) {
+            return parseInt(userId) === offer.courier_id;
+        }
+        return false;
+    };
+
     return (
         <>
                   <div className="flex flex-col w-full gap-16 md:gap-24 lg:gap-32 px-4 md:px-8 lg:px-16">
@@ -132,6 +140,7 @@ export const SearchResult: FC = () => {
                                     secondaryButtonText={'View & Book'}
                                     onSecondaryClick={() => handlePrimaryButtonClick(item)}
                                     data={item}
+                                    isOwnOffer={isOwnOffer(item)}
                                 />
                             ))}
                         </div>

@@ -4,7 +4,6 @@ import airplaneIcon from "../../assets/icons/airplaneIcon.svg";
 import briefcaseIcon from "../../assets/icons/briefcaseIcon.svg";
 import locationIcon from "../../assets/icons/locationIcon.svg";
 import { OfferCard } from "../../components/offerCard/OfferCard";
-import { Footer } from "../../layouts/Footer";
 import paymentIcon from "../../assets/icons/payment.svg";
 import directionsWalk from "../../assets/icons/directions_walk.svg";
 import addlocationIcon from "../../assets/icons/add_location_alt.svg";
@@ -367,8 +366,6 @@ export const Home: FC = () => {
         </div>
         <div className="dark-background"></div>{" "}
       </div>
-
-      <Footer />
     </div>
   );
 };

@@ -143,6 +143,23 @@ const Public = () => {
   );
 };
 
+const ConditionalFooter = () => {
+  const location = useLocation();
+  const authPages = [
+    "/login",
+    "/registration",
+    "/forgot-password",
+    "/reset-password",
+    "/email-verification",
+    "/two-factor-confirmation",
+    "/two-factor-verification",
+  ];
+
+  const shouldHideFooter = authPages.includes(location.pathname);
+
+  return shouldHideFooter ? null : <Footer />;
+};
+
 function App() {
   useEffect(() => {
     // Initialize user details if user is authenticated
@@ -229,7 +246,7 @@ function App() {
               />
             </Route>
             </Routes>
-            <Footer />
+            <ConditionalFooter />
           </BrowserRouter>
         </main>
         </ChatProvider>
