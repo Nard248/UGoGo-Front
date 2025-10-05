@@ -284,14 +284,16 @@ export const Home: FC = () => {
 
         <div className="buttons">
           <Button
-            title="Find items"
+            title="Add Items"
             type="primary"
             classNames="custom-button"
+            handleClick={() => navigate('/items')}
           />
           <Button
             title="Find flights"
             type="secondary"
             classNames="custom-button secondary-button"
+            handleClick={handleClick}
           />
         </div>
       </div>

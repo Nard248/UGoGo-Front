@@ -77,8 +77,18 @@ export const Items = () => {
 
   if (!items.length)
     return (
-      <div className="items-page__empty">
-        <p>No items found.</p>
+      <div className="items-page">
+        <div className="items-page__header">
+          <h3>My items</h3>
+          <Button
+            title="Add item"
+            type="primary"
+            handleClick={() => navigate("/add-item")}
+          />
+        </div>
+        <div className="items-page__empty">
+          <p>No items found. Click "Add item" to get started.</p>
+        </div>
       </div>
     );
 

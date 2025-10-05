@@ -18,6 +18,8 @@ interface IOfferCard {
   onPrimaryClick?: () => void;
   onSecondaryClick?: () => void;
   isOwnOffer?: boolean;
+  customUser?: any;
+  onCardClick?: () => void;
 }
 
 const formatDate = (date: Date) => {
@@ -44,13 +46,19 @@ export const OfferCard: FC<IOfferCard> = ({
   withOfferStatus = true,
   withRate = true,
   isOwnOffer = false,
+  customUser,
+  onCardClick,
 }) => {
   const navigate = useNavigate();
   const handleClick = () => {
-    if (data?.id) {
+    if (onCardClick) {
+      onCardClick();
+    } else if (data?.id) {
       navigate(`/offer/${data.id}`, { state: { offer: data } });
     }
   };
+
+  const displayUser = customUser || data?.user_flight?.user || data?.user;
   return (
     <div
       className={classNames(
@@ -85,11 +93,14 @@ export const OfferCard: FC<IOfferCard> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar
-              firstName={data?.user_flight?.user?.full_name || data?.user?.full_name || "User"}
+              firstName={displayUser?.first_name || displayUser?.full_name || "User"}
+              lastName={displayUser?.last_name}
               size="small"
             />
             <span className="text-[#808080]">
-              {data?.user_flight?.user?.full_name || data?.user?.full_name || "Unknown User"}
+              {displayUser?.first_name && displayUser?.last_name
+                ? `${displayUser.first_name} ${displayUser.last_name}`
+                : displayUser?.full_name || "Unknown User"}
             </span>
           </div>
           {withRate && (

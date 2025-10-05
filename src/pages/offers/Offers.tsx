@@ -59,8 +59,8 @@ export const Offers = () => {
 
     return (
         <>
-            <div className="flex flex-col gap-[6rem] w-full px-[1.6rem] md:px-16">
-                <h3 className="text-[2rem] font-medium">My offers</h3>
+            <div className="flex flex-col gap-[6rem] w-full px-[4rem] md:px-24">
+                <h3 className="text-[3.2rem] font-bold text-[#1B3A4B]">My offers</h3>
 
                 {isLoading ? (
                     <div className="flex justify-center items-center min-h-[20rem] w-full">

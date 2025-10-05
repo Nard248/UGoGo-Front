@@ -145,9 +145,9 @@ export const Payout = () => {
                         <AlertMessage type={'error'} text={isError} className={"text-[1.8rem]"}/>
                     </div>
                 }
-                <div className="flex flex-col gap-[2.5rem] w-full px-[1.6rem] md:px-16">
-                    <h1 className="text-[2.4rem] md:text-[3.6rem] font-semibold text-center">
-                        PayOut
+                <div className="flex flex-col gap-[2.5rem] w-full px-[4rem] md:px-24">
+                    <h1 className="text-[3.2rem] font-bold text-[#1B3A4B]">
+                        Payout
                     </h1>
                     <div className="flex flex-col gap-[2rem]">
                         <h2 className="text-[1.8rem] md:text-[2.5rem] font-normal">

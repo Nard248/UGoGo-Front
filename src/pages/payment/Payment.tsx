@@ -14,13 +14,21 @@ export const Payment = () => {
     const navigate = useNavigate();
     const [isError, setIsError] = useState(false);
     const [item, setItem] = useState(null);
+    const [offerData, setOfferData] = useState<any>(null);
 
     useEffect(() => {
         const storageData = localStorage.getItem('selectedItem');
+        const offerStorageData = localStorage.getItem('offer');
+
         if (!storageData) return;
 
         const data = JSON.parse(storageData);
         setItem(data);
+
+        if (offerStorageData) {
+            const offer = JSON.parse(offerStorageData);
+            setOfferData(offer);
+        }
     }, []);
 
     const onPay = async () => {
@@ -74,7 +82,7 @@ export const Payment = () => {
                         <div className="payment-page__card-body">
                             <div className="payment-page__price-row">
                                 <span>Delivery fee</span>
-                                <span>$10</span>
+                                <span>${offerData?.price || 0}</span>
                             </div>
                             <div className="payment-page__price-row">
                                 <span>Commission fee</span>
@@ -83,7 +91,7 @@ export const Payment = () => {
                             <Divider size={'small'} appearance={'neutral'}/>
                             <div className="payment-page__price-row payment-page__price-row--total">
                                 <span>Total</span>
-                                <span>$11</span>
+                                <span>${(offerData?.price ? Number(offerData.price) + 1 : 1).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>

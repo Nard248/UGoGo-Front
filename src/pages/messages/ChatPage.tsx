@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import "./ChatPage.scss";
 import { ChatSidebar } from "./components/ChatSidebar";
 import { ChatHeader } from "./components/ChatHeader";
@@ -29,6 +30,7 @@ export interface IUser {
 
 
 const ChatPage: React.FC = () => {
+  const location = useLocation();
   const { state, loadThreads, selectThread, sendMessage, markAsRead, ensureThread, loadMoreMessages, clearError } = useChat();
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
@@ -37,6 +39,7 @@ const ChatPage: React.FC = () => {
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
   const currentUserId = getCurrentUserId();
   const previousScrollHeight = useRef<number>(0);
+  const [hasOpenedUserChat, setHasOpenedUserChat] = useState(false);
 
   // Calculate other user ID for WebSocket connection
   const getOtherUserId = () => {    
@@ -66,6 +69,39 @@ const ChatPage: React.FC = () => {
     // console.log('🚀 Is authenticated:', !!localStorage.getItem('access'));
     loadThreads();
   }, []); // Remove loadThreads dependency to prevent re-renders
+
+  // Handle opening chat with specific user from navigation state
+  useEffect(() => {
+    const navigationState = location.state as any;
+    if (navigationState?.userId && state.threads.length > 0 && !hasOpenedUserChat) {
+      const userId = navigationState.userId;
+
+      // First try to find existing thread with this user
+      const existingThread = state.threads.find((thread: DirectThread) =>
+        thread.user1 === userId || thread.user2 === userId
+      );
+
+      if (existingThread) {
+        selectThread(existingThread);
+        setHasOpenedUserChat(true);
+      } else {
+        // If no existing thread, create one
+        ensureThread(userId).then(() => {
+          // After creating, find and select the new thread
+          const newThread = state.threads.find((thread: DirectThread) =>
+            thread.user1 === userId || thread.user2 === userId
+          );
+          if (newThread) {
+            selectThread(newThread);
+          }
+          setHasOpenedUserChat(true);
+        }).catch((error) => {
+          console.error('Failed to ensure thread:', error);
+          setHasOpenedUserChat(true); // Prevent retry loop
+        });
+      }
+    }
+  }, [location.state, state.threads, hasOpenedUserChat, selectThread, ensureThread]);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -216,41 +252,40 @@ const ChatPage: React.FC = () => {
   const convertToIUser = (thread: DirectThread): IUser => {
     // Get the other user ID (not the current user)
     const otherUserId = thread.user1 === currentUserId ? thread.user2 : thread.user1;
-  
+
+    // Get user info from either participant or other_user
+    const userInfo = thread.participant || thread.other_user;
+
     // Create display name - try different sources
     let displayName = '';
-    // console.log("thteaddd. ", thread);
-    // First try participant info from backend
-    if (thread.participant?.full_name) {
-      displayName = thread.participant.full_name;
-      if (thread.participant.email) {
-        displayName += ` (${thread.participant.email})`;
-      }
-    } else if (thread.participant?.username) {
-      displayName = thread.participant.username;
-      if (thread.participant.email) {
-        displayName += ` (${thread.participant.email})`;
-      }
-    } else if (thread.participant?.email) {
-      displayName = thread.participant.email;
+
+    // First try to construct name from first_name and last_name
+    if (userInfo?.first_name && userInfo?.last_name) {
+      displayName = `${userInfo.first_name} ${userInfo.last_name}`;
+    } else if (userInfo?.first_name) {
+      displayName = userInfo.first_name;
+    } else if (userInfo?.email) {
+      displayName = userInfo.email;
+    } else if (userInfo?.username) {
+      displayName = userInfo.username;
     } else {
       // Fallback: Use user ID
       displayName = `User ${otherUserId}`;
     }
-    
+
     // Get last message info
     const lastMessage = thread.last_message?.content || 'Start a conversation';
     const lastMessageTime = thread.last_message_at || thread.created_at;
-    
+
     const iUser = {
       id: thread.id,
       name: displayName,
-      avatar: thread.participant?.avatar,
+      avatar: userInfo?.avatar,
       lastMessage: lastMessage,
       time: lastMessageTime ? formatMessageTime(lastMessageTime) : undefined,
       starred: false
     };
-    
+
     return iUser;
   };
 
@@ -361,7 +396,20 @@ const ChatPage: React.FC = () => {
                   )}
                   {isTyping && (
                     <div className="typing-indicator">
-                      <span>{state.activeThread.participant?.full_name || `User ${getOtherUserId()}`} is typing...</span>
+                      <span>{
+                        (() => {
+                          const p = state.activeThread.participant || state.activeThread.other_user;
+                          if (p?.first_name && p?.last_name) {
+                            return `${p.first_name} ${p.last_name}`;
+                          } else if (p?.first_name) {
+                            return p.first_name;
+                          } else if (p?.email) {
+                            return p.email;
+                          } else {
+                            return `User ${getOtherUserId()}`;
+                          }
+                        })()
+                      } is typing...</span>
                     </div>
                   )}
                   <div ref={messagesEndRef} />

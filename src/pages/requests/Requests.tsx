@@ -7,6 +7,8 @@ import {Loading} from "../../components/loading/Loading";
 import {EmptyState} from "../../components/emptyState/EmptyState";
 import {useNotification} from "../../components/notification/NotificationProvider";
 import {useNavigate} from "react-router-dom";
+import {chatAPI} from "../../api/chat";
+import WebSocketService from "../../services/websocket.service";
 
 export const Requests = () => {
     const navigate = useNavigate();
@@ -18,7 +20,7 @@ export const Requests = () => {
     const handleChange = (event: SyntheticEvent, newValue: string) => {
         setTabValue(newValue);
     };
-    const [requests, setRequests] = useState([])
+    const [requests, setRequests] = useState<any[]>([])
 
     const getRequests = async () => {
         setIsLoading(true)
@@ -51,13 +53,61 @@ export const Requests = () => {
     const handleActionsOnRequest = async (id: string | number, type: 'accept' | 'reject') => {
         setIsLoading(true)
         try {
+            // Find the request to get requester info
+            const request = requests.find((r: any) => r.id === id);
+
             const data = await requestsAction({request_id: id, action: type});
             if (!data.data.error) {
-                const message = type === 'accept' 
+                const message = type === 'accept'
                     ? '✅ Request accepted successfully! The sender has been notified.'
                     : '❌ Request declined. The sender has been notified.';
                 showSuccess(message);
-                await getRequests();
+
+                // If accepted, send message and redirect to chat
+                if (type === 'accept' && request) {
+                    const requesterId = request.item?.user?.id || request.requester;
+                    const toAirport = request.offer?.user_flight?.flight?.to_airport?.city?.city_name || 'your destination';
+
+                    if (requesterId) {
+                        try {
+                            console.log('📤 Sending automatic message to requester:', requesterId);
+
+                            // Create or get thread
+                            const threadResponse = await chatAPI.ensureThread(requesterId);
+                            console.log('✅ Thread ensured:', threadResponse.data);
+
+                            // Build simple message
+                            const autoMessage = `Hi I just accepted your request for my offer to ${toAirport}`;
+                            console.log('📝 Message:', autoMessage);
+
+                            // Connect to WebSocket with retry
+                            console.log('🔌 Connecting to WebSocket...');
+                            await WebSocketService.connect(requesterId.toString());
+
+                            // Wait a bit for connection to stabilize
+                            await new Promise(resolve => setTimeout(resolve, 500));
+
+                            // Send message
+                            console.log('📨 Sending message via WebSocket...');
+                            await WebSocketService.sendMessage(requesterId.toString(), autoMessage);
+                            console.log('✅ Message sent successfully!');
+
+                            // Wait a bit before redirecting to ensure message is sent
+                            await new Promise(resolve => setTimeout(resolve, 500));
+
+                            // Redirect to chat
+                            navigate('/messages', { state: { userId: requesterId } });
+                        } catch (msgError) {
+                            console.error('❌ Failed to send message:', msgError);
+                            // Still redirect even if message fails
+                            navigate('/messages', { state: { userId: requesterId } });
+                        }
+                    } else {
+                        await getRequests();
+                    }
+                } else {
+                    await getRequests();
+                }
             } else {
                 showError('Failed to process request. Please try again.');
             }
@@ -111,7 +161,7 @@ export const Requests = () => {
             {isLoading ? (
                 <Loading/>
             ) : (
-                <div className="flex flex-col gap-3 w-full px-[1.6rem] md:px-16">
+                <div className="flex flex-col gap-3 w-full px-[4rem] md:px-24">
                     {requests.length > 0 && (
                         <Tabs value={tabValue} onChange={handleChange} centered variant="scrollable" scrollButtons="auto">
                             <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
@@ -123,7 +173,7 @@ export const Requests = () => {
                     )}
 
                     <div className="flex flex-col gap-[6rem] w-full">
-                        <h3 className="text-[2rem] font-medium">
+                        <h3 className="text-[3.2rem] font-bold text-[#1B3A4B]">
                             Received Requests
                         </h3>
 
@@ -146,15 +196,18 @@ export const Requests = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[2rem] md:gap-[3rem] lg:gap-[5.7rem] justify-items-center">
                                 {/* @ts-ignore */}
                                 {(requestsWithFilters as any)[tabValue].map((request: any) => {
-                                    const isDisabled = request.status?.toLowerCase().trim() === 'completed' || request.status?.toLowerCase().trim() === 'rejected';
+                                    const status = request.status?.toLowerCase().trim();
+                                    const isDisabled = status === 'completed' || status === 'rejected' || status === 'in_process';
                                     return (
                                         <OfferCard key={request.id}
                                                    withRate={false}
                                                    onPrimaryClick={!isDisabled ? () => handleConfirmAction(request.id, 'reject') : undefined}
-                                                   primaryButtonText={request.status?.toLowerCase().trim() === 'rejected' ? 'Declined' : 'Decline'}
+                                                   primaryButtonText={status === 'rejected' ? 'Declined' : 'Decline'}
                                                    onSecondaryClick={!isDisabled ? () => handleConfirmAction(request.id, 'accept') : undefined}
-                                                   secondaryButtonText={request.status?.toLowerCase().trim() === 'completed' ? 'Accepted' : 'Accept'}
+                                                   secondaryButtonText={status === 'completed' || status === 'in_process' ? 'Accepted' : 'Accept'}
                                                    data={request.offer}
+                                                   customUser={request.item?.user}
+                                                   onCardClick={() => navigate(`/request/${request.id}`, { state: { request } })}
                                         />
                                     );
                                 })}

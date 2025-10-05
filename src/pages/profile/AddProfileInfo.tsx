@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import pencil from "../../assets/icons/pencil.svg";
+import warning from "../../assets/icons/warning.svg";
 import { Input } from "../../components/input/Input";
 import { Label } from "../../components/label/Label";
 import { Button } from "../../components/button/Button";
 import { Avatar } from "../../components/avatar/Avatar";
 import { getUserDetails, updateProfile } from "../../api/route";
+import { useNavigate } from "react-router-dom";
 import './AddProfileInfo.scss';
 
 interface UserProfile {
@@ -13,9 +15,12 @@ interface UserProfile {
   phone_number: string;
   email: string;
   birthdate: string;
+  passport_verification_status?: string;
+  is_passport_uploaded?: boolean;
 }
 
 export const AddProfileInfo = () => {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +31,9 @@ export const AddProfileInfo = () => {
     last_name: '',
     phone_number: '',
     email: '',
-    birthdate: ''
+    birthdate: '',
+    passport_verification_status: 'pending',
+    is_passport_uploaded: false
   });
 
   const [formData, setFormData] = useState<UserProfile>(profile);
@@ -46,7 +53,9 @@ export const AddProfileInfo = () => {
           last_name: userDetails.last_name || '',
           phone_number: userDetails.phone_number || '',
           email: userDetails.email || '',
-          birthdate: userDetails.birthdate || ''
+          birthdate: userDetails.birthdate || '',
+          passport_verification_status: userDetails.passport_verification_status || 'pending',
+          is_passport_uploaded: userDetails.is_passport_uploaded || false
         };
         setProfile(profileData);
         setFormData(profileData);
@@ -125,7 +134,10 @@ export const AddProfileInfo = () => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-[2.4rem]">
+    <div className="w-full flex flex-col gap-[2.4rem] px-[4rem] md:px-24">
+      <h3 className="text-[3.2rem] font-bold text-[#1B3A4B]">
+        My Account
+      </h3>
       <div className="profile">
         <div className="profile__avatar">
           <Avatar
@@ -137,17 +149,47 @@ export const AddProfileInfo = () => {
             <div className="profile__avatar__details__name">
               {profile.first_name} {profile.last_name}
             </div>
+            {profile.passport_verification_status && profile.passport_verification_status !== 'verified' &&
+             (!profile.is_passport_uploaded || profile.passport_verification_status === 'rejected') && (
+              <div className="flex items-center gap-[0.5rem] mt-[0.5rem]">
+                <img src={warning} alt="Warning" className="w-[1.6rem] h-[1.6rem]" />
+                <span className="text-[1.2rem] text-yellow-700">Not Verified</span>
+              </div>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-[.3rem] cursor-pointer" onClick={handleEdit}>
-          <div className="flex">
-            <img src={pencil} alt="Edit" />
+        <div className="flex items-center gap-[1.6rem]">
+          {profile.passport_verification_status && profile.passport_verification_status !== 'verified' &&
+           (!profile.is_passport_uploaded || profile.passport_verification_status === 'rejected') && (
+            <Button
+              title="Verify"
+              type="primary"
+              handleClick={() => navigate('/profile-verification')}
+            />
+          )}
+          <div className="flex items-center gap-[.3rem] cursor-pointer" onClick={handleEdit}>
+            <div className="flex">
+              <img src={pencil} alt="Edit" />
+            </div>
+            <button className="bg-transparent border-none underline text-[1.6rem]">
+              Edit Profile
+            </button>
           </div>
-          <button className="bg-transparent border-none underline text-[1.6rem]">
-            Edit Profile
-          </button>
         </div>
       </div>
+
+      {profile.is_passport_uploaded && profile.passport_verification_status === 'pending' && (
+        <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h4 className="text-[1.6rem] font-semibold text-yellow-900">
+              Verification Status: Pending
+            </h4>
+            <p className="text-[1.4rem] text-yellow-800">
+              Your verification is being reviewed. We will notify you once it's complete.
+            </p>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">

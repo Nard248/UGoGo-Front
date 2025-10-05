@@ -15,6 +15,7 @@ import logoutHoverIcon from "../../assets/icons/logoutHover.svg";
 import coin from "../../assets/icons/coin.svg";
 import sentIcon from "../../assets/icons/airplaneIcon.svg";
 import sentHoverIcon from "../../assets/icons/airplane.svg";
+import warning from "../../assets/icons/warning.svg";
 import { logout } from "../../api/route";
 import {User} from "../../types/global";
 
@@ -36,6 +37,8 @@ export const ProfilePopover: FC = () => {
   const [user, setUser] = useState<User>({ email: "", balance: 0 });
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [verificationStatus, setVerificationStatus] = useState<string>("");
+  const [isPassportUploaded, setIsPassportUploaded] = useState<boolean>(false);
 
   const loadUserData = () => {
     const cachedUser = localStorage.getItem("userDetails");
@@ -53,6 +56,10 @@ export const ProfilePopover: FC = () => {
         setFirstName(nameParts[0] || "");
         setLastName(nameParts.slice(1).join(" ") || "");
       }
+
+      // Load verification status
+      setVerificationStatus(userData.passport_verification_status || "");
+      setIsPassportUploaded(userData.is_passport_uploaded || false);
     }
   };
 
@@ -144,6 +151,38 @@ export const ProfilePopover: FC = () => {
               </div>
             </div>
           </div>
+          {/* Show pending banner when passport uploaded and status is pending - NOT clickable */}
+          {isPassportUploaded && verificationStatus === 'pending' && (
+            <div className="mx-[2.1rem] mb-[1.6rem] bg-yellow-50 border border-yellow-300 rounded-lg p-3 flex items-center gap-[0.8rem]">
+              <img src={warning} alt="Warning" className="w-[1.6rem] h-[1.6rem]" />
+              <div className="flex flex-col">
+                <span className="text-[1.3rem] font-semibold text-yellow-900">
+                  Verification Pending
+                </span>
+                <span className="text-[1.1rem] text-yellow-700">
+                  Your verification is being reviewed
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Show clickable warning when passport NOT uploaded OR rejected */}
+          {verificationStatus && verificationStatus !== 'verified' && (!isPassportUploaded || verificationStatus === 'rejected') && (
+            <div
+              className="mx-[2.1rem] mb-[1.6rem] bg-yellow-50 border border-yellow-300 rounded-lg p-3 flex items-center gap-[0.8rem] cursor-pointer hover:bg-yellow-100 transition-colors"
+              onClick={() => handleNavigation('/profile-verification')}
+            >
+              <img src={warning} alt="Warning" className="w-[1.6rem] h-[1.6rem]" />
+              <div className="flex flex-col">
+                <span className="text-[1.3rem] font-semibold text-yellow-900">
+                  Not Verified
+                </span>
+                <span className="text-[1.1rem] text-yellow-700">
+                  Click to complete verification
+                </span>
+              </div>
+            </div>
+          )}
           <Divider appearance="neutral" size="small" className="mt-[1.6rem]" />
           <div className="flex flex-col gap-[.8rem] px-[2.1rem] py-[1.6rem] ">
             <div

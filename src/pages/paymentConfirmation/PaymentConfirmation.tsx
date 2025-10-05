@@ -1,7 +1,7 @@
 import checkIcon from './../../assets/icons/check.svg'
 import warning from './../../assets/icons/warning.svg'
 import {Button} from "../../components/button/Button";
-import {useSearchParams} from "react-router-dom";
+import {useSearchParams, useNavigate} from "react-router-dom";
 import {useEffect, useState, useRef} from "react";
 import {confirmSession} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
@@ -9,6 +9,7 @@ import {chatAPI} from "../../api/chat";
 import WebSocketService from "../../services/websocket.service";
 
 export const PaymentConfirmation = ({isError = false}: {isError?: boolean}) => {
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [isSuccess, setIsSuccess] = useState(false);
     const messageSentRef = useRef(false);
@@ -99,7 +100,7 @@ export const PaymentConfirmation = ({isError = false}: {isError?: boolean}) => {
                 <span className="text-[2.2rem] font-medium mb-[3.9rem]">
                     Thank you for trusting us!
                 </span>
-                <Button title={'Back to the homepage'} type={'primary'} handleClick={() => {}} />
+                <Button title={'Back to the homepage'} type={'primary'} handleClick={() => navigate('/')} />
             </div>
     )
 }

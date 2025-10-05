@@ -33,6 +33,7 @@ import { ForgotPassword } from "./pages/auth/ForgotPassword";
 import { EmailVerification } from "./pages/auth/EmailVerification";
 import { ResetPassword } from "./pages/auth/ResetPassword";
 import { Requests } from "./pages/requests/Requests";
+import { RequestDetails } from "./pages/requests/RequestDetails";
 import { SentRequests } from "./pages/sentRequests/SentRequests";
 import { Offers } from "./pages/offers/Offers";
 import { Items } from "./pages/items/Items";
@@ -106,7 +107,7 @@ const Protected = () => {
     "/offer/",
     "/messages",
     "/",
-  ].includes(location.pathname) || location.pathname.startsWith("/offer/");
+  ].includes(location.pathname) || location.pathname.startsWith("/offer/") || location.pathname.startsWith("/request/");
 
   return accessToken ? (
     <>
@@ -203,6 +204,7 @@ function App() {
                 element={<ProfileVerification />}
               />
               <Route path="requests" element={<Requests />} />
+              <Route path="request/:id" element={<RequestDetails />} />
               <Route path="sent-requests" element={<SentRequests />} />
               <Route path="offers" element={<Offers />} />
               <Route path="items" element={<Items />} />

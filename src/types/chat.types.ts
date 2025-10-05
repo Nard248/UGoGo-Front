@@ -6,6 +6,7 @@ export interface DirectThread {
   last_message_at: string | null;
   // Additional computed fields for frontend
   participant?: User;
+  other_user?: User; // Alias for participant from backend
   last_message?: DirectMessage;
   unread_count?: number;
 }
@@ -13,6 +14,8 @@ export interface DirectThread {
 export interface User {
   id: number;
   username?: string;
+  first_name?: string;
+  last_name?: string;
   full_name?: string;
   email?: string;
   avatar?: string;

@@ -53,7 +53,7 @@ export const SentRequests = () => {
             {isLoading ? (
                 <Loading/>
             ) : (
-                <div className="flex flex-col gap-3 w-full px-[1.6rem] md:px-16">
+                <div className="flex flex-col gap-3 w-full px-[4rem] md:px-24">
                     {requests.length > 0 && (
                         <Tabs value={tabValue} onChange={handleChange} centered variant="scrollable" scrollButtons="auto">
                             <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
@@ -65,7 +65,7 @@ export const SentRequests = () => {
                     )}
 
                     <div className="flex flex-col gap-[6rem] w-full">
-                        <h3 className="text-[2rem] font-medium">
+                        <h3 className="text-[3.2rem] font-bold text-[#1B3A4B]">
                             Sent requests
                         </h3>
 

@@ -60,8 +60,8 @@ export const ProfileVerification = () => {
                                    }}
                 />
             }
-            <div className="flex flex-col gap-[7rem] w-full">
-                <h3 className="text-[2rem]">
+            <div className="flex flex-col gap-[7rem] w-full px-[4rem] md:px-24">
+                <h3 className="text-[3.2rem] font-bold text-[#1B3A4B]">
                     Verify your identity
                 </h3>
                 <div className="flex flex-col gap-[5rem]">
