@@ -15,13 +15,25 @@ export const Offers = () => {
     const [notificationMessage, setNotificationMessage] = useState(
         location.state?.notification || ""
     );
-    const [offers, setOffers] = useState([]);
+    const [offers, setOffers] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const getMyFlights = async () => {
         try {
             const {data} = await getMyOffers();
-            setOffers(data);
+            // Sort offers by date (latest first)
+            const sortedOffers = [...data].sort((a: any, b: any) => {
+                // Try to sort by created_at or created date field
+                const dateA = a.created_at || a.created || a.departure_datetime;
+                const dateB = b.created_at || b.created || b.departure_datetime;
+
+                if (dateA && dateB) {
+                    return new Date(dateB).getTime() - new Date(dateA).getTime();
+                }
+                // Fallback to ID-based sorting (higher ID = more recent)
+                return (b.id || 0) - (a.id || 0);
+            });
+            setOffers(sortedOffers);
         } catch (error) {
             showError('Failed to load your offers. Please try again.');
         } finally {
@@ -39,20 +51,23 @@ export const Offers = () => {
         if (notificationMessage) {
             showSuccess(notificationMessage);
             setNotificationMessage("");
+            // Clear the location state to prevent re-triggering
+            navigate(location.pathname, { replace: true, state: {} });
         }
-    }, [notificationMessage, showSuccess]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [notificationMessage]);
 
     return (
         <>
-            <div className="flex flex-col gap-[6rem] w-full">
+            <div className="flex flex-col gap-[6rem] w-full px-[1.6rem] md:px-16">
                 <h3 className="text-[2rem] font-medium">My offers</h3>
-                
+
                 {isLoading ? (
                     <div className="flex justify-center items-center min-h-[20rem] w-full">
                         <Loading/>
                     </div>
                 ) : offers.length > 0 ? (
-                    <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[2rem] md:gap-[3rem] lg:gap-[5.7rem] justify-items-center">
                         {offers.map((offer: any) => (
                             <OfferCard
                                 key={offer.id}

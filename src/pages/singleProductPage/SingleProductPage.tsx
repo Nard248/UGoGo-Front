@@ -226,12 +226,14 @@ import { SelectItemPopup } from "../../components/selectItemPopup/SelectItemPopu
 
 interface OfferDataType {
   id: number;
+  courier_id: number;
   price: string;
   available_space: string;
   available_weight: string;
   departure_datetime: string;
   arrival_datetime: string;
   notes?: string;
+  is_owner?: boolean;
   user_flight: {
     flight_number: string;
     flight: {
@@ -258,12 +260,13 @@ interface OfferDataType {
         };
       };
     };
-  };
-  user: {
-    full_name: string;
-    email: string;
-    is_email_verified: boolean;
-    passport_verification_status: string;
+    user: {
+      id: number;
+      email: string;
+      first_name: string;
+      last_name: string;
+      full_name: string;
+    };
   };
   // Add more fields here as necessary
 }
@@ -271,11 +274,8 @@ interface OfferDataType {
 export const SingleProductPage: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { id } = useParams<{ id: string }>();
-  const location = useLocation();
-  // Get passed offer data from navigation state, key is "offer"
-  const passedOfferData = location.state?.offer as OfferDataType | undefined;
 
-  const [offerData, setOfferData] = useState<OfferDataType | null>(passedOfferData || null);
+  const [offerData, setOfferData] = useState<OfferDataType | null>(null);
   const [items, setItems] = useState<any[]>([]);
   const [isItemPopupOpened, setIsItemPopupOpened] = useState(false);
 
@@ -284,14 +284,16 @@ export const SingleProductPage: FC = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // If no offerData passed, fetch it by id
+  // Always fetch offer data from API to ensure we have user information
   useEffect(() => {
-    if (!offerData && id) {
+    if (id) {
       getSingleProduct(id).then((res) => {
         setOfferData(res.data.offer);
+      }).catch((error) => {
+        console.error('Failed to fetch offer:', error);
       });
     }
-  }, [id, offerData]);
+  }, [id]);
 
   // Open popup if modal=book in URL
   useEffect(() => {
@@ -323,10 +325,67 @@ export const SingleProductPage: FC = () => {
   };
 
   // Formatting helper
-  const formatDateTime = (dateStr?: string) => {    
+  const formatDateTime = (dateStr?: string) => {
     if (!dateStr) return "N/A";
     const d = new Date(dateStr);
     return d.toLocaleString();
+  };
+
+  // Check if current user is the offer owner
+  const isOwnOffer = () => {
+    if (!offerData) {
+      return false;
+    }
+
+    // First priority: Check if API provides is_owner field
+    if (offerData.is_owner !== undefined) {
+      return offerData.is_owner;
+    }
+
+    // Second priority: Compare courier_id with user_id
+    const userId = localStorage.getItem("user_id");
+    if (userId && offerData.courier_id) {
+      const isOwner = parseInt(userId) === offerData.courier_id;
+      if (isOwner) {
+        return true;
+      }
+    }
+
+    // Third priority: Compare courier_id with userDetails.id
+    const userDetails = localStorage.getItem("userDetails");
+    if (userDetails) {
+      try {
+        const currentUser = JSON.parse(userDetails);
+        if (currentUser.id && offerData.courier_id) {
+          const isOwner = currentUser.id === offerData.courier_id;
+          if (isOwner) {
+            return true;
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing userDetails:', error);
+      }
+    }
+
+    // Fourth priority: Compare with user_flight.user.id
+    if (userId && offerData.user_flight?.user?.id) {
+      const isOwner = parseInt(userId) === offerData.user_flight.user.id;
+      if (isOwner) {
+        return true;
+      }
+    }
+
+    // Fifth priority: Compare emails with user_flight.user.email
+    const userEmail = localStorage.getItem("user_email");
+    if (userEmail && offerData.user_flight?.user?.email) {
+      const isOwner = userEmail.toLowerCase() === offerData.user_flight.user.email.toLowerCase();
+      if (isOwner) {
+        return true;
+      }
+    }
+
+    // If we can't determine, default to false (show button)
+    return false;
   };
 
   if (!offerData) {
@@ -340,7 +399,6 @@ export const SingleProductPage: FC = () => {
     // departure_datetime,
     // arrival_datetime,
     user_flight,
-    user,
   } = offerData;
 
 //   const { flight_number, flight } = user_flight || {};
@@ -472,9 +530,11 @@ const {
               </div>
             </div>
 
-            <div className="flex justify-end pt-9 pb-16">
-              <Button classNames="singleProductPage__notes__content__button" title={"Send request"} type={"primary"} handleClick={onBook} />
-            </div>
+            {!isOwnOffer() && (
+              <div className="flex justify-end pt-9 pb-16">
+                <Button classNames="singleProductPage__notes__content__button" title={"Send request"} type={"primary"} handleClick={onBook} />
+              </div>
+            )}
           </div>
         </div>
       </div>

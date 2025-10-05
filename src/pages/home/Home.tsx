@@ -104,11 +104,15 @@ export const Home: FC = () => {
       const userData = await getUserDetails();
       if (userData) {
         const userObject = {
-          name: userData.full_name,
+          id: userData.id,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
           email: userData.email,
           balance: userData.balance,
         };
         localStorage.setItem("userDetails", JSON.stringify(userObject));
+        // Dispatch event to notify other components
+        window.dispatchEvent(new Event('userDetailsUpdated'));
       }
     } catch (error) {
       console.error("Error fetching user details:", error);

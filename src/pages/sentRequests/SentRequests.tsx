@@ -53,22 +53,22 @@ export const SentRequests = () => {
             {isLoading ? (
                 <Loading/>
             ) : (
-                <div className="flex flex-col gap-3 w-full">
+                <div className="flex flex-col gap-3 w-full px-[1.6rem] md:px-16">
                     {requests.length > 0 && (
-                        <Tabs value={tabValue} onChange={handleChange} centered>
-                            <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                            <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                            <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                            <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}}/>
-                            <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}}/>
+                        <Tabs value={tabValue} onChange={handleChange} centered variant="scrollable" scrollButtons="auto">
+                            <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="In progress" value={'in_process'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
+                            <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
                         </Tabs>
                     )}
-                    
+
                     <div className="flex flex-col gap-[6rem] w-full">
                         <h3 className="text-[2rem] font-medium">
                             Sent requests
                         </h3>
-                        
+
                         {requests.length === 0 ? (
                             <EmptyState
                                 illustration="no-requests"
@@ -91,7 +91,7 @@ export const SentRequests = () => {
                             />
                         ) : (
                             <>
-                                <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[2rem] md:gap-[3rem] lg:gap-[5.7rem] justify-items-center">
                                     {/* @ts-ignore */}
                                     {(requestsWithFilters as any)[tabValue].map((request: any) => (
                                         <OfferCard key={request.id}
@@ -100,7 +100,7 @@ export const SentRequests = () => {
                                         />
                                     ))}
                                 </div>
-                                <div className="flex justify-end gap-[4rem]">
+                                <div className="flex flex-col sm:flex-row justify-end gap-[1.6rem] sm:gap-[4rem]">
                                     <Button title={'How it works'} type={'secondary'} handleClick={() => {
                                         navigate('/features');
                                     }}/>

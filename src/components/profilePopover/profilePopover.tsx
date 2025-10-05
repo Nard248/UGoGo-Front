@@ -15,7 +15,7 @@ import logoutHoverIcon from "../../assets/icons/logoutHover.svg";
 import coin from "../../assets/icons/coin.svg";
 import sentIcon from "../../assets/icons/airplaneIcon.svg";
 import sentHoverIcon from "../../assets/icons/airplane.svg";
-import { logout, getUserDetails } from "../../api/route";
+import { logout } from "../../api/route";
 import {User} from "../../types/global";
 
 
@@ -33,13 +33,31 @@ export const ProfilePopover: FC = () => {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(true);
 
-  const [user, setUser] = useState<User>({ name: "NULL", email: "NULL", balance: 0 });
+  const [user, setUser] = useState<User>({ email: "", balance: 0 });
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-  useEffect(() => {
+  const loadUserData = () => {
     const cachedUser = localStorage.getItem("userDetails");
     if (cachedUser) {
-      setUser(JSON.parse(cachedUser));
+      const userData = JSON.parse(cachedUser);
+      setUser(userData);
+
+      // Handle both old format (name) and new format (first_name, last_name)
+      if (userData.first_name || userData.last_name) {
+        setFirstName(userData.first_name || "");
+        setLastName(userData.last_name || "");
+      } else if (userData.name) {
+        // Fallback: split the name if it's in the old format
+        const nameParts = userData.name.split(" ");
+        setFirstName(nameParts[0] || "");
+        setLastName(nameParts.slice(1).join(" ") || "");
+      }
     }
+  };
+
+  useEffect(() => {
+    loadUserData();
 
     const handleClickOutside = (event: MouseEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
@@ -47,10 +65,24 @@ export const ProfilePopover: FC = () => {
       }
     };
 
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "userDetails") {
+        loadUserData();
+      }
+    };
+
+    const handleUserUpdate = () => {
+      loadUserData();
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("userDetailsUpdated", handleUserUpdate);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("userDetailsUpdated", handleUserUpdate);
     };
 
   }, []);
@@ -97,13 +129,14 @@ export const ProfilePopover: FC = () => {
           <div className="profile__avatar px-[2.1rem] py-[1.6rem]">
             <div className="profile__avatar__image">
               <Avatar
-                firstName={user.name || "User"}
+                firstName={firstName || "User"}
+                lastName={lastName}
                 size="medium"
                 className="profile__avatar__image"
               />
             </div>
             <div className="profile__avatar__details">
-              <div className="profile__avatar__details__name">{user.name}</div>
+              <div className="profile__avatar__details__name">{firstName} {lastName}</div>
               <div className="profile__avatar__details__rate">
                 <span className="profile__avatar__details__rate__value">
                   {user.email}
@@ -132,15 +165,13 @@ export const ProfilePopover: FC = () => {
             <div
               className="flex items-center gap-[.8rem] cursor-pointer"
               onClick={() => handleNavigation("/payout")}
-              onMouseEnter={() => setRequestsIcon(coin)}
-              onMouseLeave={() => setRequestsIcon(coin)}
             >
               <img
                 src={coin}
-                alt="Requests Icon"
+                alt="Payout Icon"
                 className="w-[20px] h-[20px]"
               />
-              <span className="text-[1.4rem] text-[#808080] hover:text-[#F9A34B]">
+              <span className="text-[1.4rem] text-[#808080] hover:text-[#F9A34C]">
                 Payout
               </span>
             </div>
@@ -156,7 +187,7 @@ export const ProfilePopover: FC = () => {
                 alt="Requests Icon"
                 className="w-[20px] h-[20px]"
               />
-              <span className="text-[1.4rem] text-[#808080] hover:text-[#F9A34B]">
+              <span className="text-[1.4rem] text-[#808080] hover:text-[#F9A34D]">
                 My Requests
               </span>
             </div>

@@ -44,8 +44,16 @@ export const Payout = () => {
 
     const userDetails = async () => {
         const userData = await getUserDetails();
-        const userObject = { name: userData.full_name, email: userData.email, balance: userData.balance };
+        const userObject = {
+            id: userData.id,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            email: userData.email,
+            balance: userData.balance
+        };
         localStorage.setItem("userDetails", JSON.stringify(userObject));
+        // Dispatch event to notify other components
+        window.dispatchEvent(new Event('userDetailsUpdated'));
     }
 
     useEffect(() => {
@@ -137,21 +145,21 @@ export const Payout = () => {
                         <AlertMessage type={'error'} text={isError} className={"text-[1.8rem]"}/>
                     </div>
                 }
-                <div className="flex flex-col gap-[2.5rem] w-full">
-                    <h1 className="text-[3.6rem] font-semibold text-center">
+                <div className="flex flex-col gap-[2.5rem] w-full px-[1.6rem] md:px-16">
+                    <h1 className="text-[2.4rem] md:text-[3.6rem] font-semibold text-center">
                         PayOut
                     </h1>
                     <div className="flex flex-col gap-[2rem]">
-                        <h2 className="text-[2.5rem] font-normal">
+                        <h2 className="text-[1.8rem] md:text-[2.5rem] font-normal">
                             Select the card you want to transfer to
                         </h2>
-                        <div className="flex justify-between gap-[2rem]">
-                            <div className="flex flex-col flex-1 gap-[2rem]">
+                        <div className="flex flex-col lg:flex-row lg:justify-between gap-[2rem] lg:gap-[4rem]">
+                            <div className="flex flex-col w-full lg:flex-1 gap-[2rem]">
                                 {!!cards.length &&
                                     cards.map(card => (
                                         <div
                                             key={card.id}
-                                            className={`flex flex-col max-w-[40rem] w-full p-[2rem] gap-[1rem] max-h-[13.5rem] h-full justify-evenly rounded-[1rem] bg-amber-500 text-white text-[2rem] cursor-pointer ${card.id === selectedCard?.id ? 'ml-[5rem]' : ''}`}
+                                            className={`flex flex-col w-full lg:max-w-[40rem] p-[2rem] gap-[1rem] min-h-[13.5rem] justify-evenly rounded-[1rem] bg-amber-500 text-white text-[1.6rem] md:text-[2rem] cursor-pointer transition-all ${card.id === selectedCard?.id ? 'lg:ml-[5rem] ring-4 ring-amber-300' : ''}`}
                                             onClick={() => {
                                                 setSelectedCard(card);
                                                 setFormData({...formData, card_id: card.id || 0})
@@ -171,7 +179,7 @@ export const Payout = () => {
                                     ))
                                 }
                                 <div
-                                    className="flex flex-col border border-solid border-[#F9A34B] max-w-[40rem] w-full p-[2rem] gap-[1rem] max-h-[13.5rem] h-full justify-evenly rounded-[1rem] text-[2rem] items-center cursor-pointer"
+                                    className="flex flex-col border border-solid border-[#F9A34B] w-full lg:max-w-[40rem] p-[2rem] gap-[1rem] min-h-[13.5rem] justify-evenly rounded-[1rem] text-[1.6rem] md:text-[2rem] items-center cursor-pointer hover:bg-[#FFF1E7] transition-colors"
                                     onClick={openAddCardPopup}
                                 >
                                     <div className="flex justify-between items-center w-[4rem] h-[4rem]">
@@ -182,7 +190,7 @@ export const Payout = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-[3rem] w-[40%]">
+                            <div className="flex flex-col gap-[3rem] w-full lg:w-[40%]">
                                 <div className="flex justify-between text-[1.6rem]">
                                 <span>
                                     Total Balance
@@ -195,7 +203,7 @@ export const Payout = () => {
                                     <Input type="number" placeholder="USD" errorMessage={amountError}
                                            handleChange={handleAmountChange}/>
                                 </Label>
-                                <Button type="primary" title="Transfer to the card" classNames={"text-[1.4rem]"}
+                                <Button type="primary" title="Transfer to the card" classNames={"text-[1.4rem] w-full"}
                                         disabled={!formData.transfer_amount || !formData.card_id || amountError !== null}
                                         handleClick={onVerify}/>
                             </div>

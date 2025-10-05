@@ -111,9 +111,9 @@ export const Requests = () => {
             {isLoading ? (
                 <Loading/>
             ) : (
-                <div className="flex flex-col gap-3 w-full">
+                <div className="flex flex-col gap-3 w-full px-[1.6rem] md:px-16">
                     {requests.length > 0 && (
-                        <Tabs value={tabValue} onChange={handleChange} centered>
+                        <Tabs value={tabValue} onChange={handleChange} centered variant="scrollable" scrollButtons="auto">
                             <Tab label="All" value={'all'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
                             <Tab label="Completed" value={'completed'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
                             <Tab label="Pending" value={'pending'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
@@ -121,12 +121,12 @@ export const Requests = () => {
                             <Tab label="Rejected" value={'rejected'} classes={{textColorPrimary: 'text-[#008080]'}} sx={{ fontSize: '1.4rem' }}/>
                         </Tabs>
                     )}
-                    
+
                     <div className="flex flex-col gap-[6rem] w-full">
                         <h3 className="text-[2rem] font-medium">
                             Received Requests
                         </h3>
-                        
+
                         {requests.length === 0 ? (
                             <EmptyState
                                 illustration="no-requests"
@@ -143,7 +143,7 @@ export const Requests = () => {
                                 {...getEmptyStateForTab()}
                             />
                         ) : (
-                            <div className="grid grid-cols-3 gap-[5.7rem] justify-items-center">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[2rem] md:gap-[3rem] lg:gap-[5.7rem] justify-items-center">
                                 {/* @ts-ignore */}
                                 {(requestsWithFilters as any)[tabValue].map((request: any) => {
                                     const isDisabled = request.status?.toLowerCase().trim() === 'completed' || request.status?.toLowerCase().trim() === 'rejected';

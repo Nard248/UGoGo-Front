@@ -13,7 +13,7 @@ import LocationIcon from "../assets/icons/MarkFooter.svg";
 
 export const Footer: FC = () => {
     return (
-        <footer className="footer">
+        <footer className="footer mt-[6rem]">
             <div className="footer-container">
                 <div className="footer-top">
                     <div className="footer-logo">

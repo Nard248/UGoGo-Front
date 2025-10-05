@@ -13,7 +13,6 @@ interface UserProfile {
   phone_number: string;
   email: string;
   birthdate: string;
-  gender: string;
 }
 
 export const AddProfileInfo = () => {
@@ -27,8 +26,7 @@ export const AddProfileInfo = () => {
     last_name: '',
     phone_number: '',
     email: '',
-    birthdate: '',
-    gender: ''
+    birthdate: ''
   });
 
   const [formData, setFormData] = useState<UserProfile>(profile);
@@ -48,8 +46,7 @@ export const AddProfileInfo = () => {
           last_name: userDetails.last_name || '',
           phone_number: userDetails.phone_number || '',
           email: userDetails.email || '',
-          birthdate: userDetails.birthdate || '',
-          gender: userDetails.gender || ''
+          birthdate: userDetails.birthdate || ''
         };
         setProfile(profileData);
         setFormData(profileData);
@@ -88,14 +85,15 @@ export const AddProfileInfo = () => {
       setError(null);
 
       // Validate required fields
-      if (!formData.first_name || !formData.last_name || !formData.email) {
+      if (!formData.first_name || !formData.last_name) {
         setError('Please fill in all required fields');
         return;
       }
 
-      // Format birthdate to YYYY-MM-DD if needed
+      // Format birthdate to YYYY-MM-DD if needed and exclude email
+      const { email, ...dataToUpdate } = formData;
       const formattedData = {
-        ...formData,
+        ...dataToUpdate,
         birthdate: formData.birthdate.includes('-')
           ? formData.birthdate
           : formData.birthdate
@@ -110,6 +108,9 @@ export const AddProfileInfo = () => {
 
         // Update localStorage
         localStorage.setItem('userDetails', JSON.stringify(response.data.user));
+
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new Event('userDetailsUpdated'));
 
         // Clear success message after 3 seconds
         setTimeout(() => setSuccess(null), 3000);
@@ -200,7 +201,7 @@ export const AddProfileInfo = () => {
               value={formData.email}
               classnames={'inputField'}
               handleChange={(e) => handleInputChange('email', e.target.value)}
-              disabled={!isEditing}
+              disabled={true}
             />
           </Label>
 
@@ -226,29 +227,6 @@ export const AddProfileInfo = () => {
               handleChange={(e) => handleInputChange('birthdate', e.target.value)}
               disabled={!isEditing}
             />
-          </Label>
-
-          <Label title={'Gender *'} htmlFor={'gender'} classnames={'label'}>
-            <select
-              id={'gender'}
-              value={formData.gender}
-              onChange={(e) => handleInputChange('gender', e.target.value)}
-              disabled={!isEditing}
-              className={`inputField ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`}
-              style={{
-                width: '100%',
-                padding: '1.2rem 1.6rem',
-                fontSize: '1.6rem',
-                border: '1px solid #D5D7DA',
-                borderRadius: '0.8rem',
-                backgroundColor: isEditing ? 'white' : '#f5f5f5'
-              }}
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
           </Label>
         </div>
 

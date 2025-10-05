@@ -93,17 +93,22 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
             key={notification.id}
             open={true}
             autoHideDuration={notification.duration}
-            onClose={() => handleClose(notification.id)}
+            onClose={(event, reason) => {
+              if (reason === 'clickaway') {
+                return;
+              }
+              handleClose(notification.id);
+            }}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             TransitionComponent={Slide}
-            sx={{ 
+            sx={{
               position: 'fixed',
               top: `${20 + index * 70}px`,
-              zIndex: 9999 - index 
+              zIndex: 9999 - index
             }}
           >
             <Alert
-              onClose={() => handleClose(notification.id)}
+              onClose={(event) => handleClose(notification.id)}
               severity={notification.severity}
               iconMapping={iconMapping}
               sx={{

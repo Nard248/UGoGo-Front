@@ -138,9 +138,8 @@ export const updateProfile = async (data: {
   first_name: string;
   last_name: string;
   phone_number: string;
-  email: string;
+  email?: string;
   birthdate: string;
-  gender: string;
 }) => {
   return await api.put(`/users/profile/edit/`, data);
 };

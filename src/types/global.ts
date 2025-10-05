@@ -154,7 +154,10 @@ export interface IPayout {
 }
 
 export interface User {
-    name: string;
+    id?: number;
+    first_name?: string;
+    last_name?: string;
+    name?: string; // Deprecated: use first_name and last_name instead
     email: string;
     balance?: number
 }

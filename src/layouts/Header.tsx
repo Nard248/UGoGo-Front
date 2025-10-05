@@ -142,7 +142,9 @@ interface IHeader {
 export const Header: FC<IHeader> = ({ withNavItems = true }) => {
   const [isPopoverOpened, setIsPopoverOpened] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 🍔 Burger
-  const [user, setUser] = useState<User>({ name: "User", email: "", balance: 0 });
+  const [user, setUser] = useState<User>({ email: "", balance: 0 });
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const isLoggedIn = !!localStorage.getItem("access");
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -152,11 +154,45 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
     ? Object.values(state.unreadCounts).reduce((sum, count) => sum + count, 0)
     : 0;
 
-  useEffect(() => {
+  const loadUserData = () => {
     const cachedUser = localStorage.getItem("userDetails");
     if (cachedUser) {
-      setUser(JSON.parse(cachedUser));
+      const userData = JSON.parse(cachedUser);
+      setUser(userData);
+
+      // Handle both old format (name) and new format (first_name, last_name)
+      if (userData.first_name || userData.last_name) {
+        setFirstName(userData.first_name || "");
+        setLastName(userData.last_name || "");
+      } else if (userData.name) {
+        // Fallback: split the name if it's in the old format
+        const nameParts = userData.name.split(" ");
+        setFirstName(nameParts[0] || "");
+        setLastName(nameParts.slice(1).join(" ") || "");
+      }
     }
+  };
+
+  useEffect(() => {
+    loadUserData();
+
+    const handleUserUpdate = () => {
+      loadUserData();
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "userDetails") {
+        loadUserData();
+      }
+    };
+
+    window.addEventListener("userDetailsUpdated", handleUserUpdate);
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("userDetailsUpdated", handleUserUpdate);
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   return (
@@ -190,7 +226,8 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
 
           <div className="cursor-pointer" onClick={() => setIsPopoverOpened(!isPopoverOpened)}>
             <Avatar
-              firstName={user.name || "User"}
+              firstName={firstName || "User"}
+              lastName={lastName}
               size="small"
             />
             {isPopoverOpened && <ProfilePopover />}
