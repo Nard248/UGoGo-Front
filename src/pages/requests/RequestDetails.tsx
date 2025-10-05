@@ -3,7 +3,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { OfferDetails } from "../../components/offerDetails/OfferDetails";
 import packageIcon from "./../../assets/icons/package.svg";
 import { Button } from "../../components/button/Button";
-import { requestsAction } from "../../api/route";
+import { requestsAction, getUserDetails } from "../../api/route";
 import { Avatar } from "../../components/avatar/Avatar";
 import { useNotification } from "../../components/notification/NotificationProvider";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
@@ -19,7 +19,7 @@ export const RequestDetails: FC = () => {
 
   const [requestData, setRequestData] = useState<any>(location.state?.request || null);
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState<{open: boolean, action: 'accept' | 'reject' | null}>({
+  const [confirmDialog, setConfirmDialog] = useState<{open: boolean, action: 'accept' | 'reject' | 'complete' | null}>({
     open: false,
     action: null
   });
@@ -34,7 +34,27 @@ export const RequestDetails: FC = () => {
     return d.toLocaleString();
   };
 
-  const handleConfirmAction = (action: 'accept' | 'reject') => {
+  const updateUserDetails = async () => {
+    try {
+      const userData = await getUserDetails();
+      const userObject = {
+        id: userData.id,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        email: userData.email,
+        balance: userData.balance,
+        passport_verification_status: userData.passport_verification_status,
+        is_passport_uploaded: userData.is_passport_uploaded
+      };
+      localStorage.setItem("userDetails", JSON.stringify(userObject));
+      // Dispatch event to notify other components (like profile popover)
+      window.dispatchEvent(new Event('userDetailsUpdated'));
+    } catch (error) {
+      console.error('Failed to update user details:', error);
+    }
+  };
+
+  const handleConfirmAction = (action: 'accept' | 'reject' | 'complete') => {
     setConfirmDialog({open: true, action: action});
   };
 
@@ -72,7 +92,7 @@ export const RequestDetails: FC = () => {
     }
   };
 
-  const handleActionsOnRequest = async (action: 'accept' | 'reject') => {
+  const handleActionsOnRequest = async (action: 'accept' | 'reject' | 'complete') => {
     if (!id) return;
 
     setIsLoading(true);
@@ -81,8 +101,13 @@ export const RequestDetails: FC = () => {
       if (!data.data.error) {
         const message = action === 'accept'
           ? '✅ Request accepted successfully! The sender has been notified.'
+          : action === 'complete'
+          ? '✅ Delivery completed successfully!'
           : '❌ Request declined. The sender has been notified.';
         showSuccess(message);
+
+        // Update user details (balance) after any action
+        await updateUserDetails();
 
         // If accepted, send message and redirect to chat
         if (action === 'accept' && requestData) {
@@ -110,7 +135,7 @@ export const RequestDetails: FC = () => {
             navigate('/requests');
           }
         } else {
-          // If declined, go back to requests
+          // If declined or completed, go back to requests
           navigate('/requests');
         }
       } else {
@@ -140,7 +165,12 @@ export const RequestDetails: FC = () => {
   const { item, offer, status, payment } = requestData;
   const requester = item?.user;
   const flight = offer?.user_flight?.flight;
-  const isDisabled = status?.toLowerCase().trim() === 'completed' || status?.toLowerCase().trim() === 'rejected' || status?.toLowerCase().trim() === 'in_process';
+  const statusLower = status?.toLowerCase().trim();
+  const isCompleted = statusLower === 'completed';
+  const isRejected = statusLower === 'rejected';
+  const isInProcess = statusLower === 'in_process';
+  const isPending = statusLower === 'pending';
+  const isDisabled = isCompleted || isRejected;
 
   return (
     <>
@@ -315,7 +345,7 @@ export const RequestDetails: FC = () => {
         )}
 
         {/* Action Buttons */}
-        {!isDisabled && (
+        {isPending && (
           <div className="px-[1.6rem] md:px-16 pb-16">
             <div className="flex justify-end gap-6 pt-9">
               <Button
@@ -335,16 +365,29 @@ export const RequestDetails: FC = () => {
           </div>
         )}
 
+        {/* Complete Button for In Progress */}
+        {isInProcess && (
+          <div className="px-[1.6rem] md:px-16 pb-16">
+            <div className="flex justify-end gap-6 pt-9">
+              <Button
+                title="Complete"
+                type="primary"
+                handleClick={() => handleConfirmAction('complete')}
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Status Display for Completed/Rejected */}
         {isDisabled && (
           <div className="px-[1.6rem] md:px-16 pb-16">
             <div className="flex justify-center pt-9">
               <p className="text-[1.8rem] font-semibold text-gray-600">
                 Request Status: <span className={
-                  status?.toLowerCase() === 'completed' || status?.toLowerCase() === 'in_process'
-                    ? 'text-green-600'
-                    : 'text-red-600'
+                  isCompleted ? 'text-green-600' : 'text-red-600'
                 }>
-                  {status?.toLowerCase() === 'in_process' ? 'ACCEPTED' : status?.toUpperCase()}
+                  {status?.toUpperCase()}
                 </span>
               </p>
             </div>
@@ -359,19 +402,23 @@ export const RequestDetails: FC = () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {confirmDialog.action === 'accept' ? 'Accept Request?' : 'Decline Request?'}
+          {confirmDialog.action === 'accept' ? 'Accept Request?' :
+           confirmDialog.action === 'complete' ? 'Complete Delivery?' : 'Decline Request?'}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {confirmDialog.action === 'accept'
               ? 'Are you sure you want to accept this request? This will commit you to delivering the item.'
+              : confirmDialog.action === 'complete'
+              ? 'Are you sure you want to mark this delivery as complete? This will finalize the transaction.'
               : 'Are you sure you want to decline this request? This action cannot be undone.'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button title="Cancel" type="secondary" handleClick={() => handleConfirmDialogClose(false)} />
           <Button
-            title={confirmDialog.action === 'accept' ? 'Accept' : 'Decline'}
+            title={confirmDialog.action === 'accept' ? 'Accept' :
+                   confirmDialog.action === 'complete' ? 'Complete' : 'Decline'}
             type="primary"
             handleClick={() => handleConfirmDialogClose(true)}
           />

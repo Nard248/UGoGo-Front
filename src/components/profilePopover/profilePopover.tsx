@@ -149,6 +149,11 @@ export const ProfilePopover: FC = () => {
                   {user.email}
                 </span>
               </div>
+              <div className="mt-[0.5rem]">
+                <span className="text-[1.3rem] font-semibold text-[#008080]">
+                  Balance: ${user.balance || '0.00'}
+                </span>
+              </div>
             </div>
           </div>
           {/* Show pending banner when passport uploaded and status is pending - NOT clickable */}

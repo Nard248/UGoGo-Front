@@ -1,6 +1,6 @@
 import {OfferCard} from "../../components/offerCard/OfferCard";
 import {Button} from "../../components/button/Button";
-import {getReceivedRequests, requestsAction} from "../../api/route";
+import {getReceivedRequests, requestsAction, getUserDetails} from "../../api/route";
 import {SyntheticEvent, useEffect, useMemo, useState} from "react";
 import {Tab, Tabs, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material";
 import {Loading} from "../../components/loading/Loading";
@@ -15,7 +15,7 @@ export const Requests = () => {
     const { showSuccess, showError, showInfo } = useNotification();
     const [isLoading, setIsLoading] = useState(false);
     const [tabValue, setTabValue] = useState('all');
-    const [confirmDialog, setConfirmDialog] = useState<{open: boolean, requestId: string | number | null, action: 'accept' | 'reject' | null}>({open: false, requestId: null, action: null});
+    const [confirmDialog, setConfirmDialog] = useState<{open: boolean, requestId: string | number | null, action: 'accept' | 'reject' | 'complete' | null}>({open: false, requestId: null, action: null});
 
     const handleChange = (event: SyntheticEvent, newValue: string) => {
         setTabValue(newValue);
@@ -35,6 +35,26 @@ export const Requests = () => {
         }
     }
 
+    const updateUserDetails = async () => {
+        try {
+            const userData = await getUserDetails();
+            const userObject = {
+                id: userData.id,
+                first_name: userData.first_name,
+                last_name: userData.last_name,
+                email: userData.email,
+                balance: userData.balance,
+                passport_verification_status: userData.passport_verification_status,
+                is_passport_uploaded: userData.is_passport_uploaded
+            };
+            localStorage.setItem("userDetails", JSON.stringify(userObject));
+            // Dispatch event to notify other components (like profile popover)
+            window.dispatchEvent(new Event('userDetailsUpdated'));
+        } catch (error) {
+            console.error('Failed to update user details:', error);
+        }
+    }
+
     const requestsWithFilters = useMemo(() => {
         const filters = {
             all: requests,
@@ -50,7 +70,7 @@ export const Requests = () => {
         getRequests()
     }, [])
 
-    const handleActionsOnRequest = async (id: string | number, type: 'accept' | 'reject') => {
+    const handleActionsOnRequest = async (id: string | number, type: 'accept' | 'reject' | 'complete') => {
         setIsLoading(true)
         try {
             // Find the request to get requester info
@@ -60,8 +80,13 @@ export const Requests = () => {
             if (!data.data.error) {
                 const message = type === 'accept'
                     ? '✅ Request accepted successfully! The sender has been notified.'
+                    : type === 'complete'
+                    ? '✅ Delivery completed successfully!'
                     : '❌ Request declined. The sender has been notified.';
                 showSuccess(message);
+
+                // Update user details (balance) after any action
+                await updateUserDetails();
 
                 // If accepted, send message and redirect to chat
                 if (type === 'accept' && request) {
@@ -119,7 +144,7 @@ export const Requests = () => {
         }
     }
 
-    const handleConfirmAction = (id: string | number, action: 'accept' | 'reject') => {
+    const handleConfirmAction = (id: string | number, action: 'accept' | 'reject' | 'complete') => {
         setConfirmDialog({open: true, requestId: id, action: action});
     }
 
@@ -197,14 +222,45 @@ export const Requests = () => {
                                 {/* @ts-ignore */}
                                 {(requestsWithFilters as any)[tabValue].map((request: any) => {
                                     const status = request.status?.toLowerCase().trim();
-                                    const isDisabled = status === 'completed' || status === 'rejected' || status === 'in_process';
+                                    const isCompleted = status === 'completed';
+                                    const isRejected = status === 'rejected';
+                                    const isInProcess = status === 'in_process';
+                                    const isPending = status === 'pending';
+
+                                    // For in_process status, show only Complete button
+                                    if (isInProcess) {
+                                        return (
+                                            <OfferCard key={request.id}
+                                                       withRate={false}
+                                                       onSecondaryClick={() => handleConfirmAction(request.id, 'complete')}
+                                                       secondaryButtonText='Complete'
+                                                       data={request.offer}
+                                                       customUser={request.item?.user}
+                                                       onCardClick={() => navigate(`/request/${request.id}`, { state: { request } })}
+                                            />
+                                        );
+                                    }
+
+                                    // For completed or rejected status, show no buttons at all
+                                    if (isCompleted || isRejected) {
+                                        return (
+                                            <OfferCard key={request.id}
+                                                       withRate={false}
+                                                       data={request.offer}
+                                                       customUser={request.item?.user}
+                                                       onCardClick={() => navigate(`/request/${request.id}`, { state: { request } })}
+                                            />
+                                        );
+                                    }
+
+                                    // For pending status, show Accept/Decline buttons
                                     return (
                                         <OfferCard key={request.id}
                                                    withRate={false}
-                                                   onPrimaryClick={!isDisabled ? () => handleConfirmAction(request.id, 'reject') : undefined}
-                                                   primaryButtonText={status === 'rejected' ? 'Declined' : 'Decline'}
-                                                   onSecondaryClick={!isDisabled ? () => handleConfirmAction(request.id, 'accept') : undefined}
-                                                   secondaryButtonText={status === 'completed' || status === 'in_process' ? 'Accepted' : 'Accept'}
+                                                   onPrimaryClick={() => handleConfirmAction(request.id, 'reject')}
+                                                   primaryButtonText='Decline'
+                                                   onSecondaryClick={() => handleConfirmAction(request.id, 'accept')}
+                                                   secondaryButtonText='Accept'
                                                    data={request.offer}
                                                    customUser={request.item?.user}
                                                    onCardClick={() => navigate(`/request/${request.id}`, { state: { request } })}
@@ -223,21 +279,25 @@ export const Requests = () => {
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">
-                {confirmDialog.action === 'accept' ? 'Accept Request?' : 'Decline Request?'}
+                {confirmDialog.action === 'accept' ? 'Accept Request?' :
+                 confirmDialog.action === 'complete' ? 'Complete Delivery?' : 'Decline Request?'}
             </DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    {confirmDialog.action === 'accept' 
+                    {confirmDialog.action === 'accept'
                         ? 'Are you sure you want to accept this request? This will commit you to delivering the item.'
+                        : confirmDialog.action === 'complete'
+                        ? 'Are you sure you want to mark this delivery as complete? This will finalize the transaction.'
                         : 'Are you sure you want to decline this request? This action cannot be undone.'}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button title="Cancel" type="secondary" handleClick={() => handleConfirmDialogClose(false)} />
-                <Button 
-                    title={confirmDialog.action === 'accept' ? 'Accept' : 'Decline'} 
-                    type="primary" 
-                    handleClick={() => handleConfirmDialogClose(true)} 
+                <Button
+                    title={confirmDialog.action === 'accept' ? 'Accept' :
+                           confirmDialog.action === 'complete' ? 'Complete' : 'Decline'}
+                    type="primary"
+                    handleClick={() => handleConfirmDialogClose(true)}
                 />
             </DialogActions>
         </Dialog>

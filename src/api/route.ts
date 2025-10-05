@@ -99,8 +99,9 @@ export const getSentRequests = async () => {
 };
 
 // For requesters to perform actions on their sent requests (if needed in future)
-export const requestsAction = async (data: {request_id: string | number, action: 'accept' | 'reject'}) => {
-  return await api.post(`/flight-requests/action/`, data);
+export const requestsAction = async (data: {request_id: string | number, action: 'accept' | 'reject' | 'complete'}) => {
+  const endpoint = data.action === 'complete' ? '/flight-requests/complete/' : '/flight-requests/action/';
+  return await api.post(endpoint, data);
 };
 
 

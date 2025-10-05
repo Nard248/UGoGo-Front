@@ -52,22 +52,15 @@ export const Payout = () => {
             balance: userData.balance
         };
         localStorage.setItem("userDetails", JSON.stringify(userObject));
+        // Update balance state directly
+        setBalance(parseFloat(userData.balance) || 0);
         // Dispatch event to notify other components
         window.dispatchEvent(new Event('userDetailsUpdated'));
     }
 
     useEffect(() => {
-        userDetails()
-    }, []);
-
-    useEffect(() => {
-        const cachedUser = localStorage.getItem("userDetails");
-        if (cachedUser) {
-            const {balance} = JSON.parse(cachedUser);
-            setBalance(balance || 0);
-        }
-
-        getCards()
+        userDetails();
+        getCards();
     }, [])
 
     const openAddCardPopup = () => {
