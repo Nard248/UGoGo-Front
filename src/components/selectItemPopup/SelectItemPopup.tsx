@@ -4,6 +4,7 @@ import plusIcon from './../../assets/icons/plus.svg';
 import closeIcon from './../../assets/icons/closeIcon.svg';
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
+import { validateRequest } from "../../api/route";
 import './SelectItemPopup.scss';
 
 interface ISelectItemPopup {
@@ -14,6 +15,8 @@ interface ISelectItemPopup {
 export const SelectItemPopup: FC<ISelectItemPopup> = ({ data, onClose }) => {
     const navigate = useNavigate();
     const [selectedItem, setSelectedItem] = useState<number | null>(null);
+    const [isValidating, setIsValidating] = useState<boolean>(false);
+    const [validationError, setValidationError] = useState<string | null>(null);
 
     const handleCardClick = (id: number) => {
         if (id === selectedItem) {
@@ -21,12 +24,52 @@ export const SelectItemPopup: FC<ISelectItemPopup> = ({ data, onClose }) => {
             return;
         }
         setSelectedItem(id);
+        setValidationError(null);
     };
 
-    const onConfirm = () => {
+    const onConfirm = async () => {
         const item = data.find(item => item.id === selectedItem);
-        localStorage.setItem('selectedItem', JSON.stringify(item));
-        navigate('/payment');
+        const offerData = localStorage.getItem('offer');
+
+        if (!item || !offerData) {
+            setValidationError('Missing item or offer data');
+            return;
+        }
+
+        const offer = JSON.parse(offerData);
+        setIsValidating(true);
+        setValidationError(null);
+
+        try {
+            // Validate the request with backend
+            const response = await validateRequest({
+                offer_id: offer.id,
+                item_id: item.id
+            });
+
+            const validationData = response.data;
+
+            if (!validationData.valid) {
+                // Show validation errors
+                setValidationError(validationData.errors.join('. '));
+                setIsValidating(false);
+                return;
+            }
+
+            // Store validation data including calculated price
+            localStorage.setItem('selectedItem', JSON.stringify(item));
+            localStorage.setItem('validationData', JSON.stringify(validationData));
+
+            // Navigate to payment page
+            navigate('/payment');
+        } catch (error: any) {
+            console.error('Validation error:', error);
+            const errorMessage = error.response?.data?.errors?.join('. ') ||
+                                 error.response?.data?.error ||
+                                 'Failed to validate request. Please try again.';
+            setValidationError(errorMessage);
+            setIsValidating(false);
+        }
     };
 
     return (
@@ -79,7 +122,27 @@ export const SelectItemPopup: FC<ISelectItemPopup> = ({ data, onClose }) => {
                 </div>
 
                 <div className="selectItemPopup__footer">
-                    <Button title={'Confirm'} type={'primary'} handleClick={onConfirm} disabled={!selectedItem} />
+                    {validationError && (
+                        <div style={{
+                            width: '100%',
+                            padding: '1.2rem',
+                            marginBottom: '1.5rem',
+                            backgroundColor: '#FEE2E2',
+                            border: '1px solid #FCA5A5',
+                            borderRadius: '6px',
+                            color: '#991B1B',
+                            fontSize: '1.4rem',
+                            lineHeight: '1.5'
+                        }}>
+                            {validationError}
+                        </div>
+                    )}
+                    <Button
+                        title={isValidating ? 'Validating...' : 'Confirm'}
+                        type={'primary'}
+                        handleClick={onConfirm}
+                        disabled={!selectedItem || isValidating}
+                    />
                 </div>
             </div>
         </div>

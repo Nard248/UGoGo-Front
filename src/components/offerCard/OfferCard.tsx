@@ -172,17 +172,21 @@ export const OfferCard: FC<IOfferCard> = ({
         <div className="offerCard__space flex items-center justify-between">
           <span>Available space</span>
           <span>
-            {data.available_weight || "0"} kg, {data.available_space || "0"} m³
+            {data.available_weight || "0"} kg, {data.available_dimensions || "N/A"}
           </span>
         </div>
-        {/*<div className="offerCard__userActions">*/}
-        {/*    <button className="button">*/}
-        {/*        <img src={message} alt="Message Icon" />*/}
-        {/*    </button>*/}
-        {/*    <button className="button">*/}
-        {/*        <img src={moreBtn} alt="More buttons Icon" />*/}
-        {/*    </button>*/}
-        {/*</div>*/}
+        <div className="offerCard__pricing" style={{
+          padding: '1rem',
+          backgroundColor: '#F0F9FF',
+          borderRadius: '6px',
+          marginTop: '0.5rem',
+          fontSize: '1.2rem',
+          color: '#4A5568',
+          textAlign: 'center',
+          border: '1px solid #AEE6E6'
+        }}>
+          <strong>Pricing: $25/kg</strong> (min 1kg)
+        </div>
         <div
           className={classNames(
             `cardActions flex items-center mt-[3rem] ${

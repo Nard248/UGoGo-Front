@@ -144,7 +144,7 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
     return (
         <div className="search-bar">
             <div className="search-field">
-                <label>From (Optional)</label>
+                <label>From</label>
                 <Select
                     options={airports}
                     id="departure"
@@ -163,7 +163,7 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
             <div className="search__divider"></div>
 
             <div className="search-field">
-                <label>To (Optional)</label>
+                <label>To</label>
                 <Select
                     options={filteredToAirports}
                     id="destination"
@@ -209,7 +209,7 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
       </div> */
                 <div className="search-field">
                     <Label
-                        title="Arrival Date (Optional)"
+                        title="Arrival Date"
                         htmlFor="arrivalTime"
                         classnames="postOffer__label"
                     >

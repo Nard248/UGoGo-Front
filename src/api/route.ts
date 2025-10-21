@@ -144,3 +144,31 @@ export const updateProfile = async (data: {
 }) => {
   return await api.put(`/users/profile/edit/`, data);
 };
+
+// New Pricing & Validation Endpoints
+export const validateSpace = async (data: {
+  offer_id?: number;
+  item_id?: number;
+  space_dimensions?: string;
+  item_dimensions?: string;
+}) => {
+  return await api.post(`/flight-requests/validate/space/`, data);
+};
+
+export const calculatePrice = async (params: {
+  weight?: number;
+  item_id?: number;
+}) => {
+  if (params.weight !== undefined) {
+    return await api.get(`/flight-requests/validate/price/`, { params: { weight: params.weight } });
+  } else {
+    return await api.post(`/flight-requests/validate/price/`, { item_id: params.item_id });
+  }
+};
+
+export const validateRequest = async (data: {
+  offer_id: number;
+  item_id: number;
+}) => {
+  return await api.post(`/flight-requests/validate/request/`, data);
+};

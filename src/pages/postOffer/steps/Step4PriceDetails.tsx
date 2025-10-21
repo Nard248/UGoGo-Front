@@ -157,40 +157,7 @@ interface Props {
 const Step4PriceDetails: React.FC<Props> = ({
   offerFormData,
   setOfferFormData,
-  errors,
-  setErrors,
 }) => {
-  // Calculate the price range based on weight.
-  const pMin = 25 + (Number(offerFormData.available_weight?.value) || 0) * 2;
-  const pMax = Math.round(pMin * 1.5 * 100) / 100;
-
-  const handlePriceChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { id, value } = e.target;
-    const numericValue = Number(value);
-
-    // Update the form data with the new value
-    setOfferFormData((prev) => ({
-      ...prev,
-      [id]: { value, errorMessage: null },
-    }));
-
-    // Check if the input value is a valid number and within the allowed range
-    if (value !== "" && (isNaN(numericValue) || numericValue < pMin || numericValue > pMax)) {
-      setOfferFormData((prev) => ({
-        ...prev,
-        [id]: {
-          value,
-          errorMessage: `Price must be between $${pMin.toFixed(2)} and $${pMax.toFixed(2)}.`,
-        },
-      }));
-      setErrors((prevErrors) => ({ ...prevErrors, price: true }));
-    } else {
-      setErrors((prevErrors) => ({ ...prevErrors, price: false }));
-    }
-  };
-
   const handleDescriptionChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -204,32 +171,49 @@ const Step4PriceDetails: React.FC<Props> = ({
   return (
     <div className="step-price-details">
       <div className="step-body">
-        <Label title="Price ($)" htmlFor="price">
-          <div> {/* Added a div to wrap the children */}
-            <Input
-              id="price"
-              type="number"
-              placeholder={`$${pMin.toFixed(2)} – $${pMax.toFixed(2)}`}
-              value={offerFormData.price?.value || ""}
-              handleChange={handlePriceChange}
-              classnames={errors.price ? "error" : ""}
-            />
-            {offerFormData.price?.errorMessage && (
-              <span className="error-message">
-                {offerFormData.price.errorMessage}
-              </span>
-            )}
-          </div>
-        </Label>
+        {/* Pricing Information */}
+        <div className="pricing-info-box" style={{
+          padding: "2rem",
+          backgroundColor: "#F0F9FF",
+          borderRadius: "8px",
+          marginBottom: "2rem",
+          border: "1px solid #AEE6E6"
+        }}>
+          <h3 style={{
+            fontSize: "1.8rem",
+            fontWeight: "600",
+            color: "#1B3A4B",
+            marginBottom: "1rem"
+          }}>
+            Automatic Pricing System
+          </h3>
+          <p style={{
+            fontSize: "1.4rem",
+            color: "#4A5568",
+            lineHeight: "1.6",
+            marginBottom: "1rem"
+          }}>
+            Prices are automatically calculated based on item weight:
+          </p>
+          <ul style={{
+            fontSize: "1.4rem",
+            color: "#4A5568",
+            marginLeft: "2rem",
+            lineHeight: "2"
+          }}>
+            <li><strong>$25 per kilogram</strong> (minimum 1kg charge)</li>
+            <li>Example: 2.5kg item = $62.50</li>
+            <li>You receive <strong>90%</strong> of the delivery fee (10% platform commission)</li>
+          </ul>
+        </div>
 
-        <Label title="Notes" htmlFor="description">
+        <Label title="Notes (Optional)" htmlFor="description">
           <Input
             id="description"
             type="textarea"
-            placeholder="Add notes..."
+            placeholder="Add any special instructions or notes about your flight offer..."
             value={offerFormData.description?.value || ""}
             handleChange={handleDescriptionChange}
-            classnames={errors.description ? "error" : ""}
           />
         </Label>
       </div>

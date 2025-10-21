@@ -505,26 +505,50 @@ const {
             <div className="singleProductPage__notes__content">
               <div className="flex flex-col singleProductPage__flightItemsDetails">
                 <div className="singleProductPage__productInfo__header postOffer__header">
-                  <h3 className="singleProductPage__productInfo__header__title singleProductPage__title">Price Details</h3>
+                  <h3 className="singleProductPage__productInfo__header__title singleProductPage__title">Pricing Information</h3>
                 </div>
                 <div className="singleProductPage__flightItemsDetails__content">
-                  <div className="flex justify-between singleProductPage__flightItemsDetails__content__item">
-                    <span className="singleProductPage__flightItemsDetails__content__itemTitle">Delivery fee</span>
-                    <span className="singleProductPage__flightItemsDetails__content__itemValue">${price || 0}</span>
-                  </div>
-
-                  <div className="flex justify-between singleProductPage__flightItemsDetails__content__item">
-                    <span className="singleProductPage__flightItemsDetails__content__itemTitle">Commission fee</span>
-                    <span className="singleProductPage__flightItemsDetails__content__itemValue">$1</span>
-                  </div>
-
-                  <div className="flex justify-between singleProductPage__flightItemsDetails__content__itemTotal">
-                    <span className="singleProductPage__flightItemsDetails__content__itemTitle singleProductPage__flightItemsDetails__content__itemTotal__title">
-                      Total
-                    </span>
-                    <span className="singleProductPage__flightItemsDetails__content__itemValue">
-                      ${(price ? Number(price) + 1 : 1).toFixed(2)}
-                    </span>
+                  <div style={{
+                    padding: '1.5rem',
+                    backgroundColor: '#F0F9FF',
+                    borderRadius: '8px',
+                    marginBottom: '1.5rem',
+                    border: '1px solid #AEE6E6'
+                  }}>
+                    <h4 style={{
+                      fontSize: '1.6rem',
+                      fontWeight: '600',
+                      color: '#1B3A4B',
+                      marginBottom: '1rem'
+                    }}>
+                      Automatic Pricing
+                    </h4>
+                    <p style={{
+                      fontSize: '1.4rem',
+                      color: '#4A5568',
+                      lineHeight: '1.6',
+                      marginBottom: '0.8rem'
+                    }}>
+                      The price for this delivery will be automatically calculated based on your item's weight:
+                    </p>
+                    <ul style={{
+                      fontSize: '1.4rem',
+                      color: '#4A5568',
+                      marginLeft: '2rem',
+                      lineHeight: '1.8'
+                    }}>
+                      <li><strong>$25 per kilogram</strong> (minimum 1kg charge)</li>
+                      <li>Platform commission: 10%</li>
+                      <li>Courier receives: 90% of delivery fee</li>
+                    </ul>
+                    <p style={{
+                      fontSize: '1.3rem',
+                      color: '#6B7280',
+                      marginTop: '1rem',
+                      fontStyle: 'italic'
+                    }}>
+                      Example: A 2.5kg item = $62.50 total
+                    </p>
                   </div>
                 </div>
               </div>

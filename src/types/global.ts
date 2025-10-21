@@ -35,8 +35,9 @@ export interface IOfferCreate {
   available_dimensions?: string;
   available_weight: number;
   available_space?: number;
-  price: number;
+  price?: number; // Optional - backend will auto-calculate based on item weight
   notes?: string;
+  is_fragile?: boolean;
 }
 
 export interface IOfferCreateForm {
@@ -52,7 +53,7 @@ export interface IOfferCreateForm {
   available_dimensions: IValidationModel;
   available_weight: IValidationModel;
   available_space?: IValidationModel;
-  price: IValidationModel;
+  price?: IValidationModel; // Optional - no longer used in new pricing system
   notes?: IValidationModel;
   description?: IValidationModel;
   is_fragile?: boolean;

@@ -39,19 +39,16 @@ export const Footer: FC = () => {
                             {
                                 title: "Product",
                                 links: [
-                                    { label: "Features", path: "/features" },
-                                    { label: "Pricing", path: "/pricing" },
                                     { label: "Send an item", path: "/add-item" },
-                                    { label: "Truck item", path: "/truck-item" },
+                                    { label: "Truck item", path: "/items" },
                                     { label: "Post an offer", path: "/post-offer" },
-                                    { label: "Manage offer", path: "/manage-offer" },
+                                    { label: "Manage offer", path: "/requests" },
                                 ],
                             },
                             {
                                 title: "Company",
                                 links: [
                                     { label: "About", path: "/about" },
-                                    { label: "Contact us", path: "/contact-us" },
                                     { label: "Careers", path: "/careers" },
                                     { label: "Culture", path: "/culture" },
                                     { label: "Blog", path: "/blog" },
@@ -60,7 +57,7 @@ export const Footer: FC = () => {
                             {
                                 title: "Support",
                                 links: [
-                                    { label: "Getting started", path: "/getting-started" },
+                                    { label: "Contact us", path: "/contact-us" },
                                     { label: "Help center", path: "/help-center" },
                                     { label: "Chat support", path: "/chat-support" },
                                 ],
@@ -83,9 +80,9 @@ export const Footer: FC = () => {
                         <h4>Contact us</h4>
                         <ul className="contact-info">
                             {[
-                                { src: EmailIcon, text: "contact@company.com", href: "mailto:contact@company.com" },
-                                { src: PhoneIcon, text: "(414) 687 - 5892", href: "tel:+14146875892" },
-                                { src: LocationIcon, text: "794 Mcallister St, San Francisco, 94102" },
+                                { src: EmailIcon, text: "support@ugogo.io", href: "mailto:support@ugogo.io" },
+                                { src: PhoneIcon, text: "+1(839) 388-2610", href: "tel:+18393882610" },
+                                { src: LocationIcon, text: "131 Continental Dr Suite 305 Newark, DE, 19713 US" },
                             ].map((item, index) => (
                                 <li key={index}>
                                     <img src={item.src} alt="" />

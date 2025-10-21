@@ -74,7 +74,8 @@ const PostOffer: React.FC = () => {
         return !!weight && isDimensionsFilled;
 
       case 4:
-        return !!offerFormData.price?.value;
+        // Step 4 now only has optional notes - always valid
+        return true;
       default:
         return true;
     }
@@ -106,7 +107,8 @@ const PostOffer: React.FC = () => {
       available_dimensions: `${offerFormData.available_dimensions?.value?.height}x${offerFormData.available_dimensions?.value?.length}x${offerFormData.available_dimensions?.value?.width}`,
       available_space: 1,
       available_weight: offerFormData.available_weight?.value,
-      price: offerFormData.price?.value,
+      // Price is no longer required - backend will auto-calculate based on item weight
+      notes: offerFormData.description?.value || "",
       is_fragile: offerFormData.is_fragile,
     };
 
@@ -135,9 +137,9 @@ const PostOffer: React.FC = () => {
   const getStepTitle = () => {
     const titles = {
       1: "Flight Details",
-      2: "Item Categories", 
+      2: "Item Categories",
       3: "Space & Weight",
-      4: "Pricing"
+      4: "Additional Information"
     };
     return titles[currentStep as keyof typeof titles];
   };

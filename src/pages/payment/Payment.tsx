@@ -15,10 +15,12 @@ export const Payment = () => {
     const [isError, setIsError] = useState(false);
     const [item, setItem] = useState(null);
     const [offerData, setOfferData] = useState<any>(null);
+    const [validationData, setValidationData] = useState<any>(null);
 
     useEffect(() => {
         const storageData = localStorage.getItem('selectedItem');
         const offerStorageData = localStorage.getItem('offer');
+        const validationStorageData = localStorage.getItem('validationData');
 
         if (!storageData) return;
 
@@ -28,6 +30,11 @@ export const Payment = () => {
         if (offerStorageData) {
             const offer = JSON.parse(offerStorageData);
             setOfferData(offer);
+        }
+
+        if (validationStorageData) {
+            const validation = JSON.parse(validationStorageData);
+            setValidationData(validation);
         }
     }, []);
 
@@ -80,19 +87,71 @@ export const Payment = () => {
                             </h3>
                         </div>
                         <div className="payment-page__card-body">
-                            <div className="payment-page__price-row">
-                                <span>Delivery fee</span>
-                                <span>${offerData?.price || 0}</span>
-                            </div>
-                            <div className="payment-page__price-row">
-                                <span>Commission fee</span>
-                                <span>$1</span>
-                            </div>
-                            <Divider size={'small'} appearance={'neutral'}/>
-                            <div className="payment-page__price-row payment-page__price-row--total">
-                                <span>Total</span>
-                                <span>${(offerData?.price ? Number(offerData.price) + 1 : 1).toFixed(2)}</span>
-                            </div>
+                            {validationData && validationData.price_calculation ? (
+                                <>
+                                    <div className="payment-page__price-row" style={{
+                                        fontSize: '1.3rem',
+                                        color: '#6B7280',
+                                        marginBottom: '0.8rem'
+                                    }}>
+                                        <span>Weight: {validationData.price_calculation.weight}kg × ${validationData.price_calculation.base_rate}/kg</span>
+                                    </div>
+                                    <div className="payment-page__price-row">
+                                        <span>Delivery fee</span>
+                                        <span>${validationData.price_calculation.total_price}</span>
+                                    </div>
+                                    <div className="payment-page__price-row">
+                                        <span>Platform commission (10%)</span>
+                                        <span>${validationData.price_calculation.platform_commission}</span>
+                                    </div>
+                                    <Divider size={'small'} appearance={'neutral'}/>
+                                    <div className="payment-page__price-row payment-page__price-row--total">
+                                        <span>Total</span>
+                                        <span>{validationData.price_calculation.display.total}</span>
+                                    </div>
+                                    <div className="payment-page__price-row" style={{
+                                        fontSize: '1.3rem',
+                                        color: '#6B7280',
+                                        marginTop: '0.8rem'
+                                    }}>
+                                        <span>Courier receives: {validationData.price_calculation.display.courier}</span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {(() => {
+                                        const deliveryFee = Number(offerData?.price) || 0;
+                                        const commission = deliveryFee * 0.10; // 10% commission
+                                        const total = deliveryFee;
+                                        const courierReceives = deliveryFee * 0.90; // Courier gets 90%
+
+                                        return (
+                                            <>
+                                                <div className="payment-page__price-row">
+                                                    <span>Delivery fee</span>
+                                                    <span>${deliveryFee.toFixed(2)}</span>
+                                                </div>
+                                                <div className="payment-page__price-row">
+                                                    <span>Platform commission (10%)</span>
+                                                    <span>${commission.toFixed(2)}</span>
+                                                </div>
+                                                <Divider size={'small'} appearance={'neutral'}/>
+                                                <div className="payment-page__price-row payment-page__price-row--total">
+                                                    <span>Total</span>
+                                                    <span>${total.toFixed(2)}</span>
+                                                </div>
+                                                <div className="payment-page__price-row" style={{
+                                                    fontSize: '1.3rem',
+                                                    color: '#6B7280',
+                                                    marginTop: '0.8rem'
+                                                }}>
+                                                    <span>Courier receives: ${courierReceives.toFixed(2)}</span>
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className="payment-page__card payment-page__cancellation">
