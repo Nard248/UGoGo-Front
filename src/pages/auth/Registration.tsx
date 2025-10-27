@@ -169,22 +169,6 @@ export const Registration = () => {
                                 Settings.
                             </label>
                         </div>
-
-                        <div className="dividerContainer">
-                            <div className="login__divider"/>
-                            <span className="orText">Or</span>
-                            <div className="login__divider"/>
-                        </div>
-
-                        <button className="socialButton">
-                            Sign in with Google
-                        </button>
-                        <button className="socialButton">
-                            Sign in with Facebook
-                        </button>
-                        <button className="socialButton">
-                            Sign in with Apple
-                        </button>
                     </div>
                 </div>
         </Suspense>

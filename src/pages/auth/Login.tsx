@@ -156,7 +156,31 @@ export const Login: FC = () => {
                 setLoginError('Invalid email or password. Please try again.');
             }
         } catch (error: any) {
-            setLoginError(error?.response?.data?.message || 'Invalid email or password. Please try again.');
+            console.error('Login error:', error);
+
+            // Extract error message from various possible response structures
+            let errorMessage = 'Invalid email or password. Please try again.';
+
+            if (error?.response?.data) {
+                const errorData = error.response.data;
+                if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (errorData.detail) {
+                    errorMessage = errorData.detail;
+                } else if (errorData.error) {
+                    errorMessage = errorData.error;
+                } else if (errorData.non_field_errors) {
+                    errorMessage = Array.isArray(errorData.non_field_errors)
+                        ? errorData.non_field_errors[0]
+                        : errorData.non_field_errors;
+                }
+            } else if (error?.message) {
+                errorMessage = error.message;
+            }
+
+            setLoginError(errorMessage);
         }
     }
 
@@ -222,22 +246,6 @@ export const Login: FC = () => {
                             </label>
                             <NavLink to="/forgot-password" className="forgotPasswordLink">Forgot password?</NavLink>
                         </div>
-
-                        <div className="dividerContainer">
-                            <div className="login__divider" />
-                            <span className="orText">Or</span>
-                            <div className="login__divider" />
-                        </div>
-
-                        <button className="socialButton">
-                            Sign in with Google
-                        </button>
-                        <button className="socialButton">
-                            Sign in with Facebook
-                        </button>
-                        <button className="socialButton">
-                            Sign in with Apple
-                        </button>
                     </div>
                 </div>
             </Suspense>
