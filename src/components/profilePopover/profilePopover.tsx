@@ -17,6 +17,7 @@ import sentIcon from "../../assets/icons/airplaneIcon.svg";
 import sentHoverIcon from "../../assets/icons/airplane.svg";
 import warning from "../../assets/icons/warning.svg";
 import { logout } from "../../api/route";
+import { useProfilePicture } from "../../hooks/useProfilePicture";
 import {User} from "../../types/global";
 
 
@@ -39,6 +40,9 @@ export const ProfilePopover: FC = () => {
   const [lastName, setLastName] = useState("");
   const [verificationStatus, setVerificationStatus] = useState<string>("");
   const [isPassportUploaded, setIsPassportUploaded] = useState<boolean>(false);
+
+  // Profile picture hook
+  const { pictureUrl, loading: pictureLoading } = useProfilePicture();
 
   const loadUserData = () => {
     const cachedUser = localStorage.getItem("userDetails");
@@ -140,6 +144,8 @@ export const ProfilePopover: FC = () => {
                 lastName={lastName}
                 size="medium"
                 className="profile__avatar__image"
+                profilePictureUrl={pictureUrl}
+                loading={pictureLoading}
               />
             </div>
             <div className="profile__avatar__details">

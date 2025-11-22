@@ -95,6 +95,7 @@ export const OfferCard: FC<IOfferCard> = ({
               firstName={displayUser?.first_name || displayUser?.full_name || "User"}
               lastName={displayUser?.last_name}
               size="small"
+              profilePictureUrl={displayUser?.profile_picture_url}
             />
             <span className="text-[#808080]">
               {displayUser?.first_name && displayUser?.last_name

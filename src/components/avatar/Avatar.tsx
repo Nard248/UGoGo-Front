@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './Avatar.scss';
 
 interface AvatarProps {
@@ -6,6 +6,10 @@ interface AvatarProps {
   lastName?: string;
   size?: 'small' | 'medium' | 'large';
   className?: string;
+  profilePictureUrl?: string | null;
+  editable?: boolean;
+  onImageUpload?: (file: File) => void;
+  loading?: boolean;
 }
 
 // Map letters to colors for consistent avatar colors
@@ -28,17 +32,88 @@ export const Avatar: React.FC<AvatarProps> = ({
   firstName,
   lastName,
   size = 'medium',
-  className = ''
+  className = '',
+  profilePictureUrl = null,
+  editable = false,
+  onImageUpload,
+  loading = false
 }) => {
   const initials = `${firstName.charAt(0).toUpperCase()}${lastName ? lastName.charAt(0).toUpperCase() : ''}`;
   const backgroundColor = getColorFromLetter(firstName.charAt(0));
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    if (editable && !loading) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    onImageUpload?.(file);
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <div
-      className={`avatar avatar--${size} ${className}`}
-      style={{ backgroundColor }}
+      className={`avatar avatar--${size} ${className} ${editable ? 'avatar--editable' : ''} ${loading ? 'avatar--loading' : ''}`}
+      style={!profilePictureUrl ? { backgroundColor } : undefined}
+      onClick={handleClick}
     >
-      <span className="avatar__initials">{initials}</span>
+      {loading ? (
+        <div className="avatar__loading" />
+      ) : profilePictureUrl ? (
+        <>
+          <img
+            src={profilePictureUrl}
+            alt={`${firstName} ${lastName || ''}`}
+            className="avatar__image"
+          />
+          {editable && (
+            <div className="avatar__overlay">
+              <span className="avatar__edit-icon">📷</span>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <span className="avatar__initials">{initials}</span>
+          {editable && (
+            <div className="avatar__overlay">
+              <span className="avatar__edit-icon">📷</span>
+            </div>
+          )}
+        </>
+      )}
+
+      {editable && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="avatar__file-input"
+        />
+      )}
     </div>
   );
 };

@@ -196,6 +196,7 @@ export const RequestDetails: FC = () => {
                 firstName={requester?.first_name || requester?.full_name || "User"}
                 lastName={requester?.last_name}
                 size="medium"
+                profilePictureUrl={requester?.profile_picture_url}
               />
               <div className="flex flex-col gap-2">
                 <h4 className="text-[1.8rem] font-semibold">

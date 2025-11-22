@@ -172,3 +172,21 @@ export const validateRequest = async (data: {
 }) => {
   return await api.post(`/flight-requests/validate/request/`, data);
 };
+
+// Profile Picture Management
+export const getProfilePicture = async () => {
+  return await api.get(`/users/profile/picture/`);
+};
+
+export const uploadProfilePicture = async (file: File) => {
+  const formData = new FormData();
+  formData.append('profile_picture', file);
+
+  return await api.post(`/users/profile/picture/upload/`, formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+};
+
+export const deleteProfilePicture = async () => {
+  return await api.delete(`/users/profile/picture/delete/`);
+};

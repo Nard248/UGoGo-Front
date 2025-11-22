@@ -57,6 +57,7 @@ export const ItemCard: FC<IItemCard> = ({
           <Avatar
             firstName={data?.user?.full_name || "User"}
             size="small"
+            profilePictureUrl={data?.user?.profile_picture_url}
           />
           <span className="text-[#808080]">
             {data?.user?.full_name || "Unknown User"}

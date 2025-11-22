@@ -132,6 +132,7 @@ import classNames from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
 import message from './../assets/icons/message.svg'
 import { useChat } from "../stores/ChatContext";
+import { useProfilePicture } from "../hooks/useProfilePicture";
 import { User } from "../types/global";
 import "./Header.scss";
 
@@ -153,6 +154,9 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
   const totalUnread = state && state.unreadCounts
     ? Object.values(state.unreadCounts).reduce((sum, count) => sum + count, 0)
     : 0;
+
+  // Profile picture hook
+  const { pictureUrl, loading: pictureLoading } = useProfilePicture();
 
   const loadUserData = () => {
     const cachedUser = localStorage.getItem("userDetails");
@@ -229,6 +233,8 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
               firstName={firstName || "User"}
               lastName={lastName}
               size="small"
+              profilePictureUrl={pictureUrl}
+              loading={pictureLoading}
             />
             {isPopoverOpened && <ProfilePopover />}
           </div>

@@ -92,6 +92,7 @@ export const OfferCardMini: FC<IOfferCardMini> = ({ data }) => {
           <Avatar
             firstName={user_flight?.user?.full_name || "User"}
             size="small"
+            profilePictureUrl={user_flight?.user?.profile_picture_url}
           />
           <span className="offerCardMini__username">{user_flight?.user?.full_name || "Unknown"}</span>
         </div>

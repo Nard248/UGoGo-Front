@@ -5,6 +5,7 @@ import { Input } from "../../components/input/Input";
 import { Label } from "../../components/label/Label";
 import { Button } from "../../components/button/Button";
 import { Avatar } from "../../components/avatar/Avatar";
+import { useProfilePicture } from "../../hooks/useProfilePicture";
 import { getUserDetails, updateProfile } from "../../api/route";
 import { useNavigate } from "react-router-dom";
 import './AddProfileInfo.scss';
@@ -37,6 +38,14 @@ export const AddProfileInfo = () => {
   });
 
   const [formData, setFormData] = useState<UserProfile>(profile);
+
+  // Profile picture hook
+  const {
+    pictureUrl,
+    loading: pictureLoading,
+    uploadPicture,
+    deletePicture
+  } = useProfilePicture();
 
   useEffect(() => {
     loadUserProfile();
@@ -133,6 +142,24 @@ export const AddProfileInfo = () => {
     }
   };
 
+  const handleImageUpload = async (file: File) => {
+    try {
+      // If there's already a picture, delete it first
+      if (pictureUrl) {
+        console.log('Deleting existing profile picture before upload...');
+        await deletePicture();
+      }
+
+      // Upload the new picture
+      await uploadPicture(file);
+      setSuccess('Profile picture updated successfully!');
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError('Failed to upload profile picture');
+      console.error('Upload failed:', err);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-[2.4rem] px-[4rem] md:px-24">
       <h3 className="text-[3.2rem] font-bold text-[#1B3A4B]">
@@ -140,11 +167,36 @@ export const AddProfileInfo = () => {
       </h3>
       <div className="profile">
         <div className="profile__avatar">
-          <Avatar
-            firstName={profile.first_name || 'User'}
-            lastName={profile.last_name}
-            size="medium"
-          />
+          <div className="flex flex-col items-center gap-[0.8rem]">
+            <Avatar
+              firstName={profile.first_name || 'User'}
+              lastName={profile.last_name}
+              size="medium"
+              profilePictureUrl={pictureUrl}
+              editable={true}
+              onImageUpload={handleImageUpload}
+              loading={pictureLoading}
+            />
+            {pictureUrl && !pictureLoading && (
+              <button
+                onClick={async () => {
+                  if (window.confirm('Are you sure you want to remove your profile picture?')) {
+                    try {
+                      await deletePicture();
+                      setSuccess('Profile picture removed successfully!');
+                      setTimeout(() => setSuccess(null), 3000);
+                    } catch (err) {
+                      setError('Failed to remove profile picture');
+                      console.error('Delete failed:', err);
+                    }
+                  }
+                }}
+                className="text-[1.2rem] text-red-600 hover:text-red-800 underline bg-transparent border-none cursor-pointer"
+              >
+                Remove Photo
+              </button>
+            )}
+          </div>
           <div className="profile__avatar__details">
             <div className="profile__avatar__details__name">
               {profile.first_name} {profile.last_name}
