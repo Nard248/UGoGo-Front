@@ -8,10 +8,12 @@ import {Loading} from "../../components/loading/Loading";
 import {chatAPI} from "../../api/chat";
 import WebSocketService from "../../services/websocket.service";
 
-export const PaymentConfirmation = ({isError = false}: {isError?: boolean}) => {
+export const PaymentConfirmation = ({isError: initialError = false}: {isError?: boolean}) => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [isLoading, setIsLoading] = useState(true);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(initialError);
     const messageSentRef = useRef(false);
 
     const sendAutomaticMessage = async () => {
@@ -67,40 +69,82 @@ export const PaymentConfirmation = ({isError = false}: {isError?: boolean}) => {
     };
 
     const getConfirmation = async (session_id: string) => {
-        const data = await confirmSession({session_id});
-        const success = data.data.status === 'success';
+        try {
+            const data = await confirmSession({session_id});
+            const success = data.data.status === 'success';
 
-        setIsSuccess(success);
+            setIsSuccess(success);
+            if (!success) {
+                setIsError(true);
+            }
 
-        // Send automatic message if payment was successful
-        if (success) {
-            await sendAutomaticMessage();
+            // Send automatic message if payment was successful
+            if (success) {
+                await sendAutomaticMessage();
+            }
+        } catch (error) {
+            console.error('Payment confirmation failed:', error);
+            setIsError(true);
+        } finally {
+            setIsLoading(false);
         }
     }
 
     useEffect(() => {
-        if (isError) return;
+        if (initialError) {
+            setIsLoading(false);
+            setIsError(true);
+            return;
+        }
 
         const session_id = searchParams.get('session_id');
-        if (!session_id) return;
+        if (!session_id) {
+            setIsLoading(false);
+            setIsError(true);
+            return;
+        }
         getConfirmation(session_id);
     }, [])
 
-    return (
-        !isError && !isSuccess ?
-            <Loading />
-            :
-            <div className="flex flex-col items-center my-0 mx-auto">
-                <div className="flex bg-[#73B2B2] rounded-full w-[7.2rem] h-[7.2rem] mb-[1.3rem]">
-                    <img src={isError ? warning : checkIcon} alt="Check icon"/>
-                </div>
-                <h2 className="text-[2.8rem] font-semibold mb-[1.1rem]">
-                    Payment Successful
-                </h2>
-                <span className="text-[2.2rem] font-medium mb-[3.9rem]">
-                    Thank you for trusting us!
+    if (isLoading) {
+        return (
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "60vh",
+                gap: "2rem"
+            }}>
+                <Loading />
+                <span style={{ fontSize: "1.6rem", color: "#666" }}>
+                    Confirming your payment...
                 </span>
-                <Button title={'Back to the homepage'} type={'primary'} handleClick={() => navigate('/')} />
             </div>
-    )
+        );
+    }
+
+    return (
+        <div className="flex flex-col items-center my-0 mx-auto" style={{ paddingTop: "8rem" }}>
+            <div
+                className="flex items-center justify-center rounded-full w-[7.2rem] h-[7.2rem] mb-[1.3rem]"
+                style={{ backgroundColor: isError ? "#FEE2E2" : "#73B2B2" }}
+            >
+                <img src={isError ? warning : checkIcon} alt={isError ? "Error icon" : "Success icon"}/>
+            </div>
+            <h2 className="text-[2.8rem] font-semibold mb-[1.1rem]">
+                {isError ? "Payment Failed" : "Payment Successful"}
+            </h2>
+            <span className="text-[2.2rem] font-medium mb-[3.9rem]" style={{ color: "#666", textAlign: "center" }}>
+                {isError
+                    ? "Something went wrong. Please try again."
+                    : "Thank you for trusting us!"}
+            </span>
+            <Button
+                title={isError ? 'Try Again' : 'Back to the homepage'}
+                type={'primary'}
+                handleClick={() => navigate(isError ? '/offers' : '/')}
+            />
+        </div>
+    );
 }

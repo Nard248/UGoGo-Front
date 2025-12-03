@@ -219,10 +219,30 @@ import { OfferDetails } from "../../components/offerDetails/OfferDetails";
 import packageIcon from "./../../assets/icons/package.svg";
 import { Button } from "../../components/button/Button";
 import { getItems, getSingleProduct } from "../../api/route";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import "./SingleProductPage.scss";
 import { createPortal } from "react-dom";
 import { SelectItemPopup } from "../../components/selectItemPopup/SelectItemPopup";
+import { Tooltip } from "@mui/material";
+import { Loading } from "../../components/loading/Loading";
+
+const parseAndCalculateVolume = (dimensions: string | undefined) => {
+  if (!dimensions) return null;
+
+  const parts = dimensions.split("x").map((part) => parseFloat(part.trim()));
+
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+
+  const [height, length, width] = parts;
+  const volumeCm3 = height * length * width;
+  const volumeM3 = volumeCm3 / 1_000_000;
+
+  return { volumeCm3, volumeM3, height, length, width };
+};
+
+const formatVolumeCm3 = (volume: number) => {
+  return volume >= 1000 ? volume.toLocaleString() : volume.toString();
+};
 
 interface OfferDataType {
   id: number;
@@ -230,6 +250,7 @@ interface OfferDataType {
   price: string;
   available_space: string;
   available_weight: string;
+  available_dimensions?: string;
   departure_datetime: string;
   arrival_datetime: string;
   notes?: string;
@@ -389,7 +410,19 @@ export const SingleProductPage: FC = () => {
   };
 
   if (!offerData) {
-    return <div className="singleProductPage px-16">Loading offer data...</div>;
+    return (
+      <div className="singleProductPage px-16" style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "50vh",
+        gap: "2rem"
+      }}>
+        <Loading />
+        <span style={{ fontSize: "1.4rem", color: "#666" }}>Loading offer data...</span>
+      </div>
+    );
   }
 
   const {
@@ -439,7 +472,29 @@ const {
                   Available space for packages
                 </div>
                 <div className="singleProductPage__productInfo__table__item__info">
-                  {available_weight || "N/A"} kg / {available_space || "N/A"} m³
+                  {available_weight || "N/A"} kg /{" "}
+                  {(() => {
+                    const volumeData = parseAndCalculateVolume(offerData.available_dimensions);
+                    if (volumeData) {
+                      return (
+                        <Tooltip
+                          title={
+                            <>
+                              <div>{volumeData.volumeM3.toFixed(4)} m³</div>
+                              <div>{volumeData.height} x {volumeData.length} x {volumeData.width} cm</div>
+                            </>
+                          }
+                          arrow
+                          placement="top"
+                        >
+                          <span style={{ cursor: "help", borderBottom: "1px dotted #666" }}>
+                            {formatVolumeCm3(volumeData.volumeCm3)} cm³
+                          </span>
+                        </Tooltip>
+                      );
+                    }
+                    return `${available_space || "N/A"} m³`;
+                  })()}
                 </div>
               </div>
 

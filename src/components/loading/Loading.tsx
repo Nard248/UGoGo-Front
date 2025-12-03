@@ -1,7 +1,11 @@
 import './Loading.scss'
 
-export const Loading = () => {
+interface LoadingProps {
+    centered?: boolean;
+}
+
+export const Loading = ({ centered = false }: LoadingProps) => {
     return (
-            <div className="spinner"></div>
+        <div className={`spinner ${centered ? 'spinner--centered' : ''}`}></div>
     )
 }

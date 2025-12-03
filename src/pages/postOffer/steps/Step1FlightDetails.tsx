@@ -91,7 +91,16 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
             InputLabelProps={{ shrink: true }}
             value={values.departureDate}
             onChange={(e) => handleChange("departureDate", e.target.value)}
-            inputProps={{ min: dayjs().format("YYYY-MM-DDTHH:mm") }}
+            inputProps={{
+              min: dayjs().format("YYYY-MM-DDTHH:mm"),
+              readOnly: true,
+              style: { cursor: "pointer" },
+            }}
+            onClick={(e) => {
+              const input = e.currentTarget.querySelector("input");
+              if (input) input.showPicker();
+            }}
+            sx={{ "& input": { cursor: "pointer" } }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -122,7 +131,14 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
                     .add(1, "hour")
                     .format("YYYY-MM-DDTHH:mm")
                 : dayjs().add(1, "hour").format("YYYY-MM-DDTHH:mm"),
+              readOnly: true,
+              style: { cursor: "pointer" },
             }}
+            onClick={(e) => {
+              const input = e.currentTarget.querySelector("input");
+              if (input) input.showPicker();
+            }}
+            sx={{ "& input": { cursor: "pointer" } }}
           />
         </Grid>
       </Grid>

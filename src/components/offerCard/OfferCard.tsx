@@ -1,6 +1,6 @@
 import { FC } from "react";
 import classNames from "classnames";
-import { Box, Rating } from "@mui/material";
+import { Rating, Tooltip } from "@mui/material";
 import { Avatar } from "../avatar/Avatar";
 import offerCardImage from "./../../assets/images/offer.svg";
 import airplaneDark from "./../../assets/icons/airplaneDark.svg";
@@ -33,6 +33,34 @@ const formatTime = (date: Date) => {
     .getMinutes()
     .toString()
     .padStart(2, "0")}`;
+};
+
+const parseAndCalculateVolume = (dimensions: string | undefined) => {
+  if (!dimensions) return null;
+
+  // Parse dimensions string (format: "HxLxW" e.g., "30x40x50")
+  const parts = dimensions.split("x").map((part) => parseFloat(part.trim()));
+
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+
+  const [height, length, width] = parts;
+  const volumeCm3 = height * length * width;
+  const volumeM3 = volumeCm3 / 1_000_000; // Convert cm³ to m³
+
+  return {
+    volumeCm3,
+    volumeM3,
+    height,
+    length,
+    width,
+  };
+};
+
+const formatVolumeCm3 = (volume: number) => {
+  if (volume >= 1000) {
+    return volume.toLocaleString();
+  }
+  return volume.toString();
 };
 
 export const OfferCard: FC<IOfferCard> = ({
@@ -173,7 +201,29 @@ export const OfferCard: FC<IOfferCard> = ({
         <div className="offerCard__space flex items-center justify-between">
           <span>Available space</span>
           <span>
-            {data.available_weight || "0"} kg, {data.available_dimensions || "N/A"}
+            {data.available_weight || "0"} kg,{" "}
+            {(() => {
+              const volumeData = parseAndCalculateVolume(data.available_dimensions);
+              if (volumeData) {
+                return (
+                  <Tooltip
+                    title={
+                      <>
+                        <div>{volumeData.volumeM3.toFixed(4)} m³</div>
+                        <div>{volumeData.height} x {volumeData.length} x {volumeData.width} cm</div>
+                      </>
+                    }
+                    arrow
+                    placement="top"
+                  >
+                    <span style={{ cursor: "help", borderBottom: "1px dotted #666" }}>
+                      {formatVolumeCm3(volumeData.volumeCm3)} cm³
+                    </span>
+                  </Tooltip>
+                );
+              }
+              return data.available_dimensions || "N/A";
+            })()}
           </span>
         </div>
         <div className="offerCard__pricing" style={{

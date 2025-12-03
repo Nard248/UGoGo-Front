@@ -45,9 +45,11 @@ api.interceptors.response.use(
         }
 
         // Try to refresh the access token
-        const { data } = await api.post("/users/token/refresh/", {
-          refresh: refreshToken,
-        });
+        // Use plain axios (not api) to avoid interceptor loop
+        const { data } = await axios.post(
+          `${api.defaults.baseURL}/users/token/refresh/`,
+          { refresh: refreshToken }
+        );
 
         // Save new tokens
         localStorage.setItem("access", data.access);
