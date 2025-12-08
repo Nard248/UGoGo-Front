@@ -1,10 +1,34 @@
 import { useState, useEffect } from 'react';
-import { getProfilePicture, uploadProfilePicture, deleteProfilePicture } from '../api/route';
+import { getProfilePicture, uploadProfilePicture, deleteProfilePicture, getUserDetails } from '../api/route';
 
 // Global cache to prevent multiple API calls
 let cachedPictureUrl: string | null | undefined = undefined; // undefined = not fetched yet, null = no picture
 let fetchPromise: Promise<void> | null = null;
 const subscribers = new Set<(url: string | null, loading: boolean) => void>();
+
+// Helper to refresh user details in localStorage after profile picture changes
+const refreshUserDetails = async () => {
+  try {
+    const userData = await getUserDetails();
+    if (userData) {
+      const userObject = {
+        id: userData.id,
+        email: userData.email,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        balance: userData.balance,
+        profile_picture_url: userData.profile_picture_url,
+        passport_verification_status: userData.passport_verification_status,
+        is_passport_uploaded: userData.is_passport_uploaded,
+      };
+      localStorage.setItem("userDetails", JSON.stringify(userObject));
+      // Notify other components that user details have been updated
+      window.dispatchEvent(new Event('userDetailsUpdated'));
+    }
+  } catch (error) {
+    console.error('Failed to refresh user details:', error);
+  }
+};
 
 const fetchPictureFromAPI = async () => {
   if (fetchPromise) {
@@ -82,6 +106,9 @@ export const useProfilePicture = () => {
       cachedPictureUrl = url;
       subscribers.forEach(callback => callback(url, false));
 
+      // Refresh user details in localStorage
+      await refreshUserDetails();
+
       return response.data;
     } catch (err: any) {
       setError(err.response?.data?.error || 'Upload failed');
@@ -100,6 +127,9 @@ export const useProfilePicture = () => {
       // Update cache and notify all subscribers
       cachedPictureUrl = null;
       subscribers.forEach(callback => callback(null, false));
+
+      // Refresh user details in localStorage
+      await refreshUserDetails();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Delete failed');
       throw err;

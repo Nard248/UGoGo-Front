@@ -2,11 +2,9 @@ import React from "react";
 import {
   TextField,
   Grid,
-  Typography,
   Box,
   Select,
   MenuItem,
-  Button,
 } from "@mui/material";
 import dayjs from "dayjs";
 import "./Steps.scss";
@@ -91,16 +89,16 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
             InputLabelProps={{ shrink: true }}
             value={values.departureDate}
             onChange={(e) => handleChange("departureDate", e.target.value)}
+            onKeyDown={(e) => e.preventDefault()}
             inputProps={{
               min: dayjs().format("YYYY-MM-DDTHH:mm"),
-              readOnly: true,
               style: { cursor: "pointer" },
             }}
             onClick={(e) => {
               const input = e.currentTarget.querySelector("input");
               if (input) input.showPicker();
             }}
-            sx={{ "& input": { cursor: "pointer" } }}
+            sx={{ "& input": { cursor: "pointer", caretColor: "transparent" } }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -125,20 +123,20 @@ const Step1FlightDetails: React.FC<Step1FlightDetailsProps> = ({
                 handleChange("arrivalDate", e.target.value);
               }
             }}
+            onKeyDown={(e) => e.preventDefault()}
             inputProps={{
               min: values.departureDate
                 ? dayjs(values.departureDate)
                     .add(1, "hour")
                     .format("YYYY-MM-DDTHH:mm")
                 : dayjs().add(1, "hour").format("YYYY-MM-DDTHH:mm"),
-              readOnly: true,
               style: { cursor: "pointer" },
             }}
             onClick={(e) => {
               const input = e.currentTarget.querySelector("input");
               if (input) input.showPicker();
             }}
-            sx={{ "& input": { cursor: "pointer" } }}
+            sx={{ "& input": { cursor: "pointer", caretColor: "transparent" } }}
           />
         </Grid>
       </Grid>

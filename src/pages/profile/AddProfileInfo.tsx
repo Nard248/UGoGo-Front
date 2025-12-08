@@ -167,7 +167,7 @@ export const AddProfileInfo = () => {
       </h3>
       <div className="profile">
         <div className="profile__avatar">
-          <div className="flex flex-col items-center gap-[0.8rem]">
+          <div className="relative">
             <Avatar
               firstName={profile.first_name || 'User'}
               lastName={profile.last_name}
@@ -191,9 +191,23 @@ export const AddProfileInfo = () => {
                     }
                   }
                 }}
-                className="text-[1.2rem] text-red-600 hover:text-red-800 underline bg-transparent border-none cursor-pointer"
+                className="absolute top-0 right-0 w-[2.2rem] h-[2.2rem] bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center border-2 border-white cursor-pointer transition-colors"
+                title="Remove photo"
               >
-                Remove Photo
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </button>
             )}
           </div>

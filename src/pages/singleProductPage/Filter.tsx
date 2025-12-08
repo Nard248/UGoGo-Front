@@ -10,18 +10,33 @@ import Checkbox from "@mui/material/Checkbox/Checkbox";
 import { Button } from "../../components/button/Button";
 import { getCategories } from "../../api/route";
 
+interface IFilterValues {
+  departureAfter?: string | null;
+  arrivalBefore?: string | null;
+  weight?: string;
+  space?: string;
+  selectedCategories?: number[];
+}
+
 interface IFilter {
   onClose?: () => void;
   onApply: (params: Record<string, any>) => void;
+  initialValues?: IFilterValues;
 }
 
-export const Filter: FC<IFilter> = ({ onClose, onApply }) => {
-  const [departureAfter, setDepartureAfter] = useState<any>(null);
-  const [arrivalBefore, setArrivalBefore] = useState<any>(null);
-  const [weight, setWeight] = useState("");
-  const [space, setSpace] = useState("");
+export const Filter: FC<IFilter> = ({ onClose, onApply, initialValues }) => {
+  const [departureAfter, setDepartureAfter] = useState<any>(
+    initialValues?.departureAfter ? dayjs(initialValues.departureAfter) : null
+  );
+  const [arrivalBefore, setArrivalBefore] = useState<any>(
+    initialValues?.arrivalBefore ? dayjs(initialValues.arrivalBefore) : null
+  );
+  const [weight, setWeight] = useState(initialValues?.weight || "");
+  const [space, setSpace] = useState(initialValues?.space || "");
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>(
+    initialValues?.selectedCategories || []
+  );
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -48,6 +63,16 @@ export const Filter: FC<IFilter> = ({ onClose, onApply }) => {
     if (weight) params.weight = weight;
     if (space) params.space = space;
     if (selectedCategories.length) params.categories = selectedCategories;
+
+    // Include filter values for persistence
+    params._filterValues = {
+      departureAfter: departureAfter ? dayjs(departureAfter).toISOString() : null,
+      arrivalBefore: arrivalBefore ? dayjs(arrivalBefore).toISOString() : null,
+      weight,
+      space,
+      selectedCategories,
+    };
+
     onApply(params);
     onClose && onClose();
   };

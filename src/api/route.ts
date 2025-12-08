@@ -78,7 +78,21 @@ export const searchOffer = async (params: {
 };
 
 export const advancedSearchOffer = async (params: Record<string, any>) => {
-  return await api.get(`/offers/advanced_search/`, { params });
+  return await api.get(`/offers/advanced_search/`, {
+    params,
+    paramsSerializer: (params) => {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          // Serialize arrays as repeated params: categories=1&categories=2
+          value.forEach((v) => searchParams.append(key, v.toString()));
+        } else if (value !== undefined && value !== null) {
+          searchParams.append(key, value.toString());
+        }
+      });
+      return searchParams.toString();
+    },
+  });
 };
 
 export const getAllOffers = async () => {

@@ -11,12 +11,21 @@ import {getSearchedData} from "../../components/search/SearchService";
 import {EmptyState} from "../../components/emptyState/EmptyState";
 import {useNotification} from "../../components/notification/NotificationProvider";
 
+interface FilterValues {
+    departureAfter?: string | null;
+    arrivalBefore?: string | null;
+    weight?: string;
+    space?: string;
+    selectedCategories?: number[];
+}
+
 export const SearchResult: FC = () => {
     const [isFilterOpened, setIsFilterOpened] = useState<boolean>(false);
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [hasFiltersApplied, setHasFiltersApplied] = useState<boolean>(false);
+    const [savedFilterValues, setSavedFilterValues] = useState<FilterValues>({});
     const navigate = useNavigate();
     const { showError, showInfo } = useNotification();
 
@@ -60,6 +69,13 @@ export const SearchResult: FC = () => {
     };
 
     const handleFilterApply = async (params: Record<string, any>) => {
+        // Extract and save filter values for persistence
+        const filterValues = params._filterValues;
+        if (filterValues) {
+            setSavedFilterValues(filterValues);
+            delete params._filterValues; // Remove from API params
+        }
+
         setIsLoading(true);
         setHasFiltersApplied(true);
         try {
@@ -75,6 +91,7 @@ export const SearchResult: FC = () => {
 
     const handleClearFilters = async () => {
         setHasFiltersApplied(false);
+        setSavedFilterValues({}); // Clear saved filter values
         setIsLoading(true);
         try {
             const response = await getAllOffers();
@@ -173,7 +190,11 @@ export const SearchResult: FC = () => {
             </div>
 
             {isFilterOpened && createPortal(
-                <Filter onClose={() => setIsFilterOpened(false)} onApply={handleFilterApply} />,
+                <Filter
+                    onClose={() => setIsFilterOpened(false)}
+                    onApply={handleFilterApply}
+                    initialValues={savedFilterValues}
+                />,
                 document.body
             )}
         </>
