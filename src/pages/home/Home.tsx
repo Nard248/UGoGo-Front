@@ -120,7 +120,7 @@ export const Home: FC = () => {
 
   useEffect(() => {
     fetchUser();
-  });
+  }, []);
 
   const onOfferSearch = async (searchParams: {
     origin_airport?: string;

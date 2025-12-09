@@ -190,12 +190,22 @@ export const Header: FC<IHeader> = ({ withNavItems = true }) => {
       }
     };
 
+    const handleLogout = () => {
+      // Clear local user state when user logs out
+      setUser({ email: "", balance: 0 });
+      setFirstName("");
+      setLastName("");
+      setIsPopoverOpened(false);
+    };
+
     window.addEventListener("userDetailsUpdated", handleUserUpdate);
     window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("userLoggedOut", handleLogout);
 
     return () => {
       window.removeEventListener("userDetailsUpdated", handleUserUpdate);
       window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("userLoggedOut", handleLogout);
     };
   }, []);
 

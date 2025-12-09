@@ -37,11 +37,9 @@ chatApi.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refresh");
         if (!refreshToken) {
-          // No refresh token available - redirect to login
-          localStorage.removeItem("access");
-          localStorage.removeItem("refresh");
-          localStorage.removeItem("userDetails");
-          localStorage.removeItem("email");
+          // No refresh token available - clear all user data and redirect to login
+          const { clearUserData } = await import("../utils/auth");
+          await clearUserData();
           window.location.href = "/login";
           return Promise.reject(error);
         }
@@ -64,11 +62,9 @@ chatApi.interceptors.response.use(
         // Refresh token is also expired or invalid
         console.error("Token refresh failed - redirecting to login", err);
 
-        // Clear all auth data
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-        localStorage.removeItem("userDetails");
-        localStorage.removeItem("email");
+        // Clear all user data (localStorage + caches) and redirect to login
+        const { clearUserData } = await import("../utils/auth");
+        await clearUserData();
 
         // Redirect to login
         window.location.href = "/login";

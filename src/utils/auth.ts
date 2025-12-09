@@ -108,16 +108,26 @@ export const storeUserDetails = async () => {
 };
 
 /**
- * Clear all user data from localStorage
+ * Clear all user data from localStorage and caches
+ * MUST be called on logout to prevent data leaking between user sessions
  */
-export const clearUserData = () => {
+export const clearUserData = async () => {
+  // Clear localStorage
   localStorage.removeItem('user_id');
   localStorage.removeItem('username');
   localStorage.removeItem('user_email');
+  localStorage.removeItem('email');
   localStorage.removeItem('userDetails');
   localStorage.removeItem('access');
   localStorage.removeItem('refresh');
   localStorage.removeItem('jwt_token'); // Support backend specification
+
+  // Clear profile picture cache to prevent old user's picture from showing
+  const { clearProfilePictureCache } = await import('../hooks/useProfilePicture');
+  clearProfilePictureCache();
+
+  // Dispatch logout event so components can react (e.g., ChatContext can clear state)
+  window.dispatchEvent(new Event('userLoggedOut'));
 };
 
 /**

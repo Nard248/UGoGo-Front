@@ -18,6 +18,7 @@ import sentHoverIcon from "../../assets/icons/airplane.svg";
 import warning from "../../assets/icons/warning.svg";
 import { logout } from "../../api/route";
 import { useProfilePicture } from "../../hooks/useProfilePicture";
+import { clearUserData } from "../../utils/auth";
 import {User} from "../../types/global";
 
 
@@ -86,14 +87,26 @@ export const ProfilePopover: FC = () => {
       loadUserData();
     };
 
+    const handleLogout = () => {
+      // Clear local state when user logs out
+      setUser({ email: "", balance: 0 });
+      setFirstName("");
+      setLastName("");
+      setVerificationStatus("");
+      setIsPassportUploaded(false);
+      setIsPopoverOpen(false);
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("userDetailsUpdated", handleUserUpdate);
+    window.addEventListener("userLoggedOut", handleLogout);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("userDetailsUpdated", handleUserUpdate);
+      window.removeEventListener("userLoggedOut", handleLogout);
     };
 
   }, []);
@@ -103,27 +116,15 @@ export const ProfilePopover: FC = () => {
   const handleLogout = async () => {
     try {
       const refreshToken = localStorage.getItem("refresh");
-      if (!refreshToken) {
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-        localStorage.removeItem("email");
-        localStorage.removeItem("userDetails");
-        navigate("/login");
-        return;
+      if (refreshToken) {
+        // Try to logout on the server
+        await logout(refreshToken);
       }
-
-      await logout(refreshToken);
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
-      localStorage.removeItem("email");
-      localStorage.removeItem("userDetails");
-      navigate("/login");
     } catch (error) {
       console.error("Logout failed", error);
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
-      localStorage.removeItem("email");
-      localStorage.removeItem("userDetails");
+    } finally {
+      // Always clear user data (localStorage + caches) regardless of server response
+      await clearUserData();
       navigate("/login");
     }
   };

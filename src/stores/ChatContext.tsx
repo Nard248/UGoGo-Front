@@ -22,7 +22,8 @@ type ChatAction =
   | { type: 'UPDATE_THREAD_LAST_MESSAGE'; payload: { threadId: string; message: DirectMessage } }
   | { type: 'INCREMENT_UNREAD'; payload: { threadId: string } }
   | { type: 'SET_PAGINATION'; payload: { threadId: string; hasMore: boolean; offset: number } }
-  | { type: 'SET_LOADING_MORE'; payload: { threadId: string; isLoading: boolean } };
+  | { type: 'SET_LOADING_MORE'; payload: { threadId: string; isLoading: boolean } }
+  | { type: 'CLEAR_ALL_STATE' };
 
 const initialState: ChatState = {
   threads: [],
@@ -225,7 +226,11 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
           }
         }
       };
-    
+
+    case 'CLEAR_ALL_STATE':
+      // Reset to initial state - called on logout to prevent old user's data from showing
+      return initialState;
+
     default:
       return state;
   }
@@ -678,12 +683,27 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_ERROR', payload: null });
   }, []);
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       WebSocketService.disconnectAll();
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
+    };
+  }, []);
+
+  // Listen for logout event to clear all chat state
+  useEffect(() => {
+    const handleLogout = () => {
+      console.log('🚪 User logged out - clearing chat state');
+      WebSocketService.disconnectAll();
+      dispatch({ type: 'CLEAR_ALL_STATE' });
+    };
+
+    window.addEventListener('userLoggedOut', handleLogout);
+    return () => {
+      window.removeEventListener('userLoggedOut', handleLogout);
     };
   }, []);
 

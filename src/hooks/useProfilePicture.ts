@@ -6,6 +6,17 @@ let cachedPictureUrl: string | null | undefined = undefined; // undefined = not 
 let fetchPromise: Promise<void> | null = null;
 const subscribers = new Set<(url: string | null, loading: boolean) => void>();
 
+/**
+ * Clear the profile picture cache - MUST be called on logout
+ * to prevent old user's picture from showing when a new user logs in
+ */
+export const clearProfilePictureCache = () => {
+  cachedPictureUrl = undefined;
+  fetchPromise = null;
+  // Notify all subscribers that cache was cleared
+  subscribers.forEach(callback => callback(null, false));
+};
+
 // Helper to refresh user details in localStorage after profile picture changes
 const refreshUserDetails = async () => {
   try {
