@@ -255,6 +255,7 @@ interface OfferDataType {
   arrival_datetime: string;
   notes?: string;
   is_owner?: boolean;
+  has_user_request?: boolean;
   user_flight: {
     flight_number: string;
     flight: {
@@ -611,7 +612,20 @@ const {
 
             {!isOwnOffer() && (
               <div className="flex justify-end pt-9 pb-16">
-                <Button classNames="singleProductPage__notes__content__button" title={"Send request"} type={"primary"} handleClick={onBook} />
+                {offerData.has_user_request ? (
+                  <div style={{
+                    padding: '1rem 2rem',
+                    backgroundColor: '#F3F4F6',
+                    borderRadius: '8px',
+                    color: '#6B7280',
+                    fontSize: '1.4rem',
+                    fontWeight: '500'
+                  }}>
+                    You have already sent a request to this offer.
+                  </div>
+                ) : (
+                  <Button classNames="singleProductPage__notes__content__button" title={"Send request"} type={"primary"} handleClick={onBook} />
+                )}
               </div>
             )}
           </div>
