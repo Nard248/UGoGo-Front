@@ -48,7 +48,7 @@ class WebSocketService {
 
   private getWebSocketUrl(otherUserId: string, token?: string): string {
     // Use Azure backend with secure WebSocket (wss://)
-    const baseUrl = process.env.REACT_APP_WS_URL || 'wss://ugogo-auhdbad8drdma7f6.canadacentral-01.azurewebsites.net';
+    const baseUrl = process.env.REACT_APP_WS_URL || 'wss://ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io';
     
     // Backend expects: wss://domain/ws/chat/dm/user/<other_user_id>/?token=<jwt_token>
     // Use query parameter authentication method as recommended by backend

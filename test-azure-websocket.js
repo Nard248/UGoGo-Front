@@ -12,7 +12,7 @@ if (!token) {
   
   // Test WebSocket connection to Azure backend
   const testAzureWebSocket = (otherUserId = '116') => {
-    const wsUrl = `wss://ugogo-auhdbad8drdma7f6.canadacentral-01.azurewebsites.net/ws/chat/dm/user/${otherUserId}/?token=${token}`;
+    const wsUrl = `wss://ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io/ws/chat/dm/user/${otherUserId}/?token=${token}`;
     
     console.log('🔌 Connecting to Azure WebSocket...');
     console.log('   URL:', wsUrl.replace(/token=.*/, 'token=***'));

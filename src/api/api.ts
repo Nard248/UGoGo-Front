@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: `https://ugogo-auhdbad8drdma7f6.canadacentral-01.azurewebsites.net`,
+  baseURL: `https://ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io`,
   // baseURL: `http://127.0.0.1:8000/`,
 });
 
