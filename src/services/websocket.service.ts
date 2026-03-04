@@ -22,7 +22,6 @@ class WebSocketService {
   private reconnectDelay = 1000;
   private maxReconnectDelay = 30000;
   private maxReconnectAttempts = 10;
-  private heartbeatInterval = 30000;
   private heartbeatTimers: Map<string, NodeJS.Timeout> = new Map();
 
   private constructor() {
@@ -32,7 +31,7 @@ class WebSocketService {
         // Check if it's a WebSocket-related error
         if (event.reason && (event.reason.target instanceof WebSocket || 
             event.reason.message?.includes('WebSocket'))) {
-          console.warn('Handled WebSocket rejection:', event.reason);
+          // Handled WebSocket rejection
           event.preventDefault(); // Prevent the error from bubbling up
         }
       });
@@ -64,7 +63,7 @@ class WebSocketService {
   public async connect(otherUserId: string): Promise<void> {
     // Prevent multiple simultaneous connections
     if (this.isConnecting.get(otherUserId)) {
-      console.log('🔄 Connection already in progress for user:', otherUserId);
+      // Connection already in progress
       const existingPromise = this.connectionPromises.get(otherUserId);
       if (existingPromise) {
         await existingPromise;
@@ -75,13 +74,13 @@ class WebSocketService {
     const existingConnection = this.connections.get(otherUserId);
     
     if (existingConnection?.ws?.readyState === WebSocket.OPEN) {
-      console.log('✅ Already connected to user:', otherUserId);
+      // Already connected
       return;
     }
 
     // Close any existing connection that's not open
     if (existingConnection?.ws) {
-      console.log('🔄 Closing existing non-open connection');
+      // Close existing non-open connection
       existingConnection.ws.close();
       existingConnection.ws = null;
     }
@@ -104,7 +103,7 @@ class WebSocketService {
         const token = getJWTToken();
         
         if (!token) {
-          console.error('❌ No JWT token found');
+          // No JWT token found
           this.notifyStatusListeners(connection, 'error');
           this.isConnecting.set(otherUserId, false);
           reject(new Error('No JWT token'));
@@ -112,16 +111,13 @@ class WebSocketService {
         }
         
         const wsUrl = this.getWebSocketUrl(otherUserId, token);
-        console.log('🔌 Creating WebSocket connection');
-        console.log('   Backend:', wsUrl.replace(/token=[^&]+/, 'token=***'));
-        console.log('   User ID:', otherUserId);
-        console.log('   Protocol:', wsUrl.startsWith('wss://') ? 'Secure (WSS)' : 'Insecure (WS)');
+        // Creating WebSocket connection
         
         let ws: WebSocket;
         try {
           ws = new WebSocket(wsUrl);
         } catch (wsError) {
-          console.error('Failed to create WebSocket instance:', wsError);
+          // Failed to create WebSocket instance
           this.isConnecting.set(otherUserId, false);
           resolve(); // Resolve to prevent unhandled rejection
           return;
@@ -133,9 +129,7 @@ class WebSocketService {
         this.connections.set(otherUserId, connection);
 
         ws.onopen = () => {
-          console.log(`✅ WebSocket connected successfully!`);
-          console.log(`   Connected to user: ${otherUserId}`);
-          console.log(`   Backend: Azure (${wsUrl.split('/ws/')[0]})`);
+          // WebSocket connected successfully
           this.notifyStatusListeners(connection, 'connected');
           
           // Process any queued messages
@@ -143,7 +137,7 @@ class WebSocketService {
             const queuedMsg = connection.messageQueue.shift();
             if (queuedMsg) {
               const msg = { content: queuedMsg.content };
-              console.log('📤 Sending queued message:', msg);
+              // Sending queued message
               ws.send(JSON.stringify(msg));
             }
           }
@@ -154,7 +148,7 @@ class WebSocketService {
         };
 
         ws.onerror = (error) => {
-          console.error(`❌ WebSocket error for user ${otherUserId}:`, error);
+          // WebSocket error
           this.notifyStatusListeners(connection, 'error');
           this.isConnecting.set(otherUserId, false);
           // Don't reject here - let onclose handle it
@@ -162,7 +156,7 @@ class WebSocketService {
         };
 
         ws.onclose = (event) => {
-          console.log(`🔌 WebSocket closed for user ${otherUserId}:`, event.code, event.reason);
+          // WebSocket closed
           this.notifyStatusListeners(connection, 'disconnected');
           this.isConnecting.set(otherUserId, false);
           
@@ -173,16 +167,16 @@ class WebSocketService {
           if (event.code !== 1000 && event.code !== 1001) {
             if (connection.reconnectAttempts < this.maxReconnectAttempts) {
               const delay = Math.min(this.reconnectDelay * Math.pow(2, connection.reconnectAttempts), this.maxReconnectDelay);
-              console.log(`🔄 Reconnecting in ${delay}ms...`);
+              // Reconnecting
               setTimeout(() => {
                 connection.reconnectAttempts++;
                 this.connect(otherUserId).catch(err => {
-                  console.error('Reconnection failed:', err);
+                  // Reconnection failed
                 });
               }, delay);
             } else {
               // Max reconnection attempts reached
-              console.error('Max reconnection attempts reached');
+              // Max reconnection attempts reached
               resolve(); // Resolve instead of reject to prevent unhandled errors
             }
           } else {
@@ -192,7 +186,7 @@ class WebSocketService {
         };
 
         ws.onmessage = (event) => {
-          console.log('📨 WebSocket message received:', event.data);
+          // WebSocket message received
           try {
             const payload = JSON.parse(event.data);
             
@@ -213,12 +207,12 @@ class WebSocketService {
               this.notifyListeners(connection, message);
             }
           } catch (error) {
-            console.error('Error parsing message:', error);
+            // Error parsing message
           }
         };
 
       } catch (error) {
-        console.error('Failed to create WebSocket:', error);
+        // Failed to create WebSocket
         this.isConnecting.set(otherUserId, false);
         // Resolve instead of reject to prevent unhandled promise rejection
         resolve();
@@ -229,19 +223,6 @@ class WebSocketService {
     await connectionPromise;
   }
 
-  private setupHeartbeat(userId: string): void {
-    this.clearHeartbeat(userId);
-    
-    const timer = setInterval(() => {
-      const connection = this.connections.get(userId);
-      if (connection?.ws?.readyState === WebSocket.OPEN) {
-        connection.ws.send(JSON.stringify({ type: 'ping' }));
-      }
-    }, this.heartbeatInterval);
-
-    this.heartbeatTimers.set(userId, timer);
-  }
-
   private clearHeartbeat(userId: string): void {
     const timer = this.heartbeatTimers.get(userId);
     if (timer) {
@@ -250,43 +231,8 @@ class WebSocketService {
     }
   }
 
-  private scheduleReconnect(userId: string): void {
-    const connection = this.connections.get(userId);
-    if (!connection) return;
-
-    if (connection.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error(`Max reconnection attempts reached for user ${userId}`);
-      this.notifyStatusListeners(connection, 'error');
-      return;
-    }
-
-    connection.reconnectAttempts++;
-    const delay = Math.min(
-      this.reconnectDelay * Math.pow(2, connection.reconnectAttempts - 1),
-      this.maxReconnectDelay
-    );
-
-    console.log(`Reconnecting to user ${userId} in ${delay}ms (attempt ${connection.reconnectAttempts})`);
-    this.notifyStatusListeners(connection, 'connecting');
-
-    setTimeout(() => {
-      this.connect(userId);
-    }, delay);
-  }
-
-  private flushMessageQueue(connection: WebSocketConnection): void {
-    if (connection.ws?.readyState === WebSocket.OPEN) {
-      while (connection.messageQueue.length > 0) {
-        const message = connection.messageQueue.shift();
-        if (message) {
-          connection.ws.send(JSON.stringify(message));
-        }
-      }
-    }
-  }
-
   public async sendMessage(otherUserId: string, content: string): Promise<void> {
-    console.log('📤 sendMessage called:', { otherUserId, content });
+    // sendMessage called
     
     // Ensure connection exists and is stable
     await this.connect(otherUserId);
@@ -301,14 +247,14 @@ class WebSocketService {
     
     if (connection.ws?.readyState === WebSocket.OPEN) {
       try {
-        console.log('✅ Sending message immediately:', message);
+        // Sending message immediately
         connection.ws.send(JSON.stringify(message));
       } catch (error) {
-        console.error('❌ Send failed:', error);
+        // Send failed
         throw error;
       }
     } else {
-      console.log('⏳ Connection not ready, queuing message');
+      // Connection not ready, queuing message
       connection.messageQueue.push({
         content: content.trim(),
         timestamp: new Date().toISOString(),
@@ -429,7 +375,7 @@ class WebSocketService {
       try {
         callback(message);
       } catch (error) {
-        console.error('Error in message listener:', error);
+        // Error in message listener
       }
     });
   }
@@ -439,17 +385,7 @@ class WebSocketService {
       try {
         callback(status);
       } catch (error) {
-        console.error('Error in status listener:', error);
-      }
-    });
-  }
-
-  private notifyTypingListeners(connection: WebSocketConnection, userId: string, isTyping: boolean): void {
-    connection.typingListeners.forEach(callback => {
-      try {
-        callback(userId, isTyping);
-      } catch (error) {
-        console.error('Error in typing listener:', error);
+        // Error in status listener
       }
     });
   }

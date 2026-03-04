@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import "./ChatPage.scss";
 import { ChatSidebar } from "./components/ChatSidebar";
@@ -96,7 +96,7 @@ const ChatPage: React.FC = () => {
           }
           setHasOpenedUserChat(true);
         }).catch((error) => {
-          console.error('Failed to ensure thread:', error);
+          // Failed to ensure thread
           setHasOpenedUserChat(true); // Prevent retry loop
         });
       }
@@ -148,11 +148,6 @@ const ChatPage: React.FC = () => {
       isFromMe = msg.sender === currentUserEmail;
     }
     
-    // Only log if there's an issue with sender identification
-    if (msg.sender_id === undefined && !msg.sender) {
-      console.warn('⚠️ Message missing sender info:', msg.id);
-    }
-    
     return {
       id: msg.id,
       fromMe: isFromMe,
@@ -163,9 +158,12 @@ const ChatPage: React.FC = () => {
   };
 
   // Convert messages to display format
-  const messages = state.activeThread 
-    ? (Array.isArray(state.messages[state.activeThread.id]) ? state.messages[state.activeThread.id] : []).map(convertToIMessage)
-    : [];
+  const messages = useMemo(() =>
+    state.activeThread
+      ? (Array.isArray(state.messages[state.activeThread.id]) ? state.messages[state.activeThread.id] : []).map(convertToIMessage)
+      : [],
+    [state.activeThread, state.messages, currentUserId]
+  );
 
   useEffect(() => {
     if (state.activeThread) {
@@ -245,7 +243,7 @@ const ChatPage: React.FC = () => {
         selectThread(thread);
       }, 100);
     } catch (error) {
-      console.error('Failed to start new chat:', error);
+      // Failed to start new chat
     }
   }, [ensureThread, selectThread]);
 
@@ -290,28 +288,24 @@ const ChatPage: React.FC = () => {
   };
 
   // Convert threads to users with error handling
-  const users = Array.isArray(state.threads) ? state.threads.map((thread) => {            
-    try {
-      return convertToIUser(thread);
-    } catch (error) {
-      console.error('❌ Error converting thread to user:', error, thread);
-      // Return a fallback user so the UI doesn't break
-      return {
-        id: thread.id,
-        name: `Thread ${thread.id}`,
-        lastMessage: 'Error loading thread',
-        time: undefined,
-        starred: false
-      };
-    }
-  }) : [];
+  const users = useMemo(() =>
+    Array.isArray(state.threads) ? state.threads.map((thread) => {
+      try {
+        return convertToIUser(thread);
+      } catch {
+        return {
+          id: thread.id,
+          name: `Thread ${thread.id}`,
+          lastMessage: 'Error loading thread',
+          time: undefined,
+          starred: false
+        };
+      }
+    }) : [],
+    [state.threads, currentUserId]
+  );
 
-  // Debug logging (only log on significant changes)
-  // Removed to prevent console spam
-
-  // Add error boundary for debugging
   if (!state) {
-    console.error('Chat state is undefined');
     return <div className="ugogo-chat-page">Loading chat...</div>;
   }
 

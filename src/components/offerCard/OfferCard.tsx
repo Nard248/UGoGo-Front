@@ -1,4 +1,4 @@
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import classNames from "classnames";
 import { Rating, Tooltip } from "@mui/material";
 import { Avatar } from "../avatar/Avatar";
@@ -63,6 +63,19 @@ const formatVolumeCm3 = (volume: number) => {
   return volume.toString();
 };
 
+const pricingStyle: React.CSSProperties = {
+  padding: '1rem',
+  backgroundColor: '#F0F9FF',
+  borderRadius: '6px',
+  marginTop: '0.5rem',
+  fontSize: '1.2rem',
+  color: '#4A5568',
+  textAlign: 'center',
+  border: '1px solid #AEE6E6'
+};
+
+const volumeHintStyle: React.CSSProperties = { cursor: "help", borderBottom: "1px dotted #666" };
+
 export const OfferCard: FC<IOfferCard> = memo(({
   data,
   primaryButtonText,
@@ -86,6 +99,30 @@ export const OfferCard: FC<IOfferCard> = memo(({
   };
 
   const displayUser = customUser || data?.user_flight?.user || data?.user;
+
+  const volumeDisplay = useMemo(() => {
+    const volumeData = parseAndCalculateVolume(data?.available_dimensions);
+    if (volumeData) {
+      return (
+        <Tooltip
+          title={
+            <>
+              <div>{volumeData.volumeM3.toFixed(4)} m³</div>
+              <div>{volumeData.height} x {volumeData.length} x {volumeData.width} cm</div>
+            </>
+          }
+          arrow
+          placement="top"
+        >
+          <span style={volumeHintStyle}>
+            {formatVolumeCm3(volumeData.volumeCm3)} cm³
+          </span>
+        </Tooltip>
+      );
+    }
+    return data?.available_dimensions || "N/A";
+  }, [data?.available_dimensions]);
+
   return (
     <div
       className={classNames(
@@ -93,9 +130,8 @@ export const OfferCard: FC<IOfferCard> = memo(({
       )}
     >
       <div
-        className="offerCard__image"
+        className="offerCard__image cursor-pointer"
         onClick={handleClick}
-        style={{ cursor: "pointer" }}
       >
         {isOwnOffer && (
           <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs z-10">
@@ -184,59 +220,14 @@ export const OfferCard: FC<IOfferCard> = memo(({
             </span>
           </div>
         </div>
-        {/*<div className="offerCard__direction flex items-center justify-between">*/}
-        {/*    <div className='from'>*/}
-        {/*        <span className="country">*/}
-        {/*            {data.user_flight.flight.from_airport?.city?.city_name || "Unknown City"}*/}
-        {/*        </span>,*/}
-        {/*        <span className="city">*/}
-        {/*            {data.user_flight.flight.from_airport?.airport_name || "Unknown Airport"}*/}
-        {/*        </span>*/}
-        {/*    </div>*/}
-        {/*    <div className='to'>*/}
-        {/*        <span className="country">*/}
-        {/*            {data.user_flight.flight.to_airport?.airport_name || "Unknown Destination"}*/}
-        {/*        </span>*/}
-        {/*    </div>*/}
-        {/*</div>*/}
         <div className="offerCard__space flex items-center justify-between">
           <span>Available space</span>
           <span>
             {data.available_weight || "0"} kg,{" "}
-            {(() => {
-              const volumeData = parseAndCalculateVolume(data.available_dimensions);
-              if (volumeData) {
-                return (
-                  <Tooltip
-                    title={
-                      <>
-                        <div>{volumeData.volumeM3.toFixed(4)} m³</div>
-                        <div>{volumeData.height} x {volumeData.length} x {volumeData.width} cm</div>
-                      </>
-                    }
-                    arrow
-                    placement="top"
-                  >
-                    <span style={{ cursor: "help", borderBottom: "1px dotted #666" }}>
-                      {formatVolumeCm3(volumeData.volumeCm3)} cm³
-                    </span>
-                  </Tooltip>
-                );
-              }
-              return data.available_dimensions || "N/A";
-            })()}
+            {volumeDisplay}
           </span>
         </div>
-        <div className="offerCard__pricing" style={{
-          padding: '1rem',
-          backgroundColor: '#F0F9FF',
-          borderRadius: '6px',
-          marginTop: '0.5rem',
-          fontSize: '1.2rem',
-          color: '#4A5568',
-          textAlign: 'center',
-          border: '1px solid #AEE6E6'
-        }}>
+        <div className="offerCard__pricing" style={pricingStyle}>
           <strong>Pricing: $25/kg</strong> (min 1kg)
         </div>
         <div

@@ -1,4 +1,4 @@
-import {FC, ChangeEvent, useEffect, useState} from "react";
+import {FC, ChangeEvent, useEffect, useMemo, useState} from "react";
 import searchIcon from "./../../assets/icons/search.svg";
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
@@ -22,6 +22,32 @@ interface SearchProps {
     }) => void;
 }
 
+const datePickerTextFieldSx = {
+    width: "100%",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    '& input': {
+        textAlign: 'left',
+        padding: '8px 12px',
+        color: '#333',
+        fontSize: '14px',
+    },
+    '& .MuiOutlinedInput-root': {
+        backgroundColor: '#f9f9f9',
+        '& fieldset': {
+            borderColor: '#d5d7da',
+        },
+        '&:hover fieldset': {
+            borderColor: '#999',
+        },
+        '&.Mui-focused fieldset': {
+            borderColor: '#F9A34B',
+        },
+    },
+} as const;
+
+const datePickerButtonSx = { color: '#F9A34B' } as const;
+
 export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
     const [airports, setAirports] = useState<any[]>([]);
     const [offerFormData, setOfferFormData] = useState<IOfferCreateForm>({
@@ -43,7 +69,7 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
                 const results = data.data.results;
                 setAirports(results);
             } catch (error) {
-                console.error("Error fetching airports:", error);
+                // Error fetching airports
             }
         };
         fetchAirports();
@@ -137,8 +163,9 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
         onSearchResults(searchParams);
     };
 
-    const filteredToAirports = airports.filter(
-        (airport) => airport.airport_code !== offerFormData.from_airport_id.value
+    const filteredToAirports = useMemo(() =>
+        airports.filter((airport) => airport.airport_code !== offerFormData.from_airport_id.value),
+        [airports, offerFormData.from_airport_id.value]
     );
 
     return (
@@ -181,33 +208,7 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
 
             <div className="search__divider"></div>
 
-            {/* <div className="search-field">
-        <Label
-          title="Arrival Date"
-          htmlFor="arrivalTime"
-          classnames="postOffer__label"
-        >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                views={["day"]}
-                format="YYYY-MM-DD"
-                value={
-                  offerFormData.departure_datetime.value
-                    ? dayjs(offerFormData.departure_datetime.value)
-                    : null
-                }
-                onChange={onDateChange}
-                minDate={dayjs()}
-                slotProps={{
-                  textField: {
-                    sx: { width: "100%" },
-                  },
-                }}
-              />
-            </LocalizationProvider>
-        </Label>
-      </div> */
-                <div className="search-field">
+            {<div className="search-field">
                     <Label
                         title="Arrival Date"
                         htmlFor="arrivalTime"
@@ -229,34 +230,10 @@ export const Search: FC<SearchProps> = ({data, onSearchResults}) => {
                                         textField: {
                                             placeholder: "Any date",
                                             variant: "outlined",
-                                            sx: {
-                                                width: "100%",
-                                                backgroundColor: "#f9f9f9",
-                                                borderRadius: "8px",
-                                                '& input': {
-                                                    textAlign: 'left',
-                                                    padding: '8px 12px',
-                                                    color: '#333',
-                                                    fontSize: '14px',
-                                                },
-                                                '& .MuiOutlinedInput-root': {
-                                                    backgroundColor: '#f9f9f9',
-                                                    '& fieldset': {
-                                                        borderColor: '#d5d7da',
-                                                    },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#999',
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#F9A34B',
-                                                    },
-                                                },
-                                            },
+                                            sx: datePickerTextFieldSx,
                                         },
                                         openPickerButton: {
-                                            sx: {
-                                                color: '#F9A34B',
-                                            },
+                                            sx: datePickerButtonSx,
                                         },
                                     }}
                                     disableOpenPicker={false}

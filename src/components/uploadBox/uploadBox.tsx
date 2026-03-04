@@ -27,19 +27,20 @@ export const UploadBox: FC<IUploadBox> = ({label, icon, file, upload, children})
     const [progress, setProgress] = useState(40);
 
     useEffect(() => {
-        if (file && progress < 100) {
-            const interval = setInterval(() => {
-                setProgress(prev => {
-                    if (prev >= 100) {
-                        clearInterval(interval);
-                        return 100;
-                    }
-                    return prev + 10;
-                });
-            }, 500); // every half second
-            return () => clearInterval(interval);
-        }
-    }, [file, progress]);
+        if (!file) return;
+
+        setProgress(0);
+        const interval = setInterval(() => {
+            setProgress(prev => {
+                if (prev >= 100) {
+                    clearInterval(interval);
+                    return 100;
+                }
+                return prev + 10;
+            });
+        }, 500);
+        return () => clearInterval(interval);
+    }, [file]);
 
     return (
         file ?

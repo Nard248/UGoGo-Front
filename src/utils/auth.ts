@@ -27,7 +27,7 @@ export const decodeJWT = (token: string): JWTPayload | null => {
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('Failed to decode JWT:', error);
+    // Failed to decode JWT
     return null;
   }
 };
@@ -65,12 +65,9 @@ export const storeUserDetails = async () => {
     const userDetails = await getUserDetails();
     
     if (userDetails) {
-      console.log('✅ Storing user details:', userDetails);
-      
       // Store user ID
       if (userDetails.id) {
         localStorage.setItem('user_id', userDetails.id.toString());
-        console.log('✅ Stored user_id:', userDetails.id);
       }
       
       // Store username if available
@@ -88,19 +85,13 @@ export const storeUserDetails = async () => {
       
       return userDetails;
     } else {
-      console.error('❌ No user details returned from backend');
+      // No user details returned from backend
     }
   } catch (error) {
-    console.error('Failed to store user details:', error);
-    
-    // Fallback: try to extract user ID from JWT token
+    // Failed to store user details - try fallback
     const token = localStorage.getItem('access');
     if (token) {
-      console.log('🔄 Trying fallback: extracting user ID from JWT');
-      const userId = setUserIdFromToken(token);
-      if (userId) {
-        console.log('✅ Fallback success: user_id =', userId);
-      }
+      setUserIdFromToken(token);
     }
   }
   

@@ -34,6 +34,22 @@ export const useNotification = () => {
   return context;
 };
 
+const alertSx = {
+  minWidth: '350px',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  borderRadius: '8px',
+  fontSize: '14px',
+  fontWeight: 500
+} as const;
+
+const successAlertSx = {
+  ...alertSx,
+  backgroundColor: '#DFF5F5',
+  color: '#1B3A4B',
+  border: '1px solid #73B2B2',
+  '& .MuiAlert-icon': { color: '#73B2B2' },
+} as const;
+
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -111,19 +127,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
               onClose={(event) => handleClose(notification.id)}
               severity={notification.severity}
               iconMapping={iconMapping}
-              sx={{
-                minWidth: '350px',
-                backgroundColor: notification.severity === 'success' ? '#DFF5F5' : undefined,
-                color: notification.severity === 'success' ? '#1B3A4B' : undefined,
-                border: notification.severity === 'success' ? '1px solid #73B2B2' : undefined,
-                '& .MuiAlert-icon': {
-                  color: notification.severity === 'success' ? '#73B2B2' : undefined
-                },
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: 500
-              }}
+              sx={notification.severity === 'success' ? successAlertSx : alertSx}
             >
               {notification.message}
             </Alert>

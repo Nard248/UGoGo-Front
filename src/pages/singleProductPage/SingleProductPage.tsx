@@ -1,220 +1,4 @@
-// import {ChangeEvent, FC, useEffect, useState} from "react";
-// import {OfferDetails} from "../../components/offerDetails/OfferDetails";
-// import packageIcon from "./../../assets/icons/package.svg";
-// import {Button} from "../../components/button/Button";
-// import {getItems, getSingleProduct} from "../../api/route";
-// import {Input} from "../../components/input/Input";
-// import {Label} from "../../components/label/Label";
-// import {useLocation, useParams, useSearchParams} from "react-router-dom";
-// import "./SingleProductPage.scss";
-// import {createPortal} from "react-dom";
-// import {SelectItemPopup} from "../../components/selectItemPopup/SelectItemPopup";
-// import useDebouncedCallback from "../../hooks/useDebounceCallback";
-
-// export const SingleProductPage: FC = () => {
-//     const [searchParams, setSearchParams] = useSearchParams();
-//     const {id} = useParams();
-//     const location = useLocation();
-//     const offerData = location.state?.offerData;
-
-//     const [data, setData] = useState(null);
-//     const [items, setItems] = useState<any[]>([]);
-//     const [isItemPopupOpened, setIsItemPopupOpened] = useState(false);
-//     const [comments, setComments] = useState<string | null>(null);
-
-//     useEffect(() => {
-//         window.scrollTo(0, 0);
-//     }, []);
-
-//     useEffect(() => {
-//         getSingleProduct(`${id}`).then(data => {
-//             setData(data.data.offer)
-//         })
-//     }, [])
-
-//     useEffect(() => {
-//         if (searchParams.get('modal') === 'book') {
-//             setIsItemPopupOpened(true);
-//             getItemsQuery();
-//         }
-//     }, [])
-
-//     let timeout: any;
-
-//     const handleInputChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
-//         clearTimeout(timeout);
-//         timeout = setTimeout(() => {
-//             setComments(e.target.value)
-//         }, 300);
-
-//     }
-
-//     const getItemsQuery = async () => {
-//         const data = await getItems();
-//         setItems(data.data.results || []);
-//     }
-
-//     const onBook = async () => {
-//         const offerData = localStorage.getItem('offer');
-//         if (offerData) {
-//             const updatedOfferData = {...JSON.parse(offerData), comments};
-//             localStorage.setItem('offer', JSON.stringify(updatedOfferData))
-//         }
-//         setSearchParams('modal=book');
-//         await getItemsQuery();
-//         setIsItemPopupOpened(true)
-//     }
-
-//     const onBookClose = () => {
-//         searchParams.delete('modal');
-//         setSearchParams(searchParams);
-//         setIsItemPopupOpened(false);
-//     }
-
-//     // const {price, available_space, available_weight, user_flight, user} =
-//     //     offerData;
-//     // const {from_airport, to_airport, departure_datetime, arrival_datetime} =
-//     // user_flight?.flight || {};
-
-//     return (
-//         <>
-//             <div className="singleProductPage">
-//                 <div className="px-16">
-//                     <OfferDetails
-//                         flightNumber={offerData?.user_flight?.flight_number}
-//                         fromCity={offerData?.flight?.from_airport?.city.city_name}
-//                         toCity={offerData?.to_airport?.city.city_name}
-//                     />
-//                 </div>
-//                 <div className="px-16">
-//                     <div className="singleProductPage__productInfo">
-//                         <div className="singleProductPage__productInfo__header postOffer__header">
-//                             <h3 className="singleProductPage__productInfo__header__title singleProductPage__title">
-//                                 Flight & Item Details
-//                             </h3>
-//                         </div>
-//                         <div className="singleProductPage__productInfo__table">
-//                             <div className="singleProductPage__productInfo__table__item">
-//                                 <div className="singleProductPage__productInfo__table__item__title">
-//                                     <div className="singleProductPage__productInfo__table__item__title__icon">
-//                                         <img src={packageIcon} alt="Package icon"/>
-//                                     </div>
-//                                     Available space for packages
-//                                 </div>
-//                                 <div className="singleProductPage__productInfo__table__item__info">
-//                                     {offerData?.available_weight || "N/A"} kg / {offerData?.available_space || "N/A"} m³
-//                                 </div>
-//                             </div>
-//                             <div className="singleProductPage__productInfo__table__item">
-//                                 <div className="singleProductPage__productInfo__table__item__title">
-//                                     <div className="singleProductPage__productInfo__table__item__title__icon">
-//                                         <img src={packageIcon} alt="Package icon"/>
-//                                     </div>
-//                                     Departure date & time
-//                                 </div>
-//                                 <div className="singleProductPage__productInfo__table__item__info">
-//                                     {offerData?.departure_datetime || "N/A"}
-//                                 </div>
-//                             </div>
-//                             <div className="singleProductPage__productInfo__table__item">
-//                                 <div className="singleProductPage__productInfo__table__item__title">
-//                                     <div className="singleProductPage__productInfo__table__item__title__icon">
-//                                         <img src={packageIcon} alt="Package icon"/>
-//                                     </div>
-//                                     Arival date & time
-//                                 </div>
-//                                 <div className="singleProductPage__productInfo__table__item__info">
-//                                     {offerData?.arrival_datetime || "N/A"}
-//                                 </div>
-//                             </div>
-//                             <div className="singleProductPage__productInfo__table__item">
-//                                 <div className="singleProductPage__productInfo__table__item__title">
-//                                     <div className="singleProductPage__productInfo__table__item__title__icon">
-//                                         <img src={packageIcon} alt="Package icon"/>
-//                                     </div>
-//                                     Items can not be transported
-//                                 </div>
-//                                 <div className="singleProductPage__productInfo__table__item__info">
-//                                     item, item, item, item
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//                 <div className="bg-[--primary-background] h-[55px]"></div>
-//                 <div className="px-16">
-//                     <div className="singleProductPage__notes">
-//                         <div className="singleProductPage__notes__title">
-//                             <p></p>
-//                         </div>
-//                         <div className="singleProductPage__notes__content">
-//                             <div className="singleProductPage__notes__content__area">
-//                                 <Label
-//                                     title={"Additional notes from traveler"}
-//                                     htmlFor={"notes"}
-//                                     classnames={"singleProductPage__notes__title"}
-//                                 >
-//                                     <Input
-//                                         type={"textarea"}
-//                                         placeholder={"Enter a description..."}
-//                                         id={"notes"}
-//                                         classnames={"postOffer__input"}
-//                                         handleChange={handleInputChange}
-//                                     />
-//                                 </Label>
-//                             </div>
-//                             <div className="flex flex-col singleProductPage__flightItemsDetails">
-//                                 <div className="singleProductPage__productInfo__header postOffer__header">
-//                                     <h3 className="singleProductPage__productInfo__header__title singleProductPage__title">
-//                                         Price Details
-//                                     </h3>
-//                                 </div>
-//                                 <div className="singleProductPage__flightItemsDetails__content">
-//                                     <div
-//                                         className="flex justify-between singleProductPage__flightItemsDetails__content__item">
-//                                       <span className="singleProductPage__flightItemsDetails__content__itemTitle">
-//                                         Delivery fee
-//                                       </span>
-//                                         <span className="singleProductPage__flightItemsDetails__content__itemValue">
-//                                             ${offerData?.price || 0}
-//                                         </span>
-//                                     </div>
-//                                     <div className="flex justify-between singleProductPage__flightItemsDetails__content__item">
-//                                       <span className="singleProductPage__flightItemsDetails__content__itemTitle">
-//                                         Commission fee
-//                                       </span>
-//                                       <span className="singleProductPage__flightItemsDetails__content__itemValue">
-//                                         $1
-//                                       </span>
-//                                     </div>
-//                                     <div className="flex justify-between singleProductPage__flightItemsDetails__content__itemTotal">
-//                                       <span
-//                                           className="singleProductPage__flightItemsDetails__content__itemTitle singleProductPage__flightItemsDetails__content__itemTotal__title">
-//                                         Total
-//                                       </span>
-//                                       <span className="singleProductPage__flightItemsDetails__content__itemValue">
-//                                         {" "} ${(offerData?.price ? Number(offerData?.price) + 1 : 1).toFixed(2)}
-//                                       </span>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                         <div className="flex justify-end pt-9">
-//                             <Button
-//                                 classNames="singleProductPage__notes__content__button"
-//                                 title={"Book flight"}
-//                                 type={"primary"}
-//                                 handleClick={onBook}
-//                             />
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//             {isItemPopupOpened && createPortal(<SelectItemPopup data={items} onClose={onBookClose}/>, document.body)}
-//         </>
-//     )
-// }
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { OfferDetails } from "../../components/offerDetails/OfferDetails";
 import packageIcon from "./../../assets/icons/package.svg";
 import { Button } from "../../components/button/Button";
@@ -293,6 +77,64 @@ interface OfferDataType {
   // Add more fields here as necessary
 }
 
+const loadingContainerStyle: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "50vh",
+  gap: "2rem",
+};
+
+const loadingTextStyle: React.CSSProperties = { fontSize: "1.4rem", color: "#666" };
+
+const pricingBoxStyle: React.CSSProperties = {
+  padding: '1.5rem',
+  backgroundColor: '#F0F9FF',
+  borderRadius: '8px',
+  marginBottom: '1.5rem',
+  border: '1px solid #AEE6E6',
+};
+
+const pricingTitleStyle: React.CSSProperties = {
+  fontSize: '1.6rem',
+  fontWeight: '600',
+  color: '#1B3A4B',
+  marginBottom: '1rem',
+};
+
+const pricingTextStyle: React.CSSProperties = {
+  fontSize: '1.4rem',
+  color: '#4A5568',
+  lineHeight: '1.6',
+  marginBottom: '0.8rem',
+};
+
+const pricingListStyle: React.CSSProperties = {
+  fontSize: '1.4rem',
+  color: '#4A5568',
+  marginLeft: '2rem',
+  lineHeight: '1.8',
+};
+
+const pricingExampleStyle: React.CSSProperties = {
+  fontSize: '1.3rem',
+  color: '#6B7280',
+  marginTop: '1rem',
+  fontStyle: 'italic',
+};
+
+const requestSentStyle: React.CSSProperties = {
+  padding: '1rem 2rem',
+  backgroundColor: '#F3F4F6',
+  borderRadius: '8px',
+  color: '#6B7280',
+  fontSize: '1.4rem',
+  fontWeight: '500',
+};
+
+const volumeHintStyle: React.CSSProperties = { cursor: "help", borderBottom: "1px dotted #666" };
+
 export const SingleProductPage: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { id } = useParams<{ id: string }>();
@@ -311,8 +153,8 @@ export const SingleProductPage: FC = () => {
     if (id) {
       getSingleProduct(id).then((res) => {
         setOfferData(res.data.offer);
-      }).catch((error) => {
-        console.error('Failed to fetch offer:', error);
+      }).catch(() => {
+        // Failed to fetch offer
       });
     }
   }, [id]);
@@ -353,75 +195,38 @@ export const SingleProductPage: FC = () => {
     return d.toLocaleString();
   };
 
-  // Check if current user is the offer owner
-  const isOwnOffer = () => {
-    if (!offerData) {
-      return false;
-    }
+  // Check if current user is the offer owner (memoized to avoid repeated localStorage reads)
+  const ownOffer = useMemo(() => {
+    if (!offerData) return false;
 
-    // First priority: Check if API provides is_owner field
-    if (offerData.is_owner !== undefined) {
-      return offerData.is_owner;
-    }
+    if (offerData.is_owner !== undefined) return offerData.is_owner;
 
-    // Second priority: Compare courier_id with user_id
     const userId = localStorage.getItem("user_id");
-    if (userId && offerData.courier_id) {
-      const isOwner = parseInt(userId) === offerData.courier_id;
-      if (isOwner) {
-        return true;
-      }
-    }
+    const userEmail = localStorage.getItem("user_email");
 
-    // Third priority: Compare courier_id with userDetails.id
+    if (userId && offerData.courier_id && parseInt(userId) === offerData.courier_id) return true;
+
     const userDetails = localStorage.getItem("userDetails");
     if (userDetails) {
       try {
         const currentUser = JSON.parse(userDetails);
-        if (currentUser.id && offerData.courier_id) {
-          const isOwner = currentUser.id === offerData.courier_id;
-          if (isOwner) {
-            return true;
-          }
-        }
-      } catch (error) {
-        console.error('Error parsing userDetails:', error);
-      }
+        if (currentUser.id && offerData.courier_id && currentUser.id === offerData.courier_id) return true;
+      } catch { /* ignore parse error */ }
     }
 
-    // Fourth priority: Compare with user_flight.user.id
-    if (userId && offerData.user_flight?.user?.id) {
-      const isOwner = parseInt(userId) === offerData.user_flight.user.id;
-      if (isOwner) {
-        return true;
-      }
-    }
+    if (userId && offerData.user_flight?.user?.id && parseInt(userId) === offerData.user_flight.user.id) return true;
 
-    // Fifth priority: Compare emails with user_flight.user.email
-    const userEmail = localStorage.getItem("user_email");
-    if (userEmail && offerData.user_flight?.user?.email) {
-      const isOwner = userEmail.toLowerCase() === offerData.user_flight.user.email.toLowerCase();
-      if (isOwner) {
-        return true;
-      }
-    }
+    if (userEmail && offerData.user_flight?.user?.email &&
+        userEmail.toLowerCase() === offerData.user_flight.user.email.toLowerCase()) return true;
 
-    // If we can't determine, default to false (show button)
     return false;
-  };
+  }, [offerData]);
 
   if (!offerData) {
     return (
-      <div className="singleProductPage px-16" style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "50vh",
-        gap: "2rem"
-      }}>
+      <div className="singleProductPage px-16" style={loadingContainerStyle}>
         <Loading />
-        <span style={{ fontSize: "1.4rem", color: "#666" }}>Loading offer data...</span>
+        <span style={loadingTextStyle}>Loading offer data...</span>
       </div>
     );
   }
@@ -430,12 +235,9 @@ export const SingleProductPage: FC = () => {
     price,
     available_space,
     available_weight,
-    // departure_datetime,
-    // arrival_datetime,
     user_flight,
   } = offerData;
 
-//   const { flight_number, flight } = user_flight || {};
 const {
   flight_number,
   flight: {
@@ -445,7 +247,6 @@ const {
     to_airport,
   },
 } = user_flight;
-//   const { from_airport, to_airport } = flight || {};
 
   return (
     <>
@@ -488,7 +289,7 @@ const {
                           arrow
                           placement="top"
                         >
-                          <span style={{ cursor: "help", borderBottom: "1px dotted #666" }}>
+                          <span style={volumeHintStyle}>
                             {formatVolumeCm3(volumeData.volumeCm3)} cm³
                           </span>
                         </Tooltip>
@@ -508,7 +309,6 @@ const {
                 </div>
                 <div className="singleProductPage__productInfo__table__item__info">
                   {formatDateTime(departure_datetime)}
-                  {/* {formatDateTime(user_flight?.flight?.departure_datetime)} */}
                 </div>
               </div>
 
@@ -520,7 +320,6 @@ const {
                   Arrival date & time
                 </div>
                 <div className="singleProductPage__productInfo__table__item__info">
-                  {/* {formatDateTime(arrival_datetime)} */}
                   {formatDateTime(user_flight?.flight?.arrival_datetime)}
                 </div>
               </div>
@@ -539,17 +338,6 @@ const {
                 </div>
               )}
 
-              {/* <div className="singleProductPage__productInfo__table__item">
-                <div className="singleProductPage__productInfo__table__item__title">
-                  <div className="singleProductPage__productInfo__table__item__title__icon">
-                    <img src={packageIcon} alt="Package icon" />
-                  </div>
-                  Items cannot be transported
-                </div>
-                <div className="singleProductPage__productInfo__table__item__info">
-                  item, item, item, item
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
@@ -564,45 +352,19 @@ const {
                   <h3 className="singleProductPage__productInfo__header__title singleProductPage__title">Pricing Information</h3>
                 </div>
                 <div className="singleProductPage__flightItemsDetails__content">
-                  <div style={{
-                    padding: '1.5rem',
-                    backgroundColor: '#F0F9FF',
-                    borderRadius: '8px',
-                    marginBottom: '1.5rem',
-                    border: '1px solid #AEE6E6'
-                  }}>
-                    <h4 style={{
-                      fontSize: '1.6rem',
-                      fontWeight: '600',
-                      color: '#1B3A4B',
-                      marginBottom: '1rem'
-                    }}>
+                  <div style={pricingBoxStyle}>
+                    <h4 style={pricingTitleStyle}>
                       Automatic Pricing
                     </h4>
-                    <p style={{
-                      fontSize: '1.4rem',
-                      color: '#4A5568',
-                      lineHeight: '1.6',
-                      marginBottom: '0.8rem'
-                    }}>
+                    <p style={pricingTextStyle}>
                       The price for this delivery will be automatically calculated based on your item's weight:
                     </p>
-                    <ul style={{
-                      fontSize: '1.4rem',
-                      color: '#4A5568',
-                      marginLeft: '2rem',
-                      lineHeight: '1.8'
-                    }}>
+                    <ul style={pricingListStyle}>
                       <li><strong>$25 per kilogram</strong> (minimum 1kg charge)</li>
                       <li>Platform commission: 10%</li>
                       <li>Courier receives: 90% of delivery fee</li>
                     </ul>
-                    <p style={{
-                      fontSize: '1.3rem',
-                      color: '#6B7280',
-                      marginTop: '1rem',
-                      fontStyle: 'italic'
-                    }}>
+                    <p style={pricingExampleStyle}>
                       Example: A 2.5kg item = $62.50 total
                     </p>
                   </div>
@@ -610,17 +372,10 @@ const {
               </div>
             </div>
 
-            {!isOwnOffer() && (
+            {!ownOffer && (
               <div className="flex justify-end pt-9 pb-16">
                 {offerData.has_user_request ? (
-                  <div style={{
-                    padding: '1rem 2rem',
-                    backgroundColor: '#F3F4F6',
-                    borderRadius: '8px',
-                    color: '#6B7280',
-                    fontSize: '1.4rem',
-                    fontWeight: '500'
-                  }}>
+                  <div style={requestSentStyle}>
                     You have already sent a request to this offer.
                   </div>
                 ) : (
