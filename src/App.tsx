@@ -1,17 +1,9 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Header } from "./layouts/Header";
 import { Footer } from "./layouts/Footer";
 import { NotificationProvider } from "./components/notification/NotificationProvider";
 import { ChatProvider } from "./stores/ChatContext";
 import { storeUserDetails, isAuthenticated } from "./utils/auth";
-import "./utils/debug"; // Import debug utilities
-import "./utils/debug-api"; // Import API debug utilities
-import "./utils/test-websocket"; // Import WebSocket test utilities
-import "./utils/websocket-diagnostics"; // Import WebSocket diagnostics
-import "./utils/postman-test"; // Import Postman matching tests
-import { SingleProductPage } from "./pages/singleProductPage/SingleProductPage";
-// import { PostOffer } from "./pages/postOffer/PostOffer";
-import  PostOffer  from "./pages/postOffer/PostOffer";
 
 import {
   BrowserRouter,
@@ -21,57 +13,64 @@ import {
   Routes,
   useLocation,
 } from "react-router-dom";
-import { Registration } from "./pages/auth/Registration";
-import { Login } from "./pages/auth/Login";
-import { ItemAdd } from "./pages/itemAdd/ItemAdd";
-import { Payment } from "./pages/payment/Payment";
-import { PaymentConfirmation } from "./pages/paymentConfirmation/PaymentConfirmation";
-import { SearchResult } from "./pages/search/SearchResult";
-import { AddProfileInfo } from "./pages/profile/AddProfileInfo";
-import { ProfileVerification } from "./pages/profile/ProfileVerification";
-import { ForgotPassword } from "./pages/auth/ForgotPassword";
-import { EmailVerification } from "./pages/auth/EmailVerification";
-import { ResetPassword } from "./pages/auth/ResetPassword";
-import { Requests } from "./pages/requests/Requests";
-import { RequestDetails } from "./pages/requests/RequestDetails";
-import { SentRequests } from "./pages/sentRequests/SentRequests";
-import { Offers } from "./pages/offers/Offers";
-import { Items } from "./pages/items/Items";
-import { Transaction } from "./pages/transaction/Transaction";
 import "./assets/scss/index.scss";
-import { TwoFactorConfirmation } from "./pages/auth/TwoFactorConfirmation";
-import { PaymentHistory } from "./pages/transaction/PaymentHistory";
-import { Home } from "./pages/home/Home";
-import {Payout} from "./pages/payout/Payout";
-import { Balance } from "./pages/balance/Balance";
-import {
-  About,
-  Blog,
-  Careers,
-  ChatSupport,
-  Contact,
-  Culture,
-  Features,
-  GettingStarted,
-  HelpCenter,
-  ManageOffer,
-  Pricing,
-  PrivacyPolicy,
-  SendItem,
-  Terms,
-  TruckItem,
-} from "./pages/info";
 import classNames from "classnames";
 
-import Messages from "./pages/messages/ChatPage"
+// Lazy-loaded page components for route-based code splitting
+const SingleProductPage = React.lazy(() => import("./pages/singleProductPage/SingleProductPage").then(m => ({ default: m.SingleProductPage })));
+const PostOffer = React.lazy(() => import("./pages/postOffer/PostOffer"));
+const ItemAdd = React.lazy(() => import("./pages/itemAdd/ItemAdd").then(m => ({ default: m.ItemAdd })));
+const Payment = React.lazy(() => import("./pages/payment/Payment").then(m => ({ default: m.Payment })));
+const PaymentHistory = React.lazy(() => import("./pages/transaction/PaymentHistory").then(m => ({ default: m.PaymentHistory })));
+const PaymentConfirmation = React.lazy(() => import("./pages/paymentConfirmation/PaymentConfirmation").then(m => ({ default: m.PaymentConfirmation })));
+const SearchResult = React.lazy(() => import("./pages/search/SearchResult").then(m => ({ default: m.SearchResult })));
+const AddProfileInfo = React.lazy(() => import("./pages/profile/AddProfileInfo").then(m => ({ default: m.AddProfileInfo })));
+const ProfileVerification = React.lazy(() => import("./pages/profile/ProfileVerification").then(m => ({ default: m.ProfileVerification })));
+const Requests = React.lazy(() => import("./pages/requests/Requests").then(m => ({ default: m.Requests })));
+const RequestDetails = React.lazy(() => import("./pages/requests/RequestDetails").then(m => ({ default: m.RequestDetails })));
+const SentRequests = React.lazy(() => import("./pages/sentRequests/SentRequests").then(m => ({ default: m.SentRequests })));
+const Offers = React.lazy(() => import("./pages/offers/Offers").then(m => ({ default: m.Offers })));
+const Items = React.lazy(() => import("./pages/items/Items").then(m => ({ default: m.Items })));
+const Transaction = React.lazy(() => import("./pages/transaction/Transaction").then(m => ({ default: m.Transaction })));
+const Payout = React.lazy(() => import("./pages/payout/Payout").then(m => ({ default: m.Payout })));
+const Balance = React.lazy(() => import("./pages/balance/Balance").then(m => ({ default: m.Balance })));
+const Messages = React.lazy(() => import("./pages/messages/ChatPage"));
+const Home = React.lazy(() => import("./pages/home/Home").then(m => ({ default: m.Home })));
+
+// Auth pages
+const Registration = React.lazy(() => import("./pages/auth/Registration").then(m => ({ default: m.Registration })));
+const Login = React.lazy(() => import("./pages/auth/Login").then(m => ({ default: m.Login })));
+const ForgotPassword = React.lazy(() => import("./pages/auth/ForgotPassword").then(m => ({ default: m.ForgotPassword })));
+const ResetPassword = React.lazy(() => import("./pages/auth/ResetPassword").then(m => ({ default: m.ResetPassword })));
+const EmailVerification = React.lazy(() => import("./pages/auth/EmailVerification").then(m => ({ default: m.EmailVerification })));
+const TwoFactorConfirmation = React.lazy(() => import("./pages/auth/TwoFactorConfirmation").then(m => ({ default: m.TwoFactorConfirmation })));
+
+// Info pages
+const About = React.lazy(() => import("./pages/info/About").then(m => ({ default: m.About })));
+const Blog = React.lazy(() => import("./pages/info/Blog").then(m => ({ default: m.Blog })));
+const Careers = React.lazy(() => import("./pages/info/Careers").then(m => ({ default: m.Careers })));
+const ChatSupport = React.lazy(() => import("./pages/info/ChatSupport").then(m => ({ default: m.ChatSupport })));
+const Contact = React.lazy(() => import("./pages/info/Contact").then(m => ({ default: m.Contact })));
+const Culture = React.lazy(() => import("./pages/info/Culture").then(m => ({ default: m.Culture })));
+const Features = React.lazy(() => import("./pages/info/Features").then(m => ({ default: m.Features })));
+const GettingStarted = React.lazy(() => import("./pages/info/GettingStarted").then(m => ({ default: m.GettingStarted })));
+const HelpCenter = React.lazy(() => import("./pages/info/HelpCenter").then(m => ({ default: m.HelpCenter })));
+const ManageOffer = React.lazy(() => import("./pages/info/ManageOffer").then(m => ({ default: m.ManageOffer })));
+const Pricing = React.lazy(() => import("./pages/info/Pricing").then(m => ({ default: m.Pricing })));
+const PrivacyPolicy = React.lazy(() => import("./pages/info/PrivacyPolicy").then(m => ({ default: m.PrivacyPolicy })));
+const SendItem = React.lazy(() => import("./pages/info/SendItem").then(m => ({ default: m.SendItem })));
+const Terms = React.lazy(() => import("./pages/info/Terms").then(m => ({ default: m.Terms })));
+const TruckItem = React.lazy(() => import("./pages/info/TruckItem").then(m => ({ default: m.TruckItem })));
+
+const PageLoader = () => (
+  <div className="flex items-center justify-center w-full min-h-[200px]">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#559999]"></div>
+  </div>
+);
 
 const Protected = () => {
   const location = useLocation();
   const accessToken = localStorage.getItem("access");
-  const withSidenav = !["/", "/payment-success", "/search-result"].includes(
-    location.pathname
-  );
-  // const withHeader = ['/search-result'].includes(location.pathname);
   const withHeader = [
     "/search-result",
     "/single-product-page",
@@ -113,7 +112,6 @@ const Protected = () => {
     <>
       <Header withNavItems={withHeader} />
       <div className="flex w-full">
-        {/*{withSidenav && <Sidenav />}*/}
         <Outlet />
       </div>
     </>
@@ -163,7 +161,6 @@ const ConditionalFooter = () => {
 
 function App() {
   useEffect(() => {
-    // Initialize user details if user is authenticated
     const initializeUser = async () => {
       if (isAuthenticated()) {
         const userId = localStorage.getItem('user_id');
@@ -188,6 +185,7 @@ function App() {
           'p-0': window.location.pathname === '/'
         })}>
           <BrowserRouter>
+            <Suspense fallback={<PageLoader />}>
             <Routes>
             <Route element={<Protected />}>
               <Route path="offer/:id" element={<SingleProductPage />} />
@@ -248,6 +246,7 @@ function App() {
               />
             </Route>
             </Routes>
+            </Suspense>
             <ConditionalFooter />
           </BrowserRouter>
         </main>

@@ -1,9 +1,8 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Search } from "../../components/search/Search";
 import airplaneIcon from "../../assets/icons/airplaneIcon.svg";
 import briefcaseIcon from "../../assets/icons/briefcaseIcon.svg";
 import locationIcon from "../../assets/icons/locationIcon.svg";
-import { OfferCard } from "../../components/offerCard/OfferCard";
 import paymentIcon from "../../assets/icons/payment.svg";
 import directionsWalk from "../../assets/icons/directions_walk.svg";
 import addlocationIcon from "../../assets/icons/add_location_alt.svg";
@@ -20,87 +19,28 @@ import "./home.scss";
 
 const checkmark = <img src={checkedIcon} alt="Checked" />;
 
-const homeData: any = [];
-
-// const homeData = [
-//   {
-//     id: 1,
-//     user: {
-//       full_name: "Ed Sheeren",
-//       email: "ed@example.com",
-//     },
-//     rating: 5,
-//     reviews: 435,
-//     category: "Electronics",
-//     title: "Phone Charger",
-//     price: "30",
-//     from: "Armenia, Yerevan",
-//     to: "Moscow, Russia",
-//     startDate: "12.12.2024",
-//     endDate: "21.12.2024",
-//     image: "phone-charger.jpg",
-//     status: "Open",
-//     buttons: [
-//       { text: "Approve", type: "primary" },
-//       { text: "Reject", type: "secondary" },
-//     ],
-//   },
-//   {
-//     id: 2,
-//     user: {
-//       full_name: "Ed Sheeren",
-//       email: "ed@example.com",
-//     },
-//     rating: 5,
-//     reviews: 435,
-//     category: "Flight",
-//     title: "Flight number",
-//     flightNumber: "LH123",
-//     from: "Armenia, Yerevan",
-//     to: "Moscow, Russia",
-//     startDate: "12.12.2024",
-//     startTime: "13:30",
-//     endTime: "15:30",
-//     availableSpace: "kg 12, 5x4x3",
-//     image: "flight.jpg",
-//     status: "Open",
-//     buttons: [
-//       { text: "Send a request", type: "primary" },
-//       { text: "Learn more", type: "secondary" },
-//     ],
-//   },
-// ];
-
 export const Home: FC = () => {
   const [offers, setOffers] = useState<any[]>([]);
-  useEffect(() => {
-    const fetchOffers = async () => {
-      try {
-        const response = await getAllOffers();
-        setOffers(response.data.slice(0, 3));
-      } catch (error) {
-        console.error("Failed to fetch offers:", error);
-      }
-    };
-
-    fetchOffers();
-  }, []);
-
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate("/search-result"); // or "/search-result" whatever your route is
-  };
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const userDetails = localStorage.getItem("userDetails");
 
-  const fetchUser = async () => {
-    const userDetails = localStorage.getItem("userDetails");
+      const promises: Promise<any>[] = [
+        getAllOffers().catch(() => null),
+      ];
 
-    if (userDetails) {
-      return;
-    }
+      if (!userDetails) {
+        promises.push(getUserDetails().catch(() => null));
+      }
 
-    try {
-      const userData = await getUserDetails();
+      const [offersResponse, userData] = await Promise.all(promises);
+
+      if (offersResponse?.data) {
+        setOffers(offersResponse.data.slice(0, 3));
+      }
+
       if (userData) {
         const userObject = {
           id: userData.id,
@@ -110,19 +50,18 @@ export const Home: FC = () => {
           balance: userData.balance,
         };
         localStorage.setItem("userDetails", JSON.stringify(userObject));
-        // Dispatch event to notify other components
-        window.dispatchEvent(new Event('userDetailsUpdated'));
+        window.dispatchEvent(new Event("userDetailsUpdated"));
       }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchUser();
+    fetchInitialData();
   }, []);
 
-  const onOfferSearch = async (searchParams: {
+  const handleClick = useCallback(() => {
+    navigate("/search-result");
+  }, [navigate]);
+
+  const onOfferSearch = useCallback(async (searchParams: {
     origin_airport?: string;
     destination_airport?: string;
     takeoff_date?: string;
@@ -134,7 +73,7 @@ export const Home: FC = () => {
     } catch (error) {
       console.error("Search Error:", error);
     }
-  };
+  }, [navigate]);
 
   return (
     <div className="home">
@@ -174,51 +113,6 @@ export const Home: FC = () => {
           </div>
         </div>
       </div>
-
-      {!!homeData.length && (
-        <div className="cards-section">
-          <div className="blue-background"></div>
-
-          <div className="cards-wrapper">
-            {/*@ts-ignore*/}
-            {homeData.map((item) => {
-              const customTitles: Record<string, string> = {
-                Electronics: "Post your item and find trusted travelers",
-                Flight: "Make money by carrying packages along your route",
-              };
-
-              const cardTitle =
-                customTitles[item.category] ?? "Exclusive Offer";
-
-              return (
-                <div key={item.id} className="card-container">
-                  <h2 className="card-title">{cardTitle}</h2>
-                  <OfferCard
-                    withRate={false}
-                    data={item}
-                    secondaryButtonText="Reject"
-                    primaryButtonText="Approve"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* return (
-              <div key={item.id} className="card-container">
-                <h2 className="card-title">{cardTitle}</h2>
-                <OfferCard
-                  offerData={item}
-                  secondaryButtonText="Reject"
-                  primaryButtonText="Approve"
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div> */}
 
       <div className="solutions-section">
         <h2>Multiple solutions to meet your delivery challenges</h2>
@@ -304,9 +198,6 @@ export const Home: FC = () => {
           {offers.map((offer) => (
             <OfferCardMini key={offer.id} data={offer} />
           ))}
-          {/* <OfferCardMini />
-          <OfferCardMini />
-          <OfferCardMini /> */}
         </div>
       </div>
 

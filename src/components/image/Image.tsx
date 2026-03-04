@@ -10,7 +10,7 @@ type Props = {
 export const ImageComponent: FC<Props> = ({src, alt, classnames}) => {
     return (
         <div className={`image ${classnames || ''}`}>
-            <img src={src} alt={alt}/>
+            <img src={src} alt={alt} loading="lazy"/>
         </div>
     )
 }

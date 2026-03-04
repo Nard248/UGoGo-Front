@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 import classNames from "classnames";
 import { Rating, Tooltip } from "@mui/material";
 import { Avatar } from "../avatar/Avatar";
@@ -63,7 +63,7 @@ const formatVolumeCm3 = (volume: number) => {
   return volume.toString();
 };
 
-export const OfferCard: FC<IOfferCard> = ({
+export const OfferCard: FC<IOfferCard> = memo(({
   data,
   primaryButtonText,
   secondaryButtonText,
@@ -114,6 +114,7 @@ export const OfferCard: FC<IOfferCard> = ({
           }
           alt="Offer card"
           className="offerCard__imageSvg"
+          loading="lazy"
         />
       </div>
       <div className="offerCard__details flex flex-col gap-3.5">
@@ -266,4 +267,4 @@ export const OfferCard: FC<IOfferCard> = ({
       </div>
     </div>
   );
-};
+});
