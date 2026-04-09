@@ -107,11 +107,31 @@ const onImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       <div className="uploaded-images">
         {!!itemFormData.pictures?.length &&
           itemFormData.pictures.map((picture, index) => (
-            <ImageComponent
-              key={index}
-              src={picture.image_path}
-              alt="Item"
-            />
+            <div key={index} className="relative inline-block">
+              <ImageComponent
+                src={picture.image_path}
+                alt="Item"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (picture.image_path.startsWith('blob:')) {
+                    URL.revokeObjectURL(picture.image_path);
+                  }
+                  setItemFormData(prev => ({
+                    ...prev,
+                    pictures: prev.pictures?.filter((_, i) => i !== index),
+                  }));
+                }}
+                className="absolute top-[0.4rem] right-[0.4rem] w-[2.4rem] h-[2.4rem] bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center border-2 border-white cursor-pointer"
+                title="Remove image"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
           ))}
       </div>
 

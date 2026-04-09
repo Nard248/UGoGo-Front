@@ -19,19 +19,11 @@ export const ChatInput: React.FC<Props> = ({ onSend, onTyping }) => {
     if (!value.trim()) return;
     onSend(value);
     setValue("");
-    setShowEmojiPicker(false); // close picker after send
-    setTimeout(() => {
-      const el = document.getElementById("chat-body");
-      if (el) el.scrollTop = el.scrollHeight;
-    }, 50);
+    setShowEmojiPicker(false);
   };
 
   const sendLike = () => {
     onSend("👍");
-    setTimeout(() => {
-      const el = document.getElementById("chat-body");
-      if (el) el.scrollTop = el.scrollHeight;
-    }, 50);
   };
 
   const onEmojiClick = (emojiData: EmojiClickData) => {

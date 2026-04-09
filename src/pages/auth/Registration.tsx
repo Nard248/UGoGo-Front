@@ -8,6 +8,21 @@ import {register} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
 import './Login.scss';
 
+const getPasswordStrength = (password: string): { level: number; label: string; color: string } => {
+    if (!password) return { level: 0, label: '', color: '#D3D3D4' };
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    if (score <= 2) return { level: 1, label: 'Weak', color: '#F04438' };
+    if (score <= 3) return { level: 2, label: 'Fair', color: '#F9A34B' };
+    if (score === 4) return { level: 3, label: 'Good', color: '#4CAF50' };
+    return { level: 4, label: 'Strong', color: '#2E7D32' };
+};
+
 const initialState = {
     email: {
         value: undefined,
@@ -27,6 +42,8 @@ export const Registration = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [registerForm, setRegisterForm] = useState<IRegisterForm>(initialState)
+    const [passwordValue, setPasswordValue] = useState('');
+    const passwordStrength = getPasswordStrength(passwordValue);
 
     const handleNameChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> ) => {
         const {value} = event.target;
@@ -66,12 +83,13 @@ export const Registration = () => {
 
     const handlePasswordChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement> ) => {
         const {value} = event.target;
-        if (value.length < 6) {
+        setPasswordValue(value);
+        if (value.length < 8) {
             setRegisterForm(prevState => ({
                 ...prevState,
                 password: {
                     ...prevState.password,
-                    errorMessage: 'Password must be at least 6 characters long'
+                    errorMessage: 'Password must be at least 8 characters long'
                 }
             }))
             return
@@ -91,7 +109,7 @@ export const Registration = () => {
         }
         setIsLoading(true);
         const formData: IRegister = {
-            full_name: registerForm.email.value,
+            full_name: registerForm.fullName.value,
             email: registerForm.email.value,
             password: registerForm.password.value
         }
@@ -157,6 +175,24 @@ export const Registration = () => {
                                            handleChange={handlePasswordChange}
                                     />
                                 </Label>
+                                {passwordValue && (
+                                    <div className="flex flex-col gap-[0.4rem] mt-[0.8rem]">
+                                        <div className="flex gap-[0.4rem]">
+                                            {[1, 2, 3, 4].map(i => (
+                                                <div
+                                                    key={i}
+                                                    className="h-[0.4rem] flex-1 rounded-full"
+                                                    style={{
+                                                        backgroundColor: i <= passwordStrength.level ? passwordStrength.color : '#E0E0E0'
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                        <span className="text-[1.2rem]" style={{ color: passwordStrength.color }}>
+                                            {passwordStrength.label}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                             <button className="loginButton" onClick={onRegister}
                                     disabled={!registerForm.fullName.value || !registerForm.email.value || !registerForm.password.value}>Continue

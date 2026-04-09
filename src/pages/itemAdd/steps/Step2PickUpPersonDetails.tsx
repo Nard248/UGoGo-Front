@@ -17,6 +17,13 @@ const Step2PickUpPersonDetails = ({
   prevStep: () => void;
 }) => {
   const [isValid, setIsValid] = useState(false);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+
+  const validatePhone = (phone: string): boolean => {
+    // Accepts international format: optional + followed by 7-15 digits (spaces/dashes allowed)
+    const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+    return phoneRegex.test(phone);
+  };
 
   useEffect(() => {
     const { pickup_name, pickup_surname, pickup_phone, pickup_email } = itemFormData;
@@ -24,12 +31,20 @@ const Step2PickUpPersonDetails = ({
       !!pickup_name?.trim() &&
       !!pickup_surname?.trim() &&
       !!pickup_phone?.trim() &&
+      validatePhone(pickup_phone || '') &&
       !!pickup_email?.trim();
     setIsValid(valid);
   }, [itemFormData]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = event.target;
+    if (id === 'pickup_phone') {
+      if (value && !validatePhone(value)) {
+        setPhoneError('Enter a valid phone number (e.g. +1 555-123-4567)');
+      } else {
+        setPhoneError(null);
+      }
+    }
     setItemFormData((prevData: IItemCreate) => ({
       ...prevData,
       [id]: value,
@@ -60,11 +75,13 @@ const Step2PickUpPersonDetails = ({
 
       <Label title="Phone" htmlFor="pickup_phone">
         <Input
-          type="text"
+          type="tel"
           id="pickup_phone"
           value={itemFormData.pickup_phone || ''}
           handleChange={handleChange}
-          placeholder="Phone number"
+          placeholder="+1 555-123-4567"
+          errorMessage={phoneError}
+          showPasswordToggle={false}
         />
       </Label>
 

@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: `https://ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io`,
-  // baseURL: `http://127.0.0.1:8000/`,
+  baseURL: process.env.REACT_APP_API_URL || `http://127.0.0.1:8001`,
+  // Production: https://ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io
 });
 
 api.interceptors.request.use(
@@ -23,19 +23,33 @@ api.interceptors.request.use(
   }
 );
 
+// Auth endpoints where 401 means "bad credentials", not "expired token"
+const AUTH_ENDPOINTS = ['/users/token/', '/users/register/', '/users/forgot-password/', '/users/reset-password/'];
+
 api.interceptors.response.use(
   (response: any) => response,
   async (error: any) => {
     const originalRequest = error.config;
+    const requestUrl = originalRequest?.url || '';
 
-    // Handle 401 Unauthorized errors (token expired)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip token refresh for auth endpoints — let the component handle the error
+    const isAuthEndpoint = AUTH_ENDPOINTS.some(ep => requestUrl.endsWith(ep));
+
+    // Handle 401 Unauthorized errors (token expired) — but not for auth endpoints
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
 
+      const accessToken = localStorage.getItem("access");
+      const refreshToken = localStorage.getItem("refresh");
+
+      // If user was never logged in (no tokens at all), just reject — don't redirect
+      if (!accessToken && !refreshToken) {
+        return Promise.reject(error);
+      }
+
       try {
-        const refreshToken = localStorage.getItem("refresh");
         if (!refreshToken) {
-          // No refresh token available - clear all user data and redirect to login
+          // Had an access token but no refresh — session is gone, redirect to login
           const { clearUserData } = await import("../utils/auth");
           await clearUserData();
           window.location.href = "/login";

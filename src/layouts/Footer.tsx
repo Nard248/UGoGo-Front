@@ -40,7 +40,7 @@ export const Footer: FC = () => {
                                 title: "Product",
                                 links: [
                                     { label: "Send an item", path: "/add-item" },
-                                    { label: "Truck item", path: "/items" },
+                                    { label: "Track item", path: "/items" },
                                     { label: "Post an offer", path: "/post-offer" },
                                     { label: "Manage offer", path: "/requests" },
                                 ],

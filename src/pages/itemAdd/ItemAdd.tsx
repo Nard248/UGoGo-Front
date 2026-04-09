@@ -35,7 +35,7 @@ export const ItemAdd: React.FC = () => {
                !!itemFormData.pickup_phone &&
                !!itemFormData.pickup_email;
       case 3:
-        return true; // Images are optional
+        return (itemFormData.pictures?.length ?? 0) > 0;
       case 4:
         return !!itemFormData.category_ids && itemFormData.category_ids.length > 0;
       default:

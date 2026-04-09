@@ -81,38 +81,34 @@ export const ProfileVerification = () => {
                             Upload a picture of valid document
                         </p>
                         <div className="flex flex-col justify-between items-center">
-                            <UploadBox label={'Front side'} file={formData.pid_picture} upload={onUploadPassport}>
+                            <UploadBox
+                                label={'Front side'}
+                                file={formData.pid_picture}
+                                upload={onUploadPassport}
+                                onRemove={() => setFormData({...formData, pid_picture: undefined as any})}
+                            >
                                 <p className="text-teal-600 font-medium">Click to upload</p>
                                 <p className="text-gray-500 text-sm">or drag and drop</p>
-                                <p className="text-gray-400 text-xs mt-1">PDF, JPG, JPEG, PNG LESS THAN 10MB.</p>
+                                <p className="text-gray-400 text-xs mt-1">JPG, JPEG, PNG LESS THAN 5MB.</p>
                                 <p className="text-gray-400 text-xs">Ensure your document is in good condition and
                                     readable</p>
                             </UploadBox>
                         </div>
                     </div>
-                    {/*<div className="flex flex-col gap-[1.7rem]">*/}
-                    {/*    <p className="text-[#666666] text-[2rem]">*/}
-                    {/*        Take a picture of valid document*/}
-                    {/*    </p>*/}
-                    {/*    <div className="flex flex-col justify-between items-center">*/}
-                    {/*        <UploadBox label={'Back side'} upload={}>*/}
-                    {/*            <p className="text-teal-600 font-medium">Click to upload</p>*/}
-                    {/*            <p className="text-gray-500 text-sm">or drag and drop</p>*/}
-                    {/*            <p className="text-gray-400 text-xs mt-1">PDF, JPG, JPEG, PNG LESS THAN 10MB.</p>*/}
-                    {/*            <p className="text-gray-400 text-xs">Ensure your document is in good condition and*/}
-                    {/*                readable</p>*/}
-                    {/*        </UploadBox>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
                     <div className="flex flex-col gap-[1.7rem]">
                         <p className="text-[#666666] text-[2rem]">
                             Upload a selfie with your document
                         </p>
                         <div className="flex flex-col justify-between items-center">
-                            <UploadBox label={'Front side'} file={formData.pid_selfie} upload={onUploadSelfie}>
+                            <UploadBox
+                                label={'Selfie'}
+                                file={formData.pid_selfie}
+                                upload={onUploadSelfie}
+                                onRemove={() => setFormData({...formData, pid_selfie: undefined as any})}
+                            >
                                 <p className="text-teal-600 font-medium">Click to upload</p>
                                 <p className="text-gray-500 text-sm">or drag and drop</p>
-                                <p className="text-gray-400 text-xs mt-1">PDF, JPG, JPEG, PNG LESS THAN 10MB.</p>
+                                <p className="text-gray-400 text-xs mt-1">JPG, JPEG, PNG LESS THAN 5MB.</p>
                                 <p className="text-gray-400 text-xs">Ensure your document is in good condition and
                                     readable</p>
                             </UploadBox>

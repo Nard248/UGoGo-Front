@@ -16,6 +16,7 @@ interface UserProfile {
   phone_number: string;
   email: string;
   birthdate: string;
+  gender: string;
   passport_verification_status?: string;
   is_passport_uploaded?: boolean;
 }
@@ -33,6 +34,7 @@ export const AddProfileInfo = () => {
     phone_number: '',
     email: '',
     birthdate: '',
+    gender: '',
     passport_verification_status: 'pending',
     is_passport_uploaded: false
   });
@@ -63,6 +65,7 @@ export const AddProfileInfo = () => {
           phone_number: userDetails.phone_number || '',
           email: userDetails.email || '',
           birthdate: userDetails.birthdate || '',
+          gender: userDetails.gender || '',
           passport_verification_status: userDetails.passport_verification_status || 'pending',
           is_passport_uploaded: userDetails.is_passport_uploaded || false
         };
@@ -335,6 +338,22 @@ export const AddProfileInfo = () => {
               handleChange={(e) => handleInputChange('birthdate', e.target.value)}
               disabled={!isEditing}
             />
+          </Label>
+
+          <Label title={'Gender'} htmlFor={'gender'} classnames={'label'}>
+            <select
+              id="gender"
+              value={formData.gender}
+              onChange={(e) => handleInputChange('gender', e.target.value)}
+              disabled={!isEditing}
+              className="input inputField"
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
           </Label>
         </div>
 

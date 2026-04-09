@@ -73,9 +73,9 @@ export const SentRequests = () => {
                             <EmptyState
                                 illustration="no-requests"
                                 title="You haven't sent any requests"
-                                description="Find available couriers and send requests to ship your items safely."
+                                description="Find available travelers and send requests to ship your items safely."
                                 primaryAction={{
-                                    label: "Find couriers",
+                                    label: "Find travelers",
                                     onClick: () => navigate('/')
                                 }}
                                 secondaryAction={{

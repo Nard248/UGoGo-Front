@@ -143,16 +143,14 @@ export const SingleProductPage: FC = () => {
   const [items, setItems] = useState<any[]>([]);
   const [isItemPopupOpened, setIsItemPopupOpened] = useState(false);
 
-  // Scroll to top on mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  // Always fetch offer data from API to ensure we have user information
+  // Fetch offer data and scroll to top after loading
   useEffect(() => {
     if (id) {
+      window.scrollTo(0, 0);
       getSingleProduct(id).then((res) => {
         setOfferData(res.data.offer);
+        // Scroll to top after data renders
+        setTimeout(() => window.scrollTo(0, 0), 0);
       }).catch(() => {
         // Failed to fetch offer
       });
@@ -362,7 +360,7 @@ const {
                     <ul style={pricingListStyle}>
                       <li><strong>$25 per kilogram</strong> (minimum 1kg charge)</li>
                       <li>Platform commission: 10%</li>
-                      <li>Courier receives: 90% of delivery fee</li>
+                      <li>Traveler receives: 90% of delivery fee</li>
                     </ul>
                     <p style={pricingExampleStyle}>
                       Example: A 2.5kg item = $62.50 total

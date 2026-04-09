@@ -102,7 +102,7 @@ export const UserSelectorModal: React.FC<UserSelectorModalProps> = ({
     <div className="user-selector-modal-overlay" onClick={handleClose}>
       <div className="user-selector-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Select a Courier</h3>
+          <h3>Select a Traveler</h3>
           <button className="close-button" onClick={handleClose} aria-label="Close">
             ×
           </button>
@@ -159,7 +159,7 @@ export const UserSelectorModal: React.FC<UserSelectorModalProps> = ({
                 <div className="offer-info">
                   <div className="offer-header">
                     <div className="courier-name">
-                      {offer.user_flight?.user?.full_name || 'Unknown Courier'}
+                      {offer.user_flight?.user?.full_name || 'Unknown Traveler'}
                     </div>
                     <div className="flight-number">
                       {offer.user_flight?.flight?.from_airport?.airport_code || 'N/A'}-{offer.user_flight?.flight?.to_airport?.airport_code || 'N/A'}

@@ -114,7 +114,7 @@ export const Payment = () => {
                                         color: '#6B7280',
                                         marginTop: '0.8rem'
                                     }}>
-                                        <span>Courier receives: {validationData.price_calculation.display.courier}</span>
+                                        <span>Traveler receives: {validationData.price_calculation.display.courier}</span>
                                     </div>
                                 </>
                             ) : (
@@ -123,7 +123,7 @@ export const Payment = () => {
                                         const deliveryFee = Number(offerData?.price) || 0;
                                         const commission = deliveryFee * 0.10; // 10% commission
                                         const total = deliveryFee;
-                                        const courierReceives = deliveryFee * 0.90; // Courier gets 90%
+                                        const courierReceives = deliveryFee * 0.90; // Traveler gets 90%
 
                                         return (
                                             <>
@@ -145,7 +145,7 @@ export const Payment = () => {
                                                     color: '#6B7280',
                                                     marginTop: '0.8rem'
                                                 }}>
-                                                    <span>Courier receives: ${courierReceives.toFixed(2)}</span>
+                                                    <span>Traveler receives: ${courierReceives.toFixed(2)}</span>
                                                 </div>
                                             </>
                                         );

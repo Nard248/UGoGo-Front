@@ -124,7 +124,7 @@ export const Contact = () => {
     {
       question: "How does UGoGo work?",
       answer:
-        "UGoGo connects travelers with people who need to send items. Travelers can offer space in their luggage and earn money, while senders can ship items affordably through verified couriers.",
+        "UGoGo connects travelers with people who need to send items. Travelers can offer space in their luggage and earn money, while senders can ship items affordably through verified travelers.",
     },
     {
       question: "Is it safe to use UGoGo?",
@@ -147,7 +147,7 @@ export const Contact = () => {
         "We offer comprehensive protection including item insurance, dispute resolution, and 24/7 customer support. All transactions are tracked and monitored for your safety.",
     },
     {
-      question: "How do I become a courier?",
+      question: "How do I become a traveler?",
       answer:
         "Sign up, complete our verification process, and start posting your travel routes. You can earn money by utilizing unused luggage space on trips you're already taking.",
     },

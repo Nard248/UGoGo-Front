@@ -51,8 +51,8 @@ const ChatPage: React.FC = () => {
   const { connectionStatus, sendTyping } = useWebSocket({
     otherUserId: getOtherUserId(),
     onMessage: (message: DirectMessage) => {
-      // Message handling is done in ChatContext, just scroll to bottom
-      scrollToBottom();
+      // Message handling is done in ChatContext
+      // Scroll is handled by the useEffect watching state.messages (only if near bottom)
     },
     onTyping: (userId: string, typing: boolean) => {
       if (userId === getOtherUserId()) {
@@ -235,8 +235,12 @@ const ChatPage: React.FC = () => {
 
   const handleStartNewChat = useCallback(async (user: User) => {
     try {
-      // console.log('Starting new chat with user:', user);
-      const thread = await ensureThread(user.id);
+      const userId = Number(user.id);
+      if (!userId || isNaN(userId)) {
+        console.error('Invalid user ID for chat:', user.id);
+        return;
+      }
+      const thread = await ensureThread(userId);
       // console.log('Created/found thread:', thread);      
       // Wait a moment for the thread to be properly added to state
       setTimeout(() => {

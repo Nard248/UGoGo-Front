@@ -105,7 +105,6 @@ const Protected = () => {
     "/balance",
     "/offer/",
     "/messages",
-    "/",
   ].includes(location.pathname) || location.pathname.startsWith("/offer/") || location.pathname.startsWith("/request/");
 
   return accessToken ? (
@@ -116,7 +115,20 @@ const Protected = () => {
       </div>
     </>
   ) : (
-    <Navigate to="/login" />
+    <Navigate to="/" />
+  );
+};
+
+// Routes accessible by everyone (authenticated or not)
+const OpenRoute = () => {
+  const accessToken = localStorage.getItem("access");
+  return (
+    <>
+      <Header withNavItems={true} />
+      <div className="flex w-full">
+        <Outlet />
+      </div>
+    </>
   );
 };
 
@@ -225,12 +237,15 @@ function App() {
               <Route path="terms" element={<Terms />} />
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="messages" element={<Messages />} />
+            </Route>
+            <Route element={<OpenRoute />}>
               <Route path="/" element={<Home />} />
             </Route>
             <Route element={<Public />}>
               <Route path="registration" element={<Registration />} />
               <Route path="login" element={<Login />} />
               <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password/:uid/:token" element={<ResetPassword />} />
               <Route path="reset-password" element={<ResetPassword />} />
               <Route
                 path="email-verification"

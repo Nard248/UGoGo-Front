@@ -21,6 +21,19 @@ export const register = async (data: ILogin) => {
   return await api.post(`/users/register/`, data);
 };
 
+export const forgotPassword = async (email: string) => {
+  return await api.post(`/users/forgot-password/`, { email });
+};
+
+export const resetPassword = async (data: {
+  uid: string;
+  token: string;
+  new_password: string;
+  confirm_password: string;
+}) => {
+  return await api.post(`/users/reset-password/`, data);
+};
+
 export const getSingleProduct = async (id: string) => {
   return await api.get(`/offers/offers/${id}/`);
 };
@@ -155,6 +168,7 @@ export const updateProfile = async (data: {
   phone_number: string;
   email?: string;
   birthdate: string;
+  gender?: string;
 }) => {
   return await api.put(`/users/profile/edit/`, data);
 };

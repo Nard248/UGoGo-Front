@@ -16,7 +16,7 @@ export const Card: FC<Props> = ({id, title, iconSrc, iconName, selected, handleC
     return (
         <div className={`card cursor-pointer ${selected ? 'selected' : ''}`} onClick={() => handleCardClick(id)}>
             <div className="card__icon">
-                <img src={logo} alt={iconName} className="card__icon-image"/>
+                <img src={iconSrc || logo} alt={iconName} className="card__icon-image" onError={(e) => { (e.target as HTMLImageElement).src = logo; }}/>
             </div>
             <span className="card__title">
                 {title}
