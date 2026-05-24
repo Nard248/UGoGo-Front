@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAccessToken, getRefreshToken, setAuthTokens, isAuthPersistent } from "../utils/auth";
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || `http://127.0.0.1:8001`,
@@ -7,7 +8,7 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (request: any) => {
-    const accessToken = localStorage.getItem("access");
+    const accessToken = getAccessToken();
 
     return {
       ...request,
@@ -39,8 +40,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
 
-      const accessToken = localStorage.getItem("access");
-      const refreshToken = localStorage.getItem("refresh");
+      const accessToken = getAccessToken();
+      const refreshToken = getRefreshToken();
 
       // If user was never logged in (no tokens at all), just reject — don't redirect
       if (!accessToken && !refreshToken) {
@@ -63,11 +64,9 @@ api.interceptors.response.use(
           { refresh: refreshToken }
         );
 
-        // Save new tokens
-        localStorage.setItem("access", data.access);
-        if (data.refresh) {
-          localStorage.setItem("refresh", data.refresh);
-        }
+        // Save new tokens to the same store the session uses (localStorage if
+        // "Remember me" was on, sessionStorage otherwise)
+        setAuthTokens(data.access, data.refresh || refreshToken, isAuthPersistent());
 
         // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${data.access}`;

@@ -60,10 +60,18 @@ export const getCurrentUserId = (): number => {
  * Store user details after login
  */
 export const storeUserDetails = async () => {
+  // Always derive user_id from the access token first. This guarantees
+  // getCurrentUserId() works even if the /users/me request is slow or fails
+  // (e.g. cold backend), instead of depending on the network round-trip.
+  const accessToken = localStorage.getItem('access');
+  if (accessToken) {
+    setUserIdFromToken(accessToken);
+  }
+
   try {
     const { getUserDetails } = await import('../api/route');
     const userDetails = await getUserDetails();
-    
+
     if (userDetails) {
       // Store user ID
       if (userDetails.id) {
@@ -98,8 +106,37 @@ export const storeUserDetails = async () => {
   return null;
 };
 
+const AUTH_PERSIST_KEY = 'auth_persist';
+
 /**
- * Clear all user data from localStorage and caches
+ * Store auth tokens honoring the "Remember me" choice.
+ * - remember=true  → localStorage (persists across browser restarts)
+ * - remember=false → sessionStorage (cleared when the tab/browser closes)
+ * The other store is cleared to avoid stale tokens lingering.
+ */
+export const setAuthTokens = (access: string, refresh: string, remember: boolean) => {
+  const primary = remember ? localStorage : sessionStorage;
+  const secondary = remember ? sessionStorage : localStorage;
+  secondary.removeItem('access');
+  secondary.removeItem('refresh');
+  primary.setItem('access', access);
+  primary.setItem('refresh', refresh);
+  localStorage.setItem(AUTH_PERSIST_KEY, remember ? '1' : '0');
+};
+
+/** Read the access token from whichever store currently holds it. */
+export const getAccessToken = (): string | null =>
+  localStorage.getItem('access') || sessionStorage.getItem('access');
+
+/** Read the refresh token from whichever store currently holds it. */
+export const getRefreshToken = (): string | null =>
+  localStorage.getItem('refresh') || sessionStorage.getItem('refresh');
+
+/** Whether the current session was started with "Remember me" enabled. */
+export const isAuthPersistent = (): boolean => localStorage.getItem(AUTH_PERSIST_KEY) !== '0';
+
+/**
+ * Clear all user data from storage and caches
  * MUST be called on logout to prevent data leaking between user sessions
  */
 export const clearUserData = async () => {
@@ -112,6 +149,10 @@ export const clearUserData = async () => {
   localStorage.removeItem('access');
   localStorage.removeItem('refresh');
   localStorage.removeItem('jwt_token'); // Support backend specification
+  localStorage.removeItem(AUTH_PERSIST_KEY);
+  // Also clear session-scoped tokens (used when "Remember me" is off)
+  sessionStorage.removeItem('access');
+  sessionStorage.removeItem('refresh');
 
   // Clear profile picture cache to prevent old user's picture from showing
   const { clearProfilePictureCache } = await import('../hooks/useProfilePicture');
@@ -125,7 +166,7 @@ export const clearUserData = async () => {
  * Get JWT token from storage (supporting both jwt_token and access keys)
  */
 export const getJWTToken = (): string | null => {
-  return localStorage.getItem('jwt_token') || localStorage.getItem('access');
+  return localStorage.getItem('jwt_token') || getAccessToken();
 };
 
 /**

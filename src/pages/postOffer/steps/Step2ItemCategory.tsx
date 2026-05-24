@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "../../../components/card/Card";
+import { getCategoryIcon } from "../../../utils/categoryIcons";
 import { getCategories } from "../../../api/route";
 import "./Steps.scss";
 import { IOfferCreateForm } from "../../../types/global";
@@ -69,6 +70,7 @@ const Step2ItemCategory: React.FC<Step2ItemCategoryProps> = ({
             title={name}
             iconSrc={icon_path}
             iconName={name}
+            iconNode={getCategoryIcon(name)}
             selected={isSelected(id)}
             handleCardClick={() => handleCategoryClick(id)}
           />

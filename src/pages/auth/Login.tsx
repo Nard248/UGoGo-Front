@@ -8,11 +8,12 @@ import { Button } from '../../components/button/Button';
 import {ILogin, ILoginForm, User} from "../../types/global";
 import {login} from "../../api/route";
 import {Loading} from "../../components/loading/Loading";
-import {storeUserDetails} from "../../utils/auth";
+import {storeUserDetails, setUserIdFromToken, setAuthTokens} from "../../utils/auth";
 
 export const Login: FC = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [loginError, setLoginError] = useState<string | null>(null);
     const [loginForm, setLoginForm] = useState<ILoginForm>({
         email: {
@@ -23,7 +24,7 @@ export const Login: FC = () => {
             value: undefined,
             errorMessage: null
         },
-        rememberMe: false
+        rememberMe: true
     })
     const [user, setUser] = useState<User>({ name: "NULL", email: "NULL" });
     const [emailDebounce, setEmailDebounce] = useState<string>('');
@@ -122,6 +123,7 @@ export const Login: FC = () => {
         }
 
         setLoginError(null);
+        setIsSubmitting(true);
 
         try {
             const formData: ILogin = {
@@ -132,23 +134,31 @@ export const Login: FC = () => {
 
             // Check if login was successful (has refresh token)
             if(data?.refresh && data?.access) {
-                localStorage.setItem('refresh', data.refresh);
-                localStorage.setItem('access', data.access);
+                // Store tokens in localStorage (Remember me) or sessionStorage
+                setAuthTokens(data.access, data.refresh, loginForm.rememberMe);
 
-                // Check email verification status only after successful login
-                if (!data?.isEmailVerified) {
-                    localStorage.setItem('email', loginForm.email.value);
-                    setIsLoading(true);
-                    navigate('/email-verification');
-                    return;
-                }
+                // Persist user_id immediately from the JWT so chat/ownership
+                // checks work without waiting on /users/me (fixes cold-login race)
+                setUserIdFromToken(data.access);
 
-                // Store user details after successful login
+                // Store user details, then decide routing. The token response does
+                // not reliably include an email-verification flag, so we use the
+                // authoritative `is_email_verified` from /users/me. Default to
+                // allowing access if it can't be determined (don't block on a
+                // transient fetch failure).
                 setIsLoading(true);
+                let details: any = null;
                 try {
-                    await storeUserDetails();
+                    details = await storeUserDetails();
                 } catch (error) {
                     console.error('Failed to store user details:', error);
+                }
+
+                const isEmailVerified = details?.is_email_verified ?? true;
+                if (!isEmailVerified) {
+                    localStorage.setItem('email', loginForm.email.value);
+                    navigate('/email-verification');
+                    return;
                 }
 
                 navigate('/')
@@ -181,6 +191,9 @@ export const Login: FC = () => {
             }
 
             setLoginError(errorMessage);
+        } finally {
+            // On success we navigate away; on failure re-enable the button
+            setIsSubmitting(false);
         }
     }
 
@@ -236,11 +249,11 @@ export const Login: FC = () => {
                                     />
                                 </Label>
                             </div>
-                            <Button title={'Login'} type={'primary'} disabled={!loginForm.email.value || !loginForm.password.value} classNames={'loginButton'} handleClick={onLogin} />
+                            <Button title={isSubmitting ? 'Logging in…' : 'Login'} type={'primary'} disabled={!loginForm.email.value || !loginForm.password.value || isSubmitting} classNames={'loginButton'} handleClick={onLogin} />
                         </form>
 
                         <div className="rememberMeContainer">
-                            <input type="checkbox" id="rememberMe" className="cursor-pointer" />
+                            <input type="checkbox" id="rememberMe" className="cursor-pointer" checked={loginForm.rememberMe} onChange={(e) => setLoginForm(prev => ({ ...prev, rememberMe: e.target.checked }))} />
                             <label htmlFor="rememberMe" className="rememberMeLabel">
                                 Remember me
                             </label>

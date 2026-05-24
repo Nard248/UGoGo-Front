@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { IItemCreate } from "../../../types/global";
 import { Card } from "../../../components/card/Card";
-import { getCategories } from "../../../api/route"; 
+import { getCategoryIcon } from "../../../utils/categoryIcons";
+import { getCategories } from "../../../api/route";
 import "./StepItemDetails.scss";
 
 interface ICategory {
@@ -65,6 +66,7 @@ const Step4ItemCategory = ({
           title={name}
           iconSrc={icon_path}
           iconName={name}
+          iconNode={getCategoryIcon(name)}
           selected={isSelected(id)}
           handleCardClick={() => handleCategoryClick(id)}
         />

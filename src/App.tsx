@@ -68,6 +68,19 @@ const PageLoader = () => (
   </div>
 );
 
+// Reset scroll position on every route change. The app's scroll container is
+// <body> (custom overflow), not the window, so React Router's default handling
+// doesn't reset it — without this, new pages open scrolled to the previous offset.
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const Protected = () => {
   const location = useLocation();
   const accessToken = localStorage.getItem("access");
@@ -197,6 +210,7 @@ function App() {
           'p-0': window.location.pathname === '/'
         })}>
           <BrowserRouter>
+            <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
             <Routes>
             <Route element={<Protected />}>

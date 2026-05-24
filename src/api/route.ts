@@ -69,7 +69,7 @@ export const emailVerification = async (data: {
 
 export const getUserDetails = async () => {
   try {
-    const response = await api.get("/users/me", {
+    const response = await api.get("/users/me/", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access")}`,
       },

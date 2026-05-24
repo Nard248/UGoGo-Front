@@ -23,17 +23,23 @@ export const ItemAdd: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // International phone: optional + followed by 7-15 digits (spaces/dashes/parens allowed)
+  const isValidPhone = (phone: string) => /^\+?[\d\s\-()]{7,20}$/.test(phone.trim());
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        return !!itemFormData.name && 
-               !!itemFormData.weight && 
+        return !!itemFormData.name &&
+               !!itemFormData.weight &&
                !!itemFormData.dimensions;
       case 2:
         return !!itemFormData.pickup_name &&
                !!itemFormData.pickup_surname &&
                !!itemFormData.pickup_phone &&
-               !!itemFormData.pickup_email;
+               isValidPhone(itemFormData.pickup_phone) &&
+               !!itemFormData.pickup_email &&
+               isValidEmail(itemFormData.pickup_email);
       case 3:
         return (itemFormData.pictures?.length ?? 0) > 0;
       case 4:
