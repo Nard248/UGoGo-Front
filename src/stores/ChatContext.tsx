@@ -12,6 +12,7 @@ type ChatAction =
   | { type: 'SET_MESSAGES'; payload: { threadId: string; messages: DirectMessage[] } }
   | { type: 'PREPEND_MESSAGES'; payload: { threadId: string; messages: DirectMessage[] } }
   | { type: 'ADD_MESSAGE'; payload: { threadId: string; message: DirectMessage } }
+  | { type: 'REMOVE_MESSAGE'; payload: { threadId: string; messageId: string } }
   | { type: 'UPDATE_MESSAGE'; payload: { threadId: string; messageId: string; updates: Partial<DirectMessage> } }
   | { type: 'SET_CONNECTION_STATUS'; payload: { userId: string; status: ConnectionStatus } }
   | { type: 'SET_TYPING'; payload: { userId: string; isTyping: boolean } }
@@ -107,17 +108,52 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case 'ADD_MESSAGE': {
       const currentMessages = state.messages[action.payload.threadId] || [];
       const messagesArray = Array.isArray(currentMessages) ? currentMessages : [];
-      const messageExists = messagesArray.some(m => m.id === action.payload.message.id);
+      const incoming = action.payload.message;
 
-      if (messageExists) {
+      // Exact duplicate by id
+      if (messagesArray.some(m => m.id === incoming.id)) {
         return state;
+      }
+
+      // Reconcile: a real (server) message replaces a still-pending optimistic
+      // (temp-) message with the same content, instead of duplicating it.
+      // Preserve the optimistic sender_id if the echo doesn't carry one, so the
+      // bubble stays on the correct (sender's) side.
+      const isReal = !incoming.id.startsWith('temp-');
+      if (isReal) {
+        const tempIndex = messagesArray.findIndex(
+          m => m.id.startsWith('temp-') && m.content === incoming.content
+        );
+        if (tempIndex >= 0) {
+          const reconciled = [...messagesArray];
+          reconciled[tempIndex] = {
+            ...incoming,
+            sender_id: incoming.sender_id ?? messagesArray[tempIndex].sender_id
+          };
+          return {
+            ...state,
+            messages: { ...state.messages, [action.payload.threadId]: reconciled }
+          };
+        }
       }
 
       return {
         ...state,
         messages: {
           ...state.messages,
-          [action.payload.threadId]: [...messagesArray, action.payload.message]
+          [action.payload.threadId]: [...messagesArray, incoming]
+        }
+      };
+    }
+
+    case 'REMOVE_MESSAGE': {
+      const arr = state.messages[action.payload.threadId] || [];
+      const safeArr = Array.isArray(arr) ? arr : [];
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          [action.payload.threadId]: safeArr.filter(m => m.id !== action.payload.messageId)
         }
       };
     }
@@ -381,9 +417,30 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const sendMessage = useCallback(async (content: string) => {
     if (!state.activeThread || !content.trim()) return;
 
+    const trimmed = content.trim();
+    const threadId = state.activeThread.id;
     const currentUserId = getCurrentUserId();
+    const currentUserEmail = localStorage.getItem('email') || localStorage.getItem('user_email') || '';
     const otherUserId = (state.activeThread.user1 === currentUserId ?
       state.activeThread.user2 : state.activeThread.user1).toString();
+
+    // Optimistically render the message immediately. The backend does not echo
+    // the sender's own message back over its socket, so without this the message
+    // would only appear after reloading the thread.
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const optimisticMessage: DirectMessage = {
+      id: tempId,
+      thread: threadId,
+      sender: currentUserEmail,
+      sender_id: currentUserId,
+      content: trimmed,
+      created_at: new Date().toISOString(),
+      is_read: false,
+      edited: false,
+      deleted: false,
+    };
+    dispatch({ type: 'ADD_MESSAGE', payload: { threadId, message: optimisticMessage } });
+    dispatch({ type: 'UPDATE_THREAD_LAST_MESSAGE', payload: { threadId, message: optimisticMessage } });
 
     try {
       try {
@@ -392,9 +449,12 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         // Continue - message might still be sent if connection exists
       }
 
-      await WebSocketService.sendMessage(otherUserId, content.trim());
-      // Message will arrive via WebSocket listener - no need for HTTP refresh
+      await WebSocketService.sendMessage(otherUserId, trimmed);
+      // If the server echoes the message back, the ADD_MESSAGE reducer reconciles
+      // the temp message by content, so no duplicate appears.
     } catch (error: any) {
+      // Roll back the optimistic message so we don't show one that failed to send
+      dispatch({ type: 'REMOVE_MESSAGE', payload: { threadId, messageId: tempId } });
       showError('Failed to send message. Please try again.');
     }
   }, [state.activeThread, showError]);

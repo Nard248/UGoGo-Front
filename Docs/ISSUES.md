@@ -99,7 +99,7 @@ Source: `Docs/UGoGo Feedback.pdf`. Status legend: 🔴 Open · 🟡 Verify (poss
 | # | Issue | Likely location | Status |
 |---|-------|-----------------|--------|
 | C1 | Unclear who you can chat with; "fail" when clicking travelers | backend `ensure-thread` | ✅ **FIXED (backend) — verified in UI.** ensure-thread now returns 200 with a thread; clicking a traveler opens the conversation (no error). |
-| C4 | **NEW:** a just-sent message does **not** render in the open conversation until the thread is reloaded (message is sent & persisted over WS, but the UI keeps showing "No messages yet") | `stores/ChatContext.tsx` / `messages/ChatPage.tsx` (real-time append) | 🔴 Open — frontend should optimistically append the sent message (sender's own message likely isn't echoed back over its own socket) |
+| C4 | A just-sent message did **not** render until the thread was reloaded | `stores/ChatContext.tsx` | ✅ **Fixed & verified.** `sendMessage` now optimistically appends the message (temp id); `ADD_MESSAGE` reconciles any server echo by content (no duplicate); `REMOVE_MESSAGE` rolls back on send failure. Verified: message shows instantly on send; exactly one copy after reload. |
 | C2 | Chat auto-scrolls on send (annoying) | `messages/ChatPage.tsx:176-188` | ✅ **Improved by ecb0b59** — now scrolls only when switching threads or when user is already near bottom (`isNearBottom`), not on every send |
 | C3 | Live two-way WebSocket messaging **could not be tested via UI** — blocked by the C1 ensure-thread 500 (no thread can be created) | Blocked | dependent on C1 |
 | S6 (sugg) | "Courier" → "Traveler" rename: done in chat modal; verify everywhere else | 🟡 partial | "Select a Traveler" confirmed |
