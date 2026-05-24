@@ -2,6 +2,8 @@
 
 Found during a full Playwright test pass on 2026-05-24 (local frontend → Azure backend `ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io`). For each item the **frontend is already correct** — these require server-side changes.
 
+> **Verification re-run 2026-05-24 14:33 UTC:** ✅ **BE-1, BE-2, BE-3, BE-6 are now FIXED** on the deployed backend and verified end-to-end in the UI (profile save 200, ensure-thread 200, offer notes returned, token includes `is_email_verified`). ⚠️ **BE-4** (category `icon_path`) and **BE-5** (`/users/me` 301) are **still open**, but both are already mitigated on the frontend (MUI category icons; `/users/me/` with slash), so they don't block the app. A new **frontend** bug surfaced once chat was unblocked — see ISSUES.md **C4** (sent message doesn't render until reload).
+
 ---
 
 ## 🔴 BE-1 — Profile update blocked by CORS (PUT not allowed)  [Critical]

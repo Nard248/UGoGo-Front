@@ -81,7 +81,7 @@ Source: `Docs/UGoGo Feedback.pdf`. Status legend: 🔴 Open · 🟡 Verify (poss
 
 | # | Issue | Likely location | Status |
 |---|-------|-----------------|--------|
-| F1 | Offer "notes" not visible when viewing from another account | `singleProductPage/SingleProductPage.tsx:325` (frontend OK) + **backend serializer** | 🔴 **Confirmed = BACKEND bug.** Frontend renders `offerData.notes` ("Additional notes from traveler"), but `/offers/offers/{id}/` and `/offers/my_offers/` **omit `notes` entirely** (also no `flight_details`). Verified against my own offer id=18 created with notes "TESTNOTE-12345" → field absent. Fix: backend retrieve/list serializer must include `notes`. |
+| F1 | Offer "notes" not visible when viewing from another account | backend serializer | ✅ **FIXED (backend) — verified in UI.** `/offers/offers/{id}/` now returns `notes` (+`flight_details`); offer page shows "Additional notes from traveler: TESTNOTE-12345 …". |
 | F2 | "View & Book" page opens auto-scrolled down | global scroll-reset on route change | 🔴 **Confirmed.** Scroll container is `<body>` (custom overflow), not window. After clicking View & Book, `/offer/1` opened at `body.scrollTop=716`. No scroll reset on navigation. Fix: app-level effect resetting `document.body.scrollTop=0` on route change (must target body, not window). |
 | F3 | Offer card formatting inconsistent between cards | `components/offerCard/OfferCard.tsx` + `.scss` | 🔴 **Confirmed.** When city names are long (e.g. "Armenia, Yerevan → USA, New York") the route text wraps to 2 lines, making that card taller, misaligning the plane icon and pushing "View & Book" down vs. single-line cards. Cards don't enforce uniform height. Also data artifact: city "Paris_" (trailing underscore) from backend. |
 | F4 | Mobile **burger menu button visible on desktop** width (renders as an empty orange bar) | `layouts/Header` `.burger-btn` CSS | 🔴 New — responsive breakpoint not hiding burger on desktop |
@@ -98,7 +98,8 @@ Source: `Docs/UGoGo Feedback.pdf`. Status legend: 🔴 Open · 🟡 Verify (poss
 
 | # | Issue | Likely location | Status |
 |---|-------|-----------------|--------|
-| C1 | Unclear who you can chat with; "fail" when clicking travelers | `api/chat.ts:11`, `stores/ChatContext.tsx:443` (frontend OK) + **backend** | 🔴 **Confirmed = BACKEND bug.** Modal correctly renamed "Select a Traveler" and lists travelers by offer. Clicking one POSTs `{other_user_id:143}` to `/api/chat/dm/ensure-thread/` → **500 Server Error** (Django HTML). Frontend shows toast "Failed to create conversation". Blocks all new conversations. Fix: backend ensure-thread endpoint. |
+| C1 | Unclear who you can chat with; "fail" when clicking travelers | backend `ensure-thread` | ✅ **FIXED (backend) — verified in UI.** ensure-thread now returns 200 with a thread; clicking a traveler opens the conversation (no error). |
+| C4 | **NEW:** a just-sent message does **not** render in the open conversation until the thread is reloaded (message is sent & persisted over WS, but the UI keeps showing "No messages yet") | `stores/ChatContext.tsx` / `messages/ChatPage.tsx` (real-time append) | 🔴 Open — frontend should optimistically append the sent message (sender's own message likely isn't echoed back over its own socket) |
 | C2 | Chat auto-scrolls on send (annoying) | `messages/ChatPage.tsx:176-188` | ✅ **Improved by ecb0b59** — now scrolls only when switching threads or when user is already near bottom (`isNearBottom`), not on every send |
 | C3 | Live two-way WebSocket messaging **could not be tested via UI** — blocked by the C1 ensure-thread 500 (no thread can be created) | Blocked | dependent on C1 |
 | S6 (sugg) | "Courier" → "Traveler" rename: done in chat modal; verify everywhere else | 🟡 partial | "Select a Traveler" confirmed |
@@ -107,7 +108,7 @@ Source: `Docs/UGoGo Feedback.pdf`. Status legend: 🔴 Open · 🟡 Verify (poss
 
 | # | Issue | Likely location | Status |
 |---|-------|-----------------|--------|
-| A1 | Fails to update any personal information | `route.ts:173 updateProfile` (PUT) + **backend CORS** | 🔴 **Confirmed = BACKEND CORS bug.** Save → `PUT /users/profile/edit/` blocked at preflight: *"Method PUT is not allowed by Access-Control-Allow-Methods"* → net::ERR_FAILED. Same-origin in prod is false (SWA vs Container Apps) so it fails in production too. Fix: backend must allow PUT in CORS `Access-Control-Allow-Methods` (or accept PATCH/POST & align frontend). Gender dropdown present (ecb0b59). |
+| A1 | Fails to update any personal information | backend CORS | ✅ **FIXED (backend) — verified in UI.** `PUT /users/profile/edit/` now returns 200 ("User information updated successfully.") through the app; no CORS error. |
 | A2 | ID verification: jpeg works, pdf fails (format-specific?) | `profile/ProfileVerification.tsx` | ✅ **Clarified** — UI now explicitly states "JPG, JPEG, PNG LESS THAN 5MB"; pdf intentionally unsupported. (Optional: ensure `<input accept>` blocks pdf selection outright.) |
 | A3 | ID verification: no way to remove a wrong file | `profile/ProfileVerification.tsx` (UploadBox) | ✅ **Fixed by ecb0b59** — verified: each upload shows a "Remove file" button that resets the zone |
 
