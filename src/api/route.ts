@@ -67,6 +67,10 @@ export const emailVerification = async (data: {
   return await api.post(`/users/verfiy-email/`, data);
 };
 
+export const resendVerificationEmail = async (email: string) => {
+  return await api.post(`/users/resend-verification-email/`, { email });
+};
+
 export const getUserDetails = async () => {
   try {
     const response = await api.get("/users/me/", {

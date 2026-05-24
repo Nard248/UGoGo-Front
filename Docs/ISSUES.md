@@ -49,6 +49,21 @@ Source: `Docs/UGoGo Feedback.pdf`. Status legend: 🔴 Open · 🟡 Verify (poss
 | — | Post-offer wizard (4 steps) works end-to-end; `create_offer` → 201; success toast shown | ✅ Works | req #41 = 201 |
 | (data) | Backend category name typo "electronic devies" → "electronic devices" (backend-owned) | Low | get_all_categories body |
 
+## Registration / email verification (tested 2026-05-24)
+
+| # | Issue | Location | Status |
+|---|-------|----------|--------|
+| R1 | **Silent registration errors** — failed signup (e.g. duplicate email) showed **no message** | `Registration.tsx` | ✅ **Fixed & verified** — error banner now shows backend message (e.g. "users with this email already exists.") |
+| R2 | "I agree to Terms" checkbox is **uncontrolled and not enforced** | `Registration.tsx` | ✅ **Fixed & verified** — checkbox controlled; Continue disabled until checked |
+| R3 | "Resend a new code" / "Resend email" are **non-functional** | `EmailVerification.tsx`, `route.ts` | ✅ **Fixed & verified** — both wired to `POST /users/resend-verification-email/` (200) with success message |
+| R4 | Endpoint path typo `/users/verfiy-email/` ("verfiy") — works (backend matches the typo) but should be corrected on both sides eventually | `route.ts:67` | 🟡 Cosmetic |
+| — | Password-strength meter present & working (Weak→Strong) | `Registration.tsx:11` | ✅ S1 addressed |
+| — | Registration **shows a loading spinner** during submit (better than old login) | `Registration.tsx` | ✅ Works |
+| — | Email-verification screen renders (obfuscated email, 6-digit inputs, auto-advance); **wrong code** → "Invalid verification code." | `EmailVerification.tsx` | ✅ Works |
+| — | Register cold-start latency ~28s (same backend perf issue as login) | backend | Info |
+| R5 | Happy path: register → email code → verify → `/` | full flow | ✅ **Verified end-to-end** via mailinator (`ugogoqa5571@mailinator.com`): register→201, code email received (`636696`), `POST /users/verfiy-email/`→**201**, navigated to `/` |
+| R6 | After successful verification the user was dropped on a logged-out homepage | `EmailVerification.tsx` | ✅ **Fixed** — now navigates to `/login` (with `{verified:true}` state) so the next step is clear |
+
 ## Logging in
 
 | # | Issue | Likely location | Status |

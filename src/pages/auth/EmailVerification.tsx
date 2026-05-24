@@ -1,7 +1,6 @@
 import React, {useRef, useState, KeyboardEvent, useEffect} from "react";
-import {emailVerification} from "../../api/route";
+import {emailVerification, resendVerificationEmail} from "../../api/route";
 import {Button} from "../../components/button/Button";
-import {Link} from "../../components/link/Link";
 import './EmailVerification.scss'
 import {useNavigate} from "react-router-dom";
 import classNames from "classnames";
@@ -12,6 +11,8 @@ export const EmailVerification = () => {
     const inputRefs = useRef<HTMLInputElement[]>([]);
     const [email, setEmail] = useState<string | null>(null);
     const [error, setError] = useState(false);
+    const [resendMessage, setResendMessage] = useState<string | null>(null);
+    const [isResending, setIsResending] = useState(false);
 
     useEffect(() => {
         const _email = localStorage.getItem('email');
@@ -61,12 +62,29 @@ export const EmailVerification = () => {
 
         try {
             const verifyCode = code.join("");
-            const data = await emailVerification({email, email_verification_code: verifyCode});
+            await emailVerification({email, email_verification_code: verifyCode});
             localStorage.removeItem('email');
-            navigate('/')
+            // Email is verified but no session is issued here — send the user to
+            // login (with a success cue) instead of dropping them on a logged-out home page
+            navigate('/login', { state: { verified: true } })
         } catch (e) {
             setError(true);
             console.log(e);
+        }
+    }
+
+    const handleResend = async () => {
+        if (!email || isResending) return;
+        setResendMessage(null);
+        setIsResending(true);
+        try {
+            await resendVerificationEmail(email);
+            setError(false);
+            setResendMessage('A new verification code has been sent to your email.');
+        } catch (e) {
+            setResendMessage('Could not resend the code. Please try again.');
+        } finally {
+            setIsResending(false);
         }
     }
 
@@ -113,11 +131,13 @@ export const EmailVerification = () => {
                         {error &&
                             <span className="text-center text-[1.4rem] text-[#D32F2F]">Invalid verification code.</span>
                         }
+                        {resendMessage &&
+                            <span className="text-center text-[1.4rem] text-[#2E7D32]">{resendMessage}</span>
+                        }
                     </div>
                     <div className="w-full md:w-3/6 text-[#666666] font-normal text-[1.4rem]">
                         It may take a minute to receive your code.
-                        Haven't receive it? <Link title={'Resend a new code'} href={''} type={'tertiary'}
-                                                  outline={true}/>.
+                        Haven't receive it? <span onClick={handleResend} className="cursor-pointer text-[#F9A34B] underline">Resend a new code</span>.
                     </div>
                 </div>
             </div>
@@ -129,9 +149,9 @@ export const EmailVerification = () => {
                     <span className="text-[1.4rem] md:text-[1.6rem] text-[#040308] font-normal">
                         Didn't receive the email? Check spam or promotion folder or
                     </span>
-                    <Button title={'Resend email'} type={'primary'} classNames={"w-full text-[1.4rem]"}
-                            handleClick={() => {
-                            }}/>
+                    <Button title={isResending ? 'Resending…' : 'Resend email'} type={'primary'} classNames={"w-full text-[1.4rem]"}
+                            disabled={isResending}
+                            handleClick={handleResend}/>
                 </div>
             </div>
         </div>

@@ -42,6 +42,8 @@ export const Registration = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [registerForm, setRegisterForm] = useState<IRegisterForm>(initialState)
+    const [registerError, setRegisterError] = useState<string | null>(null);
+    const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false);
     const [passwordValue, setPasswordValue] = useState('');
     const passwordStrength = getPasswordStrength(passwordValue);
 
@@ -103,10 +105,16 @@ export const Registration = () => {
         }))
     }
 
-    const onRegister = async () => {
+    const onRegister = async (e?: React.MouseEvent) => {
+        if (e) e.preventDefault();
         if (!registerForm.fullName.value || !registerForm.email.value || !registerForm.password.value) {
             return
         }
+        if (!agreedToTerms) {
+            setRegisterError("Please agree to UGOGO's Terms of Service to continue.");
+            return;
+        }
+        setRegisterError(null);
         setIsLoading(true);
         const formData: IRegister = {
             full_name: registerForm.fullName.value,
@@ -118,12 +126,37 @@ export const Registration = () => {
             const {data} = await register(formData);
             if (data.user) {
                 localStorage.setItem('email', registerForm.email.value);
-                setIsLoading(false);
                 navigate('/email-verification')
+                return;
             }
-        } catch (e) {
             setIsLoading(false);
-            console.log(e);
+            setRegisterError('Registration failed. Please try again.');
+        } catch (error: any) {
+            setIsLoading(false);
+
+            // Surface the backend error instead of failing silently
+            let errorMessage = 'Registration failed. Please try again.';
+            const errorData = error?.response?.data;
+            if (errorData) {
+                if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                } else if (errorData.email) {
+                    errorMessage = Array.isArray(errorData.email) ? errorData.email[0] : errorData.email;
+                } else if (errorData.password) {
+                    errorMessage = Array.isArray(errorData.password) ? errorData.password[0] : errorData.password;
+                } else if (errorData.detail) {
+                    errorMessage = errorData.detail;
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (errorData.error) {
+                    errorMessage = errorData.error;
+                } else if (errorData.non_field_errors) {
+                    errorMessage = Array.isArray(errorData.non_field_errors) ? errorData.non_field_errors[0] : errorData.non_field_errors;
+                }
+            } else if (error?.message) {
+                errorMessage = error.message;
+            }
+            setRegisterError(errorMessage);
         }
     }
 
@@ -148,6 +181,11 @@ export const Registration = () => {
                                 <NavLink to="/login" className="signupLink text-[#F9A34B]">Sign in</NavLink>
                             </div>
                         </div>
+                        {registerError && (
+                            <div className="loginError">
+                                {registerError}
+                            </div>
+                        )}
                         <form className="flex flex-col gap-[22px]">
                             <div>
                                 <Label title={'Full Name'} htmlFor={'fullName'}
@@ -195,11 +233,11 @@ export const Registration = () => {
                                 )}
                             </div>
                             <button className="loginButton" onClick={onRegister}
-                                    disabled={!registerForm.fullName.value || !registerForm.email.value || !registerForm.password.value}>Continue
+                                    disabled={!registerForm.fullName.value || !registerForm.email.value || !registerForm.password.value || !agreedToTerms}>Continue
                             </button>
                         </form>
                         <div className="rememberMeContainer">
-                            <input type="checkbox" id="rememberMe" className="cursor-pointer"/>
+                            <input type="checkbox" id="rememberMe" className="cursor-pointer" checked={agreedToTerms} onChange={(e) => { setAgreedToTerms(e.target.checked); setRegisterError(null); }}/>
                             <label htmlFor="rememberMe" className="rememberMeLabel">
                                 I agree with UGOGO's Terms of Service, Privacy Policy, and default Notification
                                 Settings.
