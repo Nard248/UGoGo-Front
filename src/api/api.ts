@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAccessToken, getRefreshToken, setAuthTokens, isAuthPersistent } from "../utils/auth";
 
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || `http://127.0.0.1:8001`,
+  baseURL: process.env.REACT_APP_API_URL || `https://ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io`,
   // Production: https://ugogo-backend.blackflower-e8d746fa.eastus.azurecontainerapps.io
 });
 
